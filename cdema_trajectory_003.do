@@ -385,25 +385,24 @@ drop diff10 diff30 diff50 diff100 diff1000 diff10000 c3 c4 c5
 ** TITLE, ATTRIBUTION, DATE of CREATION
     putpdf paragraph ,  font("Calibri Light", 12)
     putpdf text ("COVID-19 trajectory for `cname'"), bold linebreak
-    putpdf paragraph ,  font("Calibri Light", 9)
+    putpdf paragraph ,  font("Calibri Light", 8)
     putpdf text ("Briefing created by staff of the George Alleyne Chronic Disease Research Centre and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, The University of the West Indies"), linebreak
-    putpdf text ("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) for details of quantitative analyses"), font("Calibri Light", 9) linebreak italic
-    putpdf text ("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) for details of national public health interventions"), font("Calibri Light", 9) italic linebreak
-    putpdf text ("Creation date: $S_DATE"), font("Calibri Light", 9) bold italic linebreak
+    putpdf text ("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) for details of quantitative analyses"), font("Calibri Light", 8) linebreak italic
+    putpdf text ("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) for details of national public health interventions"), font("Calibri Light", 8) italic linebreak
+    putpdf text ("Creation date: $S_DATE"), font("Calibri Light", 8) bold italic linebreak
 
 ** INTRODUCTION
     putpdf paragraph ,  font("Calibri Light", 10)
     putpdf text ("Aim of this briefing. ") , bold
-    putpdf text ("We present the cumulative number of confirmed cases of COVID-19 infection in Barbados since the start of the outbreak, which ") 
-    putpdf text ("we measure as the number of days since the first confirmed case. We compare the Barbados trajectory with selected countries ") 
-    putpdf text ("further along the epidemic curve. This allows us to assess progress in reducing COVID-19 transmission ") 
-    putpdf text ("compared to interventions in other countries. Epidemic progress is likely to vary markedly between countries, ") 
-    putpdf text ("and this graphic is presented as a guide only. "), linebreak 
+    putpdf text ("We present the cumulative number of confirmed cases of COVID-19 infection in `cname' since the start of the outbreak, which ") 
+    putpdf text ("we measure as the number of days since the first confirmed case. We compare the `cname' trajectory against key comparator countries ") 
+    putpdf text ("(Singapore, South Korea, UK, USA) which are further along the epidemic curve. Epidemic progress is likely to vary markedly ") 
+    putpdf text ("between countries, and this graphic is presented as a guide only. "), linebreak 
 
 ** TABLE OF KEY NUMBERS
 ** SUMMARY METRICS
 putpdf table t1 = (2,3), width(75%) halign(center) 
-putpdf table t1(1,.), font("Calibri Light", 13) border(all,nil) 
+putpdf table t1(1,.), font("Calibri Light", 13, ffffff) border(all,single,ffffff) bgcolor(a6a6a6)
 putpdf table t1(2,.), font("Calibri Light", 18) border(all,nil) 
 putpdf table t1(1,1)=("Confirmed Cases"), halign(center) 
 putpdf table t1(1,2)=("Date of First Confirmed Case"), halign(center) 

@@ -121,7 +121,7 @@ label var usa_d "USA deaths"
 label var usa_r "USA recovered"
 
 ** Days since first case
-local days = 20
+local days = 21
 
 ** CHART _ DAYS SINCE FIRST CASE 
 ** Without Caribbean
