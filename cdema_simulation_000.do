@@ -82,15 +82,19 @@
 ** so save the file for further data management in next DO file.  
 ** -----------------------------------------------------------------
 
+
 ** -----------------------------------------------------------------
 *! DO FILE: cdema_trajectory_002.do
 ** -----------------------------------------------------------------
 ** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
 ** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
 **
+** 
+** EXAMPLE CODING USING BARBADOS
+** FOR FINAL VERSION USING ALL 14 CARICOM MEMBERS - SEE cdema_trajectory_003.do
 ** DESCRIPTION
 ** Prepare example CONFIRMED CASES briefing
-** Extract data for THREE comparator countries: Sth Korea, UK, US
+** Extract data for FOUR comparator countries: Singapore, Sth Korea, UK, US
 ** And we compare each Caribbean country against these comparators
 **
 ** We calculate the number of elapsed days since start of outbreak
@@ -99,6 +103,81 @@
 ** We then simply plot cumulative cases for all countries over this 
 ** period of elapsed time
 ** -----------------------------------------------------------------
+
+
+** -----------------------------------------------------------------
+*! DO FILE: cdema_trajectory_003.do
+*! COUNTRY SPECIFIC DAILY BRIEFING
+** -----------------------------------------------------------------
+** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
+** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
+**
+** 
+** DESCRIPTION
+** Prepare example CONFIRMED CASES briefing
+** Extract data for FOUR comparator countries: Singapore, Sth Korea, UK, US
+** And we compare each of the 14 CARISOM member states against these comparators
+**
+** We calculate the number of elapsed days since start of outbreak
+** defined as the first reported CONFIRMED case.
+**
+** We then simply plot cumulative cases for all countries over this 
+** period of elapsed time
+** -----------------------------------------------------------------
+
+
+** -----------------------------------------------------------------
+*! DO FILE: cdema_trajectory_004.do
+*! REGIONAL SUMMARY OF NUMBER OF CONFIRMED CASES
+** -----------------------------------------------------------------
+** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
+** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
+**
+** 
+** DESCRIPTION
+** Prepare example CONFIRMED CASES briefing
+** Extract data for FOUR comparator countries: Singapore, Sth Korea, UK, US
+** And we compare each of the 14 CARISOM member states against these comparators
+**
+** We calculate the number of elapsed days since start of outbreak
+** defined as the first reported CONFIRMED case.
+**
+** We then simply plot cumulative cases for all countries over this 
+** period of elapsed time
+** -----------------------------------------------------------------
+
+
+
+** -----------------------------------------------------------------
+*! DO FILE: cdema_trajectory_005.do
+*! HEATMAP. COUNTRIES on Y. DAYS on X. COLOR CODE
+*! ACCORDING TO ABSOLUTE SIZE OF OUTBREAK IN EACH COUNTRY.
+*! CUMULATIVE CONFIRMED CASES
+** -----------------------------------------------------------------
+
+
+** -----------------------------------------------------------------
+*! DO FILE: cdema_trajectory_006.do
+*! TABULAR GRAPHICS BY COUNTRY SHOWING GROWING BAR CHARTS OF 
+*! CUMULATIVE CONFIRMED CASES
+*! USE THE "DOUBLING" METRIC
+** -----------------------------------------------------------------
+
+
+** -----------------------------------------------------------------
+*! DO FILE: cdema_trajectory_007.do
+*! ATTACK RATE - SIMILAR TO THE REGIONAL BRIEFING 
+*! cdema_trajectory_004.do
+** -----------------------------------------------------------------
+
+
+** -----------------------------------------------------------------
+*! DO FILE: cdema_trajectory_007.do
+*! ATTACK RATE - SIMILAR TO THE REGIONAL BRIEFING 
+*! cdema_trajectory_004.do
+** -----------------------------------------------------------------
+
+
 
 ** -----------------------------------------------------------------
 *! OTHER CODE

@@ -186,6 +186,14 @@ label define cname_ 1 "Antigua and Barbuda"
                     ;
 #delimit cr 
 
+*! -------------------------------------------
+*! Temporary Daily Updates
+*! Review each morning
+*! CHANGE FOR THE 4APR figures --> FEED INTO the 5APR REPORT
+replace confirmed = 55 if confirmed == 53 & iso=="JAM" & date==d(4apr2020)
+replace confirmed = 24 if confirmed == 23 & iso=="GUY" & date==d(4apr2020)
+replace confirmed = 21 if confirmed == 20 & iso=="HTI" & date==d(4apr2020)
+*! -------------------------------------------
 
 ** Rate per 1,000 (not yet used)
 gen confirmed_rate = (confirmed / pop) * 10000
@@ -200,43 +208,53 @@ bysort country : gen elapsed = _n
 
 bysort country: egen elapsed_max = max(elapsed)
 
-local clist "ATG"
-///foreach country of local clist {
-local country "BRB"
+** SAVE THE FILE FOR REGIONAL WORK 
+    local c_date = c(current_date)
+    local date_string = subinstr("`c_date'", " ", "", .)
+    save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
 
-    local elapsed = elapsed_max
-        gen c3 = country if iso=="`country'"
-        label values c3 cname_
-        egen c4 = min(c3)
-        label values c4 cname_
-        decode c4, gen(c5)
-        local cname = c5
+local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO"
+///local clist "ATG"
+foreach country of local clist {
+
+    gen el_`country'1 = elapsed_max if iso=="`country'"
+    egen el_`country'2 = min(el_`country'1) 
+    local elapsed = el_`country'2
+
+    gen c3 = country if iso=="`country'"
+    label values c3 cname_
+    egen c4 = min(c3)
+    label values c4 cname_
+    decode c4, gen(c5)
+    local cname = c5
 
     #delimit ;
         gr twoway 
-            (line confirmed elapsed if iso=="USA" & elapsed<=`elapsed', lc(green%20) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="GBR" & elapsed<=`elapsed', lc(orange%20) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="KOR" & elapsed<=`elapsed', lc(red%20) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="SGP" & elapsed<=`elapsed', lc(purple%20) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', lc(gs0) lw(0.4) lp("-"))
+            (line confirmed elapsed if iso=="USA" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="GBR" & elapsed<=`elapsed', lc(orange%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="KOR" & elapsed<=`elapsed', lc(red%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="SGP" & elapsed<=`elapsed', lc(purple%40) lw(0.35) lp("-"))
+            ///(line confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', lc(gs0) lw(0.4) lp("-"))
+            (line confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', lc(gs8) lw(0.4) lp("-"))
+            (scat confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', mc(gs8) m(o))
             ,
 
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
             bgcolor(white) 
-            ysize(7.5) xsize(10)
+            ysize(5) xsize(10)
             
                 xlab(
-                    , labs(4) notick nogrid glc(gs16))
+                    , labs(5) notick nogrid glc(gs16))
                 xscale(fill noline) 
-                xtitle("Days since first case", size(4) margin(l=2 r=2 t=2 b=2)) 
+                xtitle("Days since first case", size(5) margin(l=2 r=2 t=2 b=2)) 
                 
                 ylab(
                 ,
-                labs(4) nogrid glc(gs16) angle(0) format(%9.0f))
-                ytitle("Cumulative # of Cases", size(4) margin(l=2 r=2 t=2 b=2)) 
+                labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
+                ytitle("Cumulative # of Cases", size(5) margin(l=2 r=2 t=2 b=2)) 
 
-                legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+                legend(size(5) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
                 order(1 2 3 4 5) 
                 lab(1 "USA") 
@@ -374,115 +392,153 @@ foreach comp in SGP KOR GBR USA {
     local diff10000_`comp' = diff10000_`comp'2
     }
 
-drop cmax dmin emax t10 t30 t50 t100 t1000 t10000 d10 d30 d50 d100 d1000 d10000
-drop diff10 diff30 diff50 diff100 diff1000 diff10000 c3 c4 c5
+** 1 DAY INCREASE
+sort country date 
+gen t1 = confirmed - confirmed[_n-1] if country!=country[_n+1] & iso=="`country'"
+egen t2 = min(t1)
+local change1 = t2 
+** 7 DAY INCREASE
+gen t3 = confirmed - confirmed[_n-7] if country!=country[_n+1] & iso=="`country'"
+egen t4 = min(t3)
+local change7 = t4 
+
+
+drop cmax* dmin* emax* t10 t30 t50 t100 t1000 t10000 d10 d30 d50 d100 d1000 d10000
+drop diff10* diff30* diff50* diff100* diff1000* diff10000* c3 c4 c5
+drop t1 t2 t3 t4 
 
 ** ------------------------------------------------------
 ** PDF COUNTRY REPORT
 ** ------------------------------------------------------
-    putpdf begin, pagesize(letter) font("Calibri Light", 10) margin(top,1cm) margin(bottom,0.5cm) margin(left,1cm) margin(right,0.5cm)
+    putpdf begin, pagesize(letter) font("Calibri Light", 10) margin(top,0.5cm) margin(bottom,0.25cm) margin(left,0.5cm) margin(right,0.25cm)
 
 ** TITLE, ATTRIBUTION, DATE of CREATION
     putpdf paragraph ,  font("Calibri Light", 12)
     putpdf text ("COVID-19 trajectory for `cname'"), bold linebreak
     putpdf paragraph ,  font("Calibri Light", 8)
-    putpdf text ("Briefing created by staff of the George Alleyne Chronic Disease Research Centre and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, The University of the West Indies"), linebreak
-    putpdf text ("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) for details of quantitative analyses"), font("Calibri Light", 8) linebreak italic
-    putpdf text ("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) for details of national public health interventions"), font("Calibri Light", 8) italic linebreak
-    putpdf text ("Creation date: $S_DATE"), font("Calibri Light", 8) bold italic linebreak
+    putpdf text ("Briefing created by staff of the George Alleyne Chronic Disease Research Centre ") 
+    putpdf text ("and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, ") 
+    putpdf text ("The University of the West Indies. ")
+    putpdf text ("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) "), italic
+    putpdf text ("for details of quantitative analyses. "), font("Calibri Light", 8) italic
+    putpdf text ("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) "), italic 
+    putpdf text ("for details of national public health interventions and policy implications."), font("Calibri Light", 8) italic linebreak
+    putpdf text ("Updated on: $S_DATE at $S_TIME"), font("Calibri Light", 8) bold italic linebreak
 
 ** INTRODUCTION
     putpdf paragraph ,  font("Calibri Light", 10)
     putpdf text ("Aim of this briefing. ") , bold
-    putpdf text ("We present the cumulative number of confirmed cases of COVID-19 infection in `cname' since the start of the outbreak, which ") 
+    putpdf text ("We present the cumulative number of confirmed cases")
+    putpdf text (" 1"), script(super) 
+    putpdf text (" of COVID-19 infection in `cname' since the start of the outbreak, which ") 
     putpdf text ("we measure as the number of days since the first confirmed case. We compare the `cname' trajectory against key comparator countries ") 
-    putpdf text ("(Singapore, South Korea, UK, USA) which are further along the epidemic curve. Epidemic progress is likely to vary markedly ") 
+    putpdf text ("(Singapore, South Korea, UK, USA), which are further along their epidemic curves. Epidemic progress is likely to vary markedly ") 
     putpdf text ("between countries, and this graphic is presented as a guide only. "), linebreak 
 
-** TABLE OF KEY NUMBERS
-** SUMMARY METRICS
-putpdf table t1 = (2,3), width(75%) halign(center) 
-putpdf table t1(1,.), font("Calibri Light", 13, ffffff) border(all,single,ffffff) bgcolor(a6a6a6)
-putpdf table t1(2,.), font("Calibri Light", 18) border(all,nil) 
-putpdf table t1(1,1)=("Confirmed Cases"), halign(center) 
-putpdf table t1(1,2)=("Date of First Confirmed Case"), halign(center) 
-putpdf table t1(1,3)=("Days Since First Confirmed Case"), halign(center) 
-putpdf table t1(2,1)=("`cmax_`country''"), halign(center) 
-putpdf table t1(2,2)=("`dmin_`country''"), halign(center) 
-putpdf table t1(2,3)=("`emax_`country''"), halign(center) 
+** TABLE: KEY SUMMARY METRICS
+    putpdf table t1 = (2,3), width(75%) halign(center) 
+    putpdf table t1(1,.), font("Calibri Light", 13, ffffff) border(all,single,ffffff) bgcolor(a6a6a6) 
+    putpdf table t1(2,.), font("Calibri Light", 18) border(all,nil) 
+    putpdf table t1(1,1)=("Confirmed Cases"), halign(center) 
+    putpdf table t1(1,2)=("Date of First Confirmed Case"), halign(center)  
+    putpdf table t1(1,3)=("Days Since First Confirmed Case"), halign(center) 
+    putpdf table t1(2,1)=("`cmax_`country''"), halign(center) 
+    putpdf table t1(2,2)=("`dmin_`country''"), halign(center) 
+    putpdf table t1(2,3)=("`emax_`country''"), halign(center) 
+
+** PARAGRAPH. ABOUT TABLE ABOVE
+    putpdf table p1 = (1,1), width(75%) halign(center) 
+    putpdf table p1(1,1), font("Calibri Light", 10) border(all,nil,000000) bgcolor(ffffff)
+    putpdf table p1(1,1)=("`cname' has `cmax_`country'' confirmed cases of COVID-19. "), halign(center)  
+    putpdf table p1(1,1)=("This is a 24-hour increase of `change1', and a one-week increase of "), append 
+    putpdf table p1(1,1)=("`change7' confirmed cases."), append 
+
+** TABLE: DAYS UNTIL 30, 50, 100, 1,000, 10,000 CASES
+    putpdf paragraph ,  font("Calibri Light", 10)
+    putpdf text ("Table."), bold
+    putpdf text (" Days between first confirmed case and 10, 30, 50, 100, 1,000 and 10,000 cases"), linebreak
+
+    putpdf table t2 = (6,7), width(75%) halign(center) 
+    putpdf table t2(1,.), font("Calibri Light", 10, 000000) border(all,single,000000) bgcolor(cccccc)
+    putpdf table t2(.,1), font("Calibri Light", 10, 000000) border(all,single,000000) bgcolor(cccccc)
+    putpdf table t2(2,.), font("Calibri Light", 10, 000000) 
+    
+    putpdf table t2(1,1)=("Country"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(1,2)=("10 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(1,3)=("30 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(1,4)=("50 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(1,5)=("100 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(1,6)=("1,000 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(1,7)=("10,000 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
+    
+    putpdf table t2(2,1)=("Singapore"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(3,1)=("South Korea"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(4,1)=("UK"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(5,1)=("USA"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(6,1)=("`cname'"), halign(center) border(top) border(bottom) border(left) border(right) 
+
+    putpdf table t2(2,2)=("`diff10_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(3,2)=("`diff10_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(4,2)=("`diff10_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(5,2)=("`diff10_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(6,2)=("`diff10_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
+
+    putpdf table t2(2,3)=("`diff30_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(3,3)=("`diff30_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(4,3)=("`diff30_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(5,3)=("`diff30_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(6,3)=("`diff30_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
+
+    putpdf table t2(2,4)=("`diff50_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(3,4)=("`diff50_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(4,4)=("`diff50_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(5,4)=("`diff50_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(6,4)=("`diff50_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
+
+    putpdf table t2(2,5)=("`diff100_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(3,5)=("`diff100_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(4,5)=("`diff100_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(5,5)=("`diff100_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(6,5)=("`diff100_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
+ 
+    putpdf table t2(2,6)=("`diff1000_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(3,6)=("`diff1000_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(4,6)=("`diff1000_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(5,6)=("`diff1000_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(6,6)=("`diff1000_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
+ 
+    putpdf table t2(2,7)=("`diff10000_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(3,7)=("`diff10000_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(4,7)=("`diff10000_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(5,7)=("`diff10000_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
+    putpdf table t2(6,7)=("`diff10000_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
+
+** PARAGRAPH. ABOUT TABLE ABOVE
+    putpdf table p2 = (1,1), width(75%) halign(center) 
+    putpdf table p2(1,1), font("Calibri Light", 10) border(all,nil,000000) bgcolor(ffffff)
+    putpdf table p2(1,1)=("The table above presents the number of days taken to reach 10 confirmed cases, "), halign(center)
+    putpdf table p2(1,1)=("30 cases, and so on. Use the table along with the graph below to examine "), halign(center) append
+    putpdf table p2(1,1)=("the outbreak trajectory in `cname' to date."), halign(center) append
 
 ** FIGURE OF COVID-19 trajectory
     putpdf paragraph ,  font("Calibri Light", 10)
-    putpdf text (" "), linebreak
-    putpdf text ("Figure."), bold
-    putpdf text (" Cumulative cases in `cname' as of `date'"), linebreak
-    putpdf table f1 = (1,1), width(50%) border(all,nil) halign(center)
+    putpdf text ("Graph."), bold
+    putpdf text (" Cumulative cases in `cname' as of $S_DATE (`emax_`country'' outbreak days)"), linebreak
+    putpdf table f1 = (1,1), width(70%) border(all,nil) halign(center)
     putpdf table f1(1,1)=image("`outputpath'/04_TechDocs/trajectory_`country'_$S_DATE.png")
-    ///putpdf table f1(1,2)=(" "), halign(center)  
 
-**DAYS UNTIL X CASES
-    putpdf paragraph ,  font("Calibri Light", 10)
-    putpdf text (" "), linebreak
-    putpdf text ("Table."), bold
-    putpdf text (" Days Until X Cases"), linebreak
-
-    putpdf table t1 = (6,7), width(75%) halign(center) 
-    putpdf table t1(1,.), font("Calibri Light", 10) 
-    putpdf table t1(2,.), font("Calibri Light", 10) 
-    
-    putpdf table t1(1,1)=("Country"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(1,2)=("10 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(1,3)=("30 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(1,4)=("50 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(1,5)=("100 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(1,6)=("1,000 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(1,7)=("10,000 cases"), halign(center) border(top) border(bottom) border(left) border(right) 
-    
-    putpdf table t1(2,1)=("Singapore"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(3,1)=("South Korea"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(4,1)=("UK"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(5,1)=("USA"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(6,1)=("`cname'"), halign(center) border(top) border(bottom) border(left) border(right) 
-
-    putpdf table t1(2,2)=("`diff10_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(3,2)=("`diff10_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(4,2)=("`diff10_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(5,2)=("`diff10_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(6,2)=("`diff10_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
-
-    putpdf table t1(2,3)=("`diff30_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(3,3)=("`diff30_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(4,3)=("`diff30_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(5,3)=("`diff30_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(6,3)=("`diff30_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
-
-    putpdf table t1(2,4)=("`diff50_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(3,4)=("`diff50_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(4,4)=("`diff50_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(5,4)=("`diff50_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(6,4)=("`diff50_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
-
-    putpdf table t1(2,5)=("`diff100_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(3,5)=("`diff100_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(4,5)=("`diff100_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(5,5)=("`diff100_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(6,5)=("`diff100_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
- 
-    putpdf table t1(2,6)=("`diff1000_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(3,6)=("`diff1000_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(4,6)=("`diff1000_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(5,6)=("`diff1000_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(6,6)=("`diff1000_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
- 
-    putpdf table t1(2,7)=("`diff10000_SGP'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(3,7)=("`diff10000_KOR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(4,7)=("`diff10000_GBR'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(5,7)=("`diff10000_USA'"), halign(center) border(top) border(bottom) border(left) border(right) 
-    putpdf table t1(6,7)=("`diff10000_`country''"), halign(center) border(top) border(bottom) border(left) border(right) 
-
+** DATA REFERENCE
+    putpdf table p3 = (1,1), width(100%) halign(center) 
+    putpdf table p3(1,1), font("Calibri Light", 8) border(all,nil,000000) bgcolor(ffffff)
+    putpdf table p3(1,1)=("(1) Data Source. "), bold halign(left)
+    putpdf table p3(1,1)=("Dong E, Du H, Gardner L. An interactive web-based dashboard to track COVID-19 "), append 
+    putpdf table p3(1,1)=("in real time. Lancet Infect Dis; published online Feb 19. https://doi.org/10.1016/S1473-3099(20)30120-1"), append
 
 ** Save the PDF
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_$S_DATE", replace
-
-
-**}
+    local c_date = c(current_date)
+    local c_time = c(current_time)
+    local c_time_date = "`c_date'"+"_" +"`c_time'"
+    local time_string = subinstr("`c_time_date'", ":", "_", .)
+    local time_string = subinstr("`time_string'", " ", "", .)
+    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_`time_string'", replace
+}
