@@ -49,7 +49,7 @@ restore
 ** UK and Barbados
 replace countryregion = "UK" if countryregion=="United Kingdom"
 
-keep if inlist(countryregion, "Barbados", "Jamaica", "South Korea", "UK", "US")
+keep if inlist(countryregion, "Barbados", "Jamaica", "Singapore", "South Korea", "UK", "US")
 collapse (sum) confirmed deaths recovered, by(date countryregion)
 list date countryregion confirmed deaths recovered in -9/l, sepby(date) abbreviate(13)
 encode countryregion, gen(country)
@@ -60,26 +60,11 @@ tsset country date, daily
 bysort country: gen elapsed = _n 
 save covide19_long, replace
 
-** Country populations
-* BRB
-gen pop = 287371 if country==1
-* JAM
-replace pop = 2961161 if country==2 
-* KOR
-replace pop = 51269183 if country==3
-* UK
-replace pop = 67886004 if country==4
-* US
-replace pop = 331002647 if country==5
-
-** Rate per 1,000 (not used yet as BB rate becomes too high)
-** replace confirmed = (confirmed/pop)*10000
-
 * reshape to wide for comparisons 
-keep date country pop confirmed deaths recovered
+keep date country confirmed deaths recovered
 bysort country : gen elapsed = _n 
 drop date 
-reshape wide confirmed deaths recovered pop, i(elapsed) j(country)
+reshape wide confirmed deaths recovered, i(elapsed) j(country)
 list confirmed1 confirmed2 confirmed3 in -5/l, abbreviate(13)
 
 * labelling - BARBADOS
@@ -98,30 +83,37 @@ rename recovered2 jam_r
 label var jam_c "Jamaica cases"
 label var jam_d "Jamaica deaths"
 label var jam_r "Jamaica recovered"
+* labelling - SINGAPORE
+rename confirmed3 sgp_c
+rename deaths3 sgp_d
+rename recovered3 sgp_r
+label var sgp_c "Singapore cases"
+label var sgp_d "Singapore deaths"
+label var sgp_r "Singapore recovered"
 * labelling - SOUTH KOREA 
-rename confirmed3 skorea_c
-rename deaths3 skorea_d
-rename recovered3 skorea_r
+rename confirmed4 skorea_c
+rename deaths4 skorea_d
+rename recovered4 skorea_r
 label var skorea_c "Sth Korea cases"
 label var skorea_d "Sth Korea deaths"
 label var skorea_r "Sth Korea recovered"
 * labelling - UK
-rename confirmed4 uk_c
-rename deaths4 uk_d
-rename recovered4 uk_r
+rename confirmed5 uk_c
+rename deaths5 uk_d
+rename recovered5 uk_r
 label var uk_c "UK cases"
 label var uk_d "UK deaths"
 label var uk_r "UK recovered"
 * labelling - USA
-rename confirmed5 usa_c
-rename deaths5 usa_d
-rename recovered5 usa_r
+rename confirmed6 usa_c
+rename deaths6 usa_d
+rename recovered6 usa_r
 label var usa_c "USA cases"
 label var usa_d "USA deaths"
 label var usa_r "USA recovered"
 
 ** Days since first case
-local days = 21
+local days = 25
 
 ** CHART _ DAYS SINCE FIRST CASE 
 ** Without Caribbean
@@ -130,6 +122,7 @@ local days = 21
             (line usa_c elapsed       if elapsed<=`days', lc(green) lw(0.35) lp("-"))
             (line uk_c elapsed        if elapsed<=`days', lc(blue) lw(0.35) lp("-"))
             (line skorea_c elapsed    if elapsed<=`days' , lc(red) lw(0.35) lp("-"))
+            (line sgp_c elapsed       if elapsed<=`days' , lc(purple) lw(0.35) lp("-"))
             ,
 
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -142,7 +135,7 @@ local days = 21
                 xscale(fill noline) 
                 xtitle("Days since first case", size(4) margin(l=2 r=2 t=2 b=2)) 
                 
-                ylab(0(10)40
+                ylab(
                 ,
                 labs(4) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative Cases", size(4) margin(l=2 r=2 t=2 b=2)) 
@@ -151,15 +144,15 @@ local days = 21
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(1 2 3) 
+                order(1 2 3 4) 
                 lab(1 "USA") 
                 lab(2 "UK") 
-                lab(3 "South Korea") 
+                lab(3 "South Korea")
+                lab(4 "Singapore") 
                 )
                 name(trajectory_001) 
                 ;
         #delimit cr
-graph export "`outputpath'/04_TechDocs/trajectory_001.png", replace width(4000)
 
 
 
@@ -170,6 +163,7 @@ graph export "`outputpath'/04_TechDocs/trajectory_001.png", replace width(4000)
             (line usa_c elapsed       if elapsed<=`days', lc(green%20) lw(0.35) lp("-"))
             (line uk_c elapsed        if elapsed<=`days', lc(blue%20) lw(0.35) lp("-"))
             (line skorea_c elapsed    if elapsed<=`days' , lc(red%20) lw(0.35) lp("-"))
+            (line sgp_c elapsed       if elapsed<=`days' , lc(purple%20) lw(0.35) lp("-"))
            (line jam_c elapsed       if elapsed<=`days', lc(gs0) lw(0.35) lp("-"))
             ,
 
@@ -183,7 +177,7 @@ graph export "`outputpath'/04_TechDocs/trajectory_001.png", replace width(4000)
                 xscale(fill noline) 
                 xtitle("Days since first case", size(4) margin(l=2 r=2 t=2 b=2)) 
                 
-                ylab(0(10)40
+                ylab(
                 ,
                 labs(4) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative # of Cases", size(4) margin(l=2 r=2 t=2 b=2)) 
@@ -192,16 +186,16 @@ graph export "`outputpath'/04_TechDocs/trajectory_001.png", replace width(4000)
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(1 2 3 4) 
+                order(1 2 3 4 5) 
                 lab(1 "USA") 
                 lab(2 "UK") 
-                lab(3 "South Korea") 
-                lab(4 "Jamaica") 
+                lab(3 "South Korea")
+                lab(4 "Singapore") 
+                lab(5 "Jamaica") 
                 )
                 name(trajectory_002) 
                 ;
         #delimit cr
-graph export "`outputpath'/04_TechDocs/trajectory_002.png", replace width(4000)
 
 
 ** With BARBADOS and JAMAICA
@@ -210,6 +204,7 @@ graph export "`outputpath'/04_TechDocs/trajectory_002.png", replace width(4000)
             (line usa_c elapsed       if elapsed<=`days', lc(green%20) lw(0.35) lp("-"))
             (line uk_c elapsed        if elapsed<=`days', lc(blue%20) lw(0.35) lp("-"))
             (line skorea_c elapsed    if elapsed<=`days' , lc(red%20) lw(0.35) lp("-"))
+            (line sgp_c elapsed       if elapsed<=`days' , lc(purple%20) lw(0.35) lp("-"))
            (line jam_c elapsed       if elapsed<=`days', lc(gs0%20) lw(0.35) lp("-"))
            (line bar_c elapsed       if elapsed<=`days', lc(gs0) lw(0.35) lp("-"))
             ,
@@ -224,7 +219,7 @@ graph export "`outputpath'/04_TechDocs/trajectory_002.png", replace width(4000)
                 xscale(fill noline) 
                 xtitle("Days since first case", size(4) margin(l=2 r=2 t=2 b=2)) 
                 
-                ylab(0(10)40
+                ylab(
                 ,
                 labs(4) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative # of Cases", size(4) margin(l=2 r=2 t=2 b=2)) 
@@ -233,29 +228,26 @@ graph export "`outputpath'/04_TechDocs/trajectory_002.png", replace width(4000)
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(1 2 3 4 5) 
+                order(1 2 3 4 5 6) 
                 lab(1 "USA") 
                 lab(2 "UK") 
                 lab(3 "South Korea") 
-                lab(4 "Jamaica") 
-                lab(5 "Barbados") 
+                lab(4 "Singapore") 
+                lab(5 "Jamaica") 
+                lab(6 "Barbados") 
                 )
                 name(trajectory_003) 
                 ;
         #delimit cr
-graph export "`outputpath'/04_TechDocs/trajectory_003.png", replace width(4000)
-
-
-** Days since first Barbados case
-local days_bb = 15
 
 ** With BARBADOS only
     #delimit ;
         gr twoway 
-            (line usa_c elapsed       if elapsed<=`days_bb', lc(green%20) lw(0.35) lp("-"))
-            (line uk_c elapsed        if elapsed<=`days_bb', lc(blue%20) lw(0.35) lp("-"))
-            (line skorea_c elapsed    if elapsed<=`days_bb' , lc(red%20) lw(0.35) lp("-"))
-           (line bar_c elapsed       if elapsed<=`days_bb', lc(gs0) lw(0.35) lp("-"))
+            (line usa_c elapsed       if elapsed<=`days', lc(green%20) lw(0.35) lp("-"))
+            (line uk_c elapsed        if elapsed<=`days', lc(blue%20) lw(0.35) lp("-"))
+            (line skorea_c elapsed    if elapsed<=`days' , lc(red%20) lw(0.35) lp("-"))
+            (line sgp_c elapsed       if elapsed<=`days' , lc(purple%20) lw(0.35) lp("-"))
+           (line bar_c elapsed       if elapsed<=`days', lc(gs0) lw(0.35) lp("-"))
             ,
 
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -268,7 +260,7 @@ local days_bb = 15
                 xscale(fill noline) 
                 xtitle("Days since first case", size(4) margin(l=2 r=2 t=2 b=2)) 
                 
-                ylab(0(10)40
+                ylab(
                 ,
                 labs(4) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative # of Cases", size(4) margin(l=2 r=2 t=2 b=2)) 
@@ -281,55 +273,10 @@ local days_bb = 15
                 lab(1 "USA") 
                 lab(2 "UK") 
                 lab(3 "South Korea") 
-                lab(4 "Barbados") 
+                lab(4 "Singapore") 
+                lab(5 "Barbados") 
                 )
                 name(trajectory_004) 
                 ;
         #delimit cr
-graph export "`outputpath'/04_TechDocs/trajectory_004.png", replace width(4000)
 
-
-*! CHANGE THESE ENTRIES FOR EACH COUNTRY FOR PDF REPORT CREATION
-*! -------------------------------------------------------------
-local pop = "287,371"
-local over70 = "32,963" 
-local acutebeds = 240
-local icubeds = 40
-local country = "Barbados"
-local date = "30 March 2020"
-*! -------------------------------------------------------------
-
-
-** ------------------------------------------------------
-** PDF COUNTRY REPORT
-** ------------------------------------------------------
-putpdf begin, pagesize(letter) font("Calibri Light", 10) margin(top,1cm) margin(bottom,0.5cm) margin(left,1cm) margin(right,0.5cm)
-
-** TITLE, ATTRIBUTION, DATE of CREATION
-putpdf paragraph ,  font("Calibri Light", 12)
-putpdf text ("COVID-19 trajectory for `country'"), bold linebreak
-putpdf paragraph ,  font("Calibri Light", 9)
-putpdf text ("Briefing created by staff of the George Alleyne Chronic Disease Research Centre and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, The University of the West Indies"), linebreak
-putpdf text ("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) for details of quantitative analyses"), font("Calibri Light", 9) linebreak italic
-putpdf text ("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) for details of national public health interventions"), font("Calibri Light", 9) italic linebreak
-putpdf text ("Creation date: `date'"), font("Calibri Light", 9) bold italic linebreak
-
-** INTRODUCTION
-putpdf paragraph ,  font("Calibri Light", 10)
-putpdf text ("Aim of this briefing. ") , bold
-putpdf text ("We present the cumulative number of confirmed cases of COVID-19 infection in Barbados since the start of the outbreak, which ") 
-putpdf text ("we measure as the number of days since the first confirmed case. We compare the Barbados trajectory with selected countries ") 
-putpdf text ("further along the epidemic curve. This allows us to assess progress in reducing COVID-19 transmission ") 
-putpdf text ("compared to interventions in other countries. Epidemic progress is likely to vary markedly between countries, ") 
-putpdf text ("and this graphic is presented as a guide only. "), linebreak 
-
-** FIGURE OF COVID-19 trajectory
-putpdf text (" "), linebreak
-putpdf text ("Figure."), bold
-putpdf text (" Cumulative cases in `country' as of `date'"), linebreak
-putpdf table f1 = (1,2), border(all,nil) halign(center)
-putpdf table f1(1,1)=image("`outputpath'/04_TechDocs/trajectory_004.png")
-putpdf table f1(1,2)=(" "), halign(center)  
-
-** Save the PDF
-putpdf save "`outputpath'/05_Outputs/covid19_trajectory_BRB", replace

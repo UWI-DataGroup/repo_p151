@@ -109,7 +109,7 @@ forval x = 25(25)75 {
 ** Calculate the commensurate decrease in hospitalisations (acute care) and critical care 
 forval y = 25(25)75 {
     local k = 1 
-    forval x = 0.05(0.1)0.45 {
+    forval x = 0.1(0.1)0.5 {
         gen ninf_p`y'_`k' = int(ninf_p`y'_0 * `x')
         gen nhosp_p`y'_`k' = int(ninf_p`y'_`k' * phosp)
         gen ncrit_p`y'_`k' = int(ninf_p`y'_`k' * pcrit) 
@@ -289,12 +289,12 @@ gen acutebeds = 240
 
     #delimit ;
         gr twoway 
-            (line acutebeds day,  lc(gs10) lw(0.35))
+            ///(line acutebeds day,  lc(gs10) lw(0.35))
             (rarea cdiff_p75_1 cdiff_p25_1 day , col(green%15) lw(none))
-            (rarea cdiff_p75_2 cdiff_p25_2 day , col(orange%15) lw(none))
+            ///(rarea cdiff_p75_2 cdiff_p25_2 day , col(orange%15) lw(none))
             (rarea cdiff_p75_3 cdiff_p25_3 day , col(red%15) lw(none))
             (line cdiff_p50_1 day , lc(green%50) lw(0.25) lp("-"))
-            (line cdiff_p50_2 day , lc(orange%50) lw(0.25) lp("-"))
+            ///(line cdiff_p50_2 day , lc(orange%50) lw(0.25) lp("-"))
             (line cdiff_p50_3 day , lc(red%50) lw(0.25) lp("-"))
             ,
 
@@ -312,18 +312,17 @@ gen acutebeds = 240
                 ylab(0(250)1000
                 ,
                 labs(10) labc(gs10) nogrid notick glc(gs16) angle(0) format(%9.0f))
-                yscale(noline) 
+                yscale(off fill noline) 
                 ytitle("", size(4) margin(l=2 r=2 t=2 b=2)) 
                 ///ymtick(0(100)1000)
 
-                text(330 60 "# Acute beds", size(10) place(e) color(gs10))
+                ///text(330 60 "# Acute beds", size(10) place(e) color(gs10))
 
                 legend(size(10) color(gs10) position(2) ring(0) bm(t=1 b=2 l=2 r=0) colf cols(1)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2)) 
-                order(2 3 4) 
-                lab(2 "95%") 
-                lab(3 "85%") 
-                lab(4 "75%") 
+                order(1 2) 
+                lab(1 "Earlier Suppression") 
+                lab(2 "Later Suppression") 
                 )
                 name(barbados_acutecare) 
                 ;
@@ -337,12 +336,12 @@ gen acutebeds = 240
 ** Hospital beds (ACUTE CARE)
     #delimit ;
         gr twoway 
-            (line acutebeds day,  lc(gs10) lw(0.35))
+            ///(line acutebeds day,  lc(gs10) lw(0.35))
             (rarea cdiff_p75_1 cdiff_p25_1 day , col(green%15) lw(none))
-            (rarea cdiff_p75_2 cdiff_p25_2 day , col(orange%15) lw(none))
+            ///(rarea cdiff_p75_2 cdiff_p25_2 day , col(orange%15) lw(none))
             (rarea cdiff_p75_3 cdiff_p25_3 day , col(red%15) lw(none))
             (line cdiff_p50_1 day , lc(green%50) lw(0.25) lp("-"))
-            (line cdiff_p50_2 day , lc(orange%50) lw(0.25) lp("-"))
+            ///(line cdiff_p50_2 day , lc(orange%50) lw(0.25) lp("-"))
             (line cdiff_p50_3 day , lc(red%50) lw(0.25) lp("-"))
             ,
 
@@ -360,18 +359,17 @@ gen acutebeds = 240
                 ylab(0(200)1000
                 ,
                 labs(4) labc(gs0) nogrid notick glc(gs16) angle(0) format(%9.0f))
-                yscale(noline) 
+                yscale(off fill noline) 
                 ytitle("# Acute Care Cases / Day", size(4) margin(l=2 r=2 t=2 b=2)) 
                 ///ymtick(0(100)1000)
 
-                text(280 70 "# Acute beds", size(4) place(e) color(gs10))
+                ///text(280 70 "# Acute beds", size(4) place(e) color(gs10))
 
                 legend(size(4) position(2) ring(0) bm(t=1 b=2 l=2 r=0) colf cols(1)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2)) 
-                order(2 3 4) 
-                lab(2 "95% ") 
-                lab(3 "85% ") 
-                lab(4 "75% ") 
+                order(1 2) 
+                lab(1 "Earlier") 
+                lab(2 "Later") 
                 )
                 name(final) 
                 ;

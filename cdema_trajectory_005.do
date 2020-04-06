@@ -157,6 +157,8 @@ foreach country of local clist {
 }
 
 keep country date confirmed confirmed_rate deaths recovered
+** Fix Guyana 
+replace confirmed = 4 if country==7 & date>=d(17mar2020) & date<=d(23mar2020)
 rename confirmed metric1
 rename confirmed_rate metric2
 rename deaths metric3
@@ -166,6 +168,7 @@ label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths" 4 "recovered"
 label values mtype mtype_
 sort country mtype date 
 
+/*
 
 
 ** HEATMAP -- CASES
@@ -253,13 +256,14 @@ sort country mtype date
     legend(size(3) position(2) ring(4) colf cols(1) lc(gs16)
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
     sub("Confirmed" "Deaths", size(3))
-    order(6 5 4 3 2 1) 
+    order(7 6 5 4 3 2 1) 
         lab(1 "0") 
         lab(2 "1") 
         lab(3 "2") 
         lab(4 "3")
         lab(5 "4")
-        lab(6 "5-6")
+        lab(6 "5")
+        lab(7 "6-7")
              )
     name(heatmap_deaths) 
     ;
@@ -313,4 +317,5 @@ sort country mtype date
     local c_time_date = "`c_date'"+"_" +"`c_time'"
     local time_string = subinstr("`c_time_date'", ":", "_", .)
     local time_string = subinstr("`time_string'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`time_string'", replace
+    ///putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`time_string'", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`c_date'", replace
