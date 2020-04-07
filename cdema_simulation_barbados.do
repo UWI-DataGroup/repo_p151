@@ -141,6 +141,25 @@ gen pcrit =  0.6 * (
                         );
 #delimit cr 
 
+#delimit ; 
+gen pcrit_cond =  (
+            (0.107 * 0.05) +
+            (0.127 * 0.05) +
+            (0.131 * 0.05) +
+            (0.129 * 0.05) +
+            (0.136 * 0.063) +
+            (0.139 * 0.122) +
+            (0.117 * 0.274) +
+            (0.070 * 0.432) +
+            (0.045 * 0.709)
+                        );
+#delimit cr 
+
+/*
+
+
+
+
 ** Smooth the median, p25 and p75 incident cases - mainly for display purposes
 lpoly case_av day, at(day) gen(ninf_av) nogr
 forval x = 25(25)75 {

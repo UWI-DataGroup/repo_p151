@@ -28,7 +28,7 @@
 
 *! CHANGE DAILY FILE 
 ** JH time series COVD-19 data 
-use "`datapath'\version01\2-working\jh_time_series_6Apr2020", clear
+use "`datapath'\version01\2-working\jh_time_series_7Apr2020", clear
 
 ** Country Labels
 #delimit ; 
@@ -54,6 +54,9 @@ label define cname_ 1 "Antigua and Barbuda"
                     20 "USA"
                     ;
 #delimit cr 
+
+** Fix Guyana 
+replace confirmed = 4 if country==9 & date>=d(17mar2020) & date<=d(23mar2020)
 
 ** ELAPSED DAYS and FULL COUNTRY NAME for each country
 local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO"
@@ -100,6 +103,9 @@ foreach country of local clist {
             /// TRINIDAD
             (line confirmed elapsed if iso=="TTO" & elapsed<=`el_TTO', lc(gs10) lw(0.3) lp("l"))
             (scat confirmed elapsed if iso=="TTO" & elapsed<=`el_TTO', mc(gs8) m(o) msize(1.5))
+            /// GUYANA
+            (line confirmed elapsed if iso=="GUY" & elapsed<=`el_GUY', lc(gs10) lw(0.3) lp("l"))
+            (scat confirmed elapsed if iso=="GUY" & elapsed<=`el_GUY', mc(gs8) m(o) msize(1.5))
             ,
 
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -117,10 +123,11 @@ foreach country of local clist {
                 labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative # of Cases", size(5) margin(l=2 r=2 t=2 b=2)) 
 
-                text(`con_BHS' `te_BHS' "The Bahamas" "(`con_BHS' cases, `el_BHS' days)", size(3) place(e) color(gs8) j(left))
-                text(`con_BRB' `te_BRB' "Barbados" "(`con_BRB' cases, `el_BRB' days)", size(3) place(e) color(gs8) j(left))
+                text(`con_BHS' `te_BHS' "The Bahamas" "(`con_BHS', `el_BHS' days)", size(3) place(e) color(gs8) j(left))
+                text(`con_BRB' `te_BRB' "Barbados" "(`con_BRB', `el_BRB' days)", size(3) place(e) color(gs8) j(left))
                 text(`con_JAM' `te_JAM' "Jamaica" "(`con_JAM' cases, `el_JAM' days)", size(3) place(e) color(gs8) j(left))
                 text(`con_TTO' `te_TTO' "Trinidad and Tobago" "(`con_TTO' cases, `el_TTO' days)", size(3) place(e) color(gs8) j(left))
+                text(`con_GUY' `te_GUY' "Guyana" "(`con_GUY' cases, `el_GUY' days)", size(3) place(e) color(gs8) j(left))
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -139,7 +146,7 @@ foreach country of local clist {
 
 ** GRAPHIC: LOW CASE COUNTRIES
     ** 3-APR-2020: The REST (!) --> ATG BLZ DMA GRD GUY HTI KNA LCA VCT SUR 
-    keep if iso=="ATG" | iso=="BLZ" | iso=="DMA" | iso=="GRD" | iso=="GUY" | /// 
+    keep if iso=="ATG" | iso=="BLZ" | iso=="DMA" | iso=="GRD" |  /// 
             iso=="HTI" | iso=="KNA" | iso=="LCA" | iso=="VCT" | iso=="SUR" | ///
             iso=="SGP" | iso=="KOR" | iso=="GBR" | iso=="USA"
     keep date country country2 iso pop confirmed confirmed_rate elapsed
@@ -184,17 +191,17 @@ foreach country of local clist {
                 labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative # of Cases", size(5) margin(l=2 r=2 t=2 b=2)) 
 
-                text(100 21 "Current Situation" "($S_DATE)", size(3) place(e) color(4) j(left))
-                text(100 26 "Antigua and Barbuda" "(`con_ATG' cases, `el_ATG' days)", size(3) place(e) color(gs8) j(left))
-                text(90 26 "Belize" "(`con_BLZ' cases, `el_BLZ' days)", size(3) place(e) color(gs8) j(left))
-                text(80 26 "Dominica" "(`con_ATG' cases, `el_ATG' days)", size(3) place(e) color(gs8) j(left))
-                text(70 26 "Grenada" "(`con_GRD' cases, `el_GRD' days)", size(3) place(e) color(gs8) j(left))
-                text(60 26 "Guyana" "(`con_GUY' cases, `el_GUY' days)", size(3) place(e) color(gs8) j(left))
-                text(50 26 "Haiti" "(`con_HTI' cases, `el_HTI' days)", size(3) place(e) color(gs8) j(left))
-                text(40 26 "St Kitts and Nevis" "(`con_KNA' cases, `el_KNA' days)", size(3) place(e) color(gs8) j(left))
-                text(30 26 "St Lucia" "(`con_LCA' cases, `el_LCA' days)", size(3) place(e) color(gs8) j(left))
-                text(20 26 "St Vincent" "(`con_VCT' cases, `el_VCT' days)", size(3) place(e) color(gs8) j(left))
-                text(10 26 "Suriname" "(`con_SUR' cases, `el_SUR' days)", size(3) place(e) color(gs8) j(left))
+                text(100 22 "Current Situation" "($S_DATE)", size(3) place(e) color(4) j(left))
+                text(100 27 "Antigua and Barbuda" "(`con_ATG' cases, `el_ATG' days)", size(3) place(e) color(gs8) j(left))
+                text(90 27 "Belize" "(`con_BLZ' cases, `el_BLZ' days)", size(3) place(e) color(gs8) j(left))
+                text(80 27 "Dominica" "(`con_ATG' cases, `el_ATG' days)", size(3) place(e) color(gs8) j(left))
+                text(70 27 "Grenada" "(`con_GRD' cases, `el_GRD' days)", size(3) place(e) color(gs8) j(left))
+                ///text(60 27 "Guyana" "(`con_GUY' cases, `el_GUY' days)", size(3) place(e) color(gs8) j(left))
+                text(60 27 "Haiti" "(`con_HTI' cases, `el_HTI' days)", size(3) place(e) color(gs8) j(left))
+                text(50 27 "St Kitts and Nevis" "(`con_KNA' cases, `el_KNA' days)", size(3) place(e) color(gs8) j(left))
+                text(40 27 "St Lucia" "(`con_LCA' cases, `el_LCA' days)", size(3) place(e) color(gs8) j(left))
+                text(30 27 "St Vincent" "(`con_VCT' cases, `el_VCT' days)", size(3) place(e) color(gs8) j(left))
+                text(20 27 "Suriname" "(`con_SUR' cases, `el_SUR' days)", size(3) place(e) color(gs8) j(left))
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -203,7 +210,7 @@ foreach country of local clist {
                 lab(2 "UK") 
                 lab(3 "South Korea") 
                 lab(4 "Singapore") 
-                lab(5 "10 Caribbean countries") 
+                lab(5 "9 Caribbean countries") 
                 )
                 name(trajectory_region_02) 
                 ;
@@ -241,8 +248,9 @@ foreach country of local clist {
     putpdf text ("compared to interventions in comparator countries. Epidemic progress is likely to vary markedly between countries, ") 
     putpdf text ("and these graphics are presented as a guide only. ") 
     *! CHANGE THESE TWO ROWS - EACH DAY
-    putpdf text ("As of $S_DATE, there is one country with more than 100 and 2 countries with more than 50 confirmed cases (Figure 1). ") 
-    putpdf text ("The remaining 11 countries have confirmed case numbers ranging from 5 to 29 (Figure 2)."), linebreak 
+    putpdf text ("As of $S_DATE, there is one country with more than 100 confirmed cases, 2 countries with more than 50 confirmed cases, ") 
+    putpdf text ("and 2 countries with more than 30 confirmed cases (Figure 1). ") 
+    putpdf text ("The remaining 9 countries have confirmed case numbers ranging from 7 to 24 (Figure 2)."), linebreak 
 
 ** FIGURES OF REGIONAL COVID-19 COUNT trajectories
     putpdf paragraph ,  font("Calibri Light", 9)
@@ -269,4 +277,4 @@ foreach country of local clist {
     local c_time_date = "`c_date'"+"_" +"`c_time'"
     local time_string = subinstr("`c_time_date'", ":", "_", .)
     local time_string = subinstr("`time_string'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_count_`time_string'", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_count_bycountry_`time_string'", replace

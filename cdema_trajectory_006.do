@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					cdema_trajectory_005.do
+    //  algorithm name					cdema_trajectory_006.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            04-APR-2020
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\cdema_trajectory_005", replace
+    log using "`logpath'\cdema_trajectory_006", replace
 ** HEADER -----------------------------------------------------
 
 ** JH time series COVD-19 data 
@@ -169,105 +169,68 @@ label values mtype mtype_
 sort country mtype date 
 
 
-** HEATMAP -- CASES
-#delimit ;
-    heatplot metric i.country date if mtype==1
-    ,
-    cuts(@min(10)@max)
-    color(spmap, blues)
-    keylabels(all, range(1))
-
-    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    ysize(12) xsize(10)
-
-    ylab(   1 "Antigua and Barbuda" 
-            2 "The Bahamas" 
-            3 "Barbados"
-            4 "Belize" 
-            5 "Dominica"
-            6 "Grenada"
-            7 "Guyana"
-            8 "Haiti"
-            9 "Jamaica"
-            10 "St Kitts and Nevis"
-            11 "St Lucia"
-            12 "St Vincent"
-            13 "Suriname"
-            14 "Trinidad and Tobago"
-    , labs(3) notick nogrid glc(gs16) angle(0))
-    yscale(reverse fill noline range(0(1)14)) 
-    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
-    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22010 "5 Apr"
-    , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
-    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
-    title("Confirmed cases by $S_DATE", pos(11) ring(1) size(4))
-
-    legend(size(3) position(2) ring(4) colf cols(1) lc(gs16)
-    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-    sub("Confirmed" "Cases", size(3))
-                    )
-    name(heatmap_cases) 
-    ;
-#delimit cr
-    graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width(4000)
+** CARIBBEAN-WIDE SUMMARY (Over 2-pages perhaps)
+** 1. Total count of cases across the Caribbean / CARICOM
+** 2. Total count of deaths across the Caribbean / CARICOM
+/*keep if mtype==1
+collapse (sum) metric, by(date) 
 
 
-** HEATMAP -- DEATHS
-#delimit ;
-    heatplot metric i.country date if mtype==3
-    ,
-    cuts(@min(1)@max)
-    color(spmap, reds)
-    keylabels(all, range(1))
+** COUNTING CASES ONE LAST TIME
 
-    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    ysize(12) xsize(10)
 
-    ylab(   1 "Antigua and Barbuda" 
-            2 "The Bahamas" 
-            3 "Barbados"
-            4 "Belize" 
-            5 "Dominica"
-            6 "Grenada"
-            7 "Guyana"
-            8 "Haiti"
-            9 "Jamaica"
-            10 "St Kitts and Nevis"
-            11 "St Lucia"
-            12 "St Vincent"
-            13 "Suriname"
-            14 "Trinidad and Tobago"
-    , labs(3) notick nogrid glc(gs16) angle(0))
-    yscale(reverse fill noline range(0(1)14)) 
-    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+        #delimit ;
+        gr twoway 
+            (line metric date , lc(gs0) lw(0.35) lp("-"))
+            ///(line confirmed elapsed if iso=="GBR" & elapsed<=elapsed, lc(orange%20) lw(0.35) lp("-"))
+            ///(line confirmed elapsed if iso=="KOR" & elapsed<=elapsed, lc(red%20) lw(0.35) lp("-"))
+            ///(line confirmed elapsed if iso=="SGP" & elapsed<=elapsed, lc(purple%20) lw(0.35) lp("-"))
+            /// LOW CASE CARIBBEAN REGION
+            ///(rarea con_min con_max elapsed if iso=="ALL" , col(blue%25) lw(none))
+            ,
 
-    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22010 "5 Apr"
-    , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
-    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+            ysize(5) xsize(10)
+            
+                xlab(
+                    , labs(5) notick nogrid glc(gs16))
+                xscale(fill noline ) 
+                xtitle("Days since first case", size(5) margin(l=2 r=2 t=2 b=2)) 
+                
+                ylab(
+                ,
+                labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
+                ytitle("Cumulative # of Cases", size(5) margin(l=2 r=2 t=2 b=2)) 
 
-    title("Confirmed deaths by $S_DATE", pos(11) ring(1) size(4))
+                /// text(100 21 "Current Situation" "($S_DATE)", size(3) place(e) color(4) j(left))
 
-    legend(size(3) position(2) ring(4) colf cols(1) lc(gs16)
-    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-    sub("Confirmed" "Deaths", size(3))
-    order(8 7 6 5 4 3 2 1) 
-        lab(1 "0") 
-        lab(2 "1") 
-        lab(3 "2") 
-        lab(4 "3")
-        lab(5 "4")
-        lab(6 "5")
-        lab(7 "6")
-        lab(8 "7-8")
-             )
-    name(heatmap_deaths) 
-    ;
-#delimit cr 
-    graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace width(4000)
+                legend(off size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+                region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+                order(1 2 3 4 5) 
+                lab(1 "USA") 
+                lab(2 "UK") 
+                lab(3 "South Korea") 
+                lab(4 "Singapore") 
+                lab(5 "10 Caribbean countries") 
+                )
+                name(trajectory_region_01) 
+                ;
+        #delimit cr
+        ///graph export "`outputpath'/04_TechDocs/trajectory_region02_$S_DATE.png", replace width(4000)
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 ** ------------------------------------------------------
 ** PDF REGIONAL REPORT (COUNTS OF CONFIRMED CASES)
@@ -316,4 +279,4 @@ sort country mtype date
     local time_string = subinstr("`c_time_date'", ":", "_", .)
     local time_string = subinstr("`time_string'", " ", "", .)
     ///putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`time_string'", replace
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`c_date'", replace
+    ///putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`c_date'", replace
