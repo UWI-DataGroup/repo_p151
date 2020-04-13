@@ -34,7 +34,8 @@ use "`datapath'\version01\2-working\jh_time_series", clear
 replace countryregion = "UK" if countryregion=="United Kingdom"
 ** Bahamas has 3 names in database 
 replace countryregion = "Bahamas" if countryregion=="Bahamas, The" | countryregion=="The Bahamas"
-
+** South Korea has 2 names
+replace countryregion = "South Korea" if countryregion=="Korea, South" 
 
 ** COUNTRY RESTRICTION: CARICOM countries only (N=14)
 #delimit ; 
@@ -199,7 +200,7 @@ sort country mtype date
     yscale(reverse fill noline range(0(1)14)) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
-    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22010 "5 Apr"
+    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22014 "9 Apr"
     , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
@@ -245,7 +246,7 @@ sort country mtype date
     yscale(reverse fill noline range(0(1)14)) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
-    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22010 "5 Apr"
+    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22014 "9 Apr"
     , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
@@ -263,11 +264,14 @@ sort country mtype date
         lab(6 "5")
         lab(7 "6")
         lab(8 "7-8")
-             )
+    )
     name(heatmap_deaths) 
     ;
 #delimit cr 
     graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace width(4000)
+
+
+
 
 ** ------------------------------------------------------
 ** PDF REGIONAL REPORT (COUNTS OF CONFIRMED CASES)
@@ -311,9 +315,5 @@ sort country mtype date
 
 ** Save the PDF
     local c_date = c(current_date)
-    local c_time = c(current_time)
-    local c_time_date = "`c_date'"+"_" +"`c_time'"
-    local time_string = subinstr("`c_time_date'", ":", "_", .)
-    local time_string = subinstr("`time_string'", " ", "", .)
-    ///putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`time_string'", replace
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`c_date'", replace
+    local date_string = subinstr("`c_date'", " ", "", .)
+    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`date_string'", replace

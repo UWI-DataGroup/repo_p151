@@ -154,6 +154,35 @@
 *! ACCORDING TO ABSOLUTE SIZE OF OUTBREAK IN EACH COUNTRY.
 *! CUMULATIVE CONFIRMED CASES
 ** -----------------------------------------------------------------
+** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
+** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
+**
+** 
+** DESCRIPTION
+** Prepare HEATMAP visualising the CONFIRMED CASES and CONFIRMED DEATHS
+** The idea is to provide an immediate visual summary of hotspots
+** -----------------------------------------------------------------
+
+
+
+** -----------------------------------------------------------------
+*! DO FILE: cdema_trajectory_006.do
+*! TABULAR GRAPHICS BY COUNTRY SHOWING GROWING BAR CHARTS OF 
+*! CUMULATIVE CONFIRMED CASES
+*! USE THE "DOUBLING" METRIC
+** -----------------------------------------------------------------
+** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
+** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
+**
+** CARICOM summary data
+** PLOT of CUMULATIVE CARICOM cases (probably line chart)
+** Include population variable in dataset 
+** Calculate # new cases EACH DAY
+** Calculate RATE OF DOUBLING for each day
+**
+** Perhaps a Table of doubling rate for each of the 14 members, along with SPARK barcharts
+** Perhaps include rate of doubling in some KEY successful countries
+** -----------------------------------------------------------------
 
 
 ** -----------------------------------------------------------------
