@@ -39,7 +39,7 @@
 
 *! CHANGE DAILY FILE 
 ** JH time series COVD-19 data 
-use "`datapath'\version01\2-working\jh_time_series_12Apr2020", clear
+use "`datapath'\version01\2-working\jh_time_series_14Apr2020", clear
 
 ** Country Labels
 #delimit ; 
@@ -93,6 +93,7 @@ foreach country of local clist {
     egen con_`country' = min(con_`country'1)
     local con_`country' = con_`country'
 }
+local con_BHS = `con_BHS'+4
 
 ** Range for HI CASE-LOAD CHART
 local range_hi = `el_JAM'+4 
@@ -265,9 +266,9 @@ local ctitle = `title'+5
     putpdf text ("compared to interventions in comparator countries. Epidemic progress is likely to vary markedly between countries, ") 
     putpdf text ("and these graphics are presented as a guide only. ") 
     *! CHANGE THESE TWO ROWS - EACH DAY
-    putpdf text ("As of $S_DATE, there is one country with more than 100 confirmed cases, 2 countries with more than 60 confirmed cases, ") 
-    putpdf text ("2 countries with more than 40 confirmed cases, and 1 country with more than 30 confirmed cases (Figures 1 and 2). ") 
-    putpdf text ("The remaining 8 countries have confirmed case numbers ranging from 10 to 21 (Figure 2)."), linebreak 
+    putpdf text ("As of $S_DATE, there is one country with more than 100 confirmed cases, 2 countries with more than 70 confirmed cases, ") 
+    putpdf text ("1 country with more than 50 confirmed cases, and 2 countries with 40 or more confirmed cases (Figures 1 and 2). ") 
+    putpdf text ("The remaining 8 countries have confirmed case numbers ranging from 10 to 23 (Figure 2)."), linebreak 
 
 ** FIGURES OF REGIONAL COVID-19 COUNT trajectories
     putpdf paragraph ,  font("Calibri Light", 9)
