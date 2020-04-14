@@ -201,7 +201,8 @@ label define cname_ 1 "Antigua and Barbuda"
 *! Temporary Daily Updates
 *! Review each morning
 *! CHANGE FOR THE 7APR figures --> FEED INTO the 5APR REPORT
-replace confirmed = 69 if confirmed == 65 & iso=="JAM" & date==d(11apr2020)
+replace confirmed = 49 if confirmed == 47 & iso=="BHS" & date==d(13apr2020)
+replace confirmed = 47 if confirmed == 45 & iso=="GUY" & date==d(13apr2020)
 *! -------------------------------------------
 
 ** Rate per 1,000 (not yet used)
