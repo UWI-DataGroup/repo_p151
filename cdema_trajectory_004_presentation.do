@@ -98,7 +98,48 @@ local con_BHS = `con_BHS'+4
 ** Range for HI CASE-LOAD CHART
 local range_hi = `el_JAM'+4 
 
-** GRAPHIC: HIGH CASE COUNTRIES
+
+** GRAPHIC: HIGH CASE COUNTRIES - NO CARICOM
+    ** BHS, BRB, JAM, TTO   
+        #delimit ;
+        gr twoway 
+            (line confirmed elapsed if iso=="USA" & elapsed<=`te_JAM', lc(green) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="GBR" & elapsed<=`te_JAM', lc(orange) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="SGP" & elapsed<=`te_JAM', lc(purple) lw(0.35) lp("-"))
+
+            ,
+
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+            ysize(5) xsize(10)
+            
+                xlab(
+                    , labs(5) notick nogrid glc(gs16))
+                xscale(fill noline range(0(1)`range_hi')) 
+                xtitle("Days since first case", size(5) margin(l=2 r=2 t=2 b=2)) 
+                
+                ylab(0(20)120
+                ,
+                labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
+                ytitle("Cumulative # of Cases", size(5) margin(l=2 r=2 t=2 b=2)) 
+
+                legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+                region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+                order(1 2 3) 
+                lab(1 "USA") 
+                lab(2 "UK") 
+                ///lab(3 "South Korea") 
+                lab(3 "Singapore") 
+                )
+                name(trajectory_region_00) 
+                ;
+        #delimit cr
+
+
+
+
+** GRAPHIC: HIGH CASE COUNTRIES - WITH CARICOM
     ** BHS, BRB, JAM, TTO   
         #delimit ;
         gr twoway 
@@ -133,7 +174,7 @@ local range_hi = `el_JAM'+4
                 xscale(fill noline range(0(1)`range_hi')) 
                 xtitle("Days since first case", size(5) margin(l=2 r=2 t=2 b=2)) 
                 
-                ylab(
+                ylab(0(20)120
                 ,
                 labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative # of Cases", size(5) margin(l=2 r=2 t=2 b=2)) 
@@ -155,8 +196,16 @@ local range_hi = `el_JAM'+4
                 name(trajectory_region_01) 
                 ;
         #delimit cr
-        graph export "`outputpath'/04_TechDocs/trajectory_region01_$S_DATE.png", replace width(4000)
 
+
+
+
+
+
+
+
+
+/*
 ** Placements for LO CASE-LOAD CHART 
 local range_lo = `range_hi' 
 local title = `range_hi'-10
@@ -233,63 +282,3 @@ local ctitle = `title'+5
                 name(trajectory_region_02) 
                 ;
         #delimit cr
-        graph export "`outputpath'/04_TechDocs/trajectory_region02_$S_DATE.png", replace width(4000)
-
-/*
-** ------------------------------------------------------
-** PDF REGIONAL REPORT (COUNTS OF CONFIRMED CASES)
-** ------------------------------------------------------
-    putpdf begin, pagesize(letter) font("Calibri Light", 10) margin(top,0.5cm) margin(bottom,0.25cm) margin(left,0.5cm) margin(right,0.25cm)
-
-** TITLE, ATTRIBUTION, DATE of CREATION
-    putpdf paragraph ,  font("Calibri Light", 12)
-    putpdf text ("COVID-19 trajectories for 14 CARICOM countries "), bold
-    putpdf text ("(Counts of Confirmed Cases)"), bold linebreak
-    putpdf paragraph ,  font("Calibri Light", 8)
-    putpdf text ("Briefing created by staff of the George Alleyne Chronic Disease Research Centre ") 
-    putpdf text ("and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, ") 
-    putpdf text ("The University of the West Indies. ")
-    putpdf text ("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) "), italic
-    putpdf text ("for details of quantitative analyses. "), font("Calibri Light", 8) italic
-    putpdf text ("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) "), italic 
-    putpdf text ("for details of national public health interventions and policy implications."), font("Calibri Light", 8) italic linebreak
-    putpdf text ("Updated on: $S_DATE at $S_TIME"), font("Calibri Light", 8) bold italic
-
-** INTRODUCTION
-    putpdf paragraph ,  font("Calibri Light", 9)
-    putpdf text ("Aim of this briefing. ") , bold
-    putpdf text ("We present the cumulative number of confirmed cases")
-    putpdf text (" 1"), script(super) 
-    putpdf text (" of COVID-19 infection among CARICOM countries since the start of the outbreak, which ") 
-    putpdf text ("we measure as the number of days since the first confirmed case in each country. We compare trajectories with selected countries ") 
-    putpdf text ("further along the epidemic curve. This allows us to assess progress in restricting COVID-19 transmission ") 
-    putpdf text ("compared to interventions in comparator countries. Epidemic progress is likely to vary markedly between countries, ") 
-    putpdf text ("and these graphics are presented as a guide only. ") 
-    *! CHANGE THESE TWO ROWS - EACH DAY
-    putpdf text ("As of $S_DATE, there is one country with more than 100 confirmed cases, 2 countries with more than 70 confirmed cases, ") 
-    putpdf text ("1 country with more than 50 confirmed cases, and 2 countries with 40 or more confirmed cases (Figures 1 and 2). ") 
-    putpdf text ("The remaining 8 countries have confirmed case numbers ranging from 10 to 23 (Figure 2)."), linebreak 
-
-** FIGURES OF REGIONAL COVID-19 COUNT trajectories
-    putpdf paragraph ,  font("Calibri Light", 9)
-    putpdf text ("Graph 1."), bold
-    putpdf text ("Cumulative cases in 4 CARICOM countries as of $S_DATE")
-    putpdf table f1 = (1,1), width(82%) border(all,nil) halign(center)
-    putpdf table f1(1,1)=image("`outputpath'/04_TechDocs/trajectory_region01_$S_DATE.png")
-    putpdf paragraph ,  font("Calibri Light", 9)
-    putpdf text ("Graph 2."), bold
-    putpdf text ("Cumulative cases in 10 CARICOM countries as of $S_DATE")
-    putpdf table f2 = (1,1), width(82%) border(all,nil) halign(center)
-    putpdf table f2(1,1)=image("`outputpath'/04_TechDocs/trajectory_region02_$S_DATE.png")
-
-** DATA REFERENCE
-    putpdf table p3 = (1,1), width(100%) halign(center) 
-    putpdf table p3(1,1), font("Calibri Light", 8) border(all,nil,000000) bgcolor(ffffff)
-    putpdf table p3(1,1)=("(1) Data Source. "), bold halign(left)
-    putpdf table p3(1,1)=("Dong E, Du H, Gardner L. An interactive web-based dashboard to track COVID-19 "), append 
-    putpdf table p3(1,1)=("in real time. Lancet Infect Dis; published online Feb 19. https://doi.org/10.1016/S1473-3099(20)30120-1"), append
-
-** Save the PDF
-    local c_date = c(current_date)
-    local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_count_bycountry_`date_string'", replace

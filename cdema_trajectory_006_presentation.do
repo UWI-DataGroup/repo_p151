@@ -1,9 +1,9 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					cdema_trajectory_005.do
+    //  algorithm name					cdema_trajectory_006_presentation.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	            04-APR-2020
+    // 	date last modified	            15-APR-2020
     //  algorithm task			        HEATMAP
 
     ** General algorithm set-up
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\cdema_trajectory_005", replace
+    log using "`logpath'\cdema_trajectory_006_presentation", replace
 ** HEADER -----------------------------------------------------
 
 ** JH time series COVD-19 data 
@@ -157,7 +157,7 @@ foreach country of local clist {
     drop c3 c4 c5
 }
 
-keep country date confirmed confirmed_rate deaths recovered
+keep country date pop confirmed confirmed_rate deaths recovered
 ** Fix Guyana 
 replace confirmed = 4 if country==7 & date>=d(17mar2020) & date<=d(23mar2020)
 rename confirmed metric1
@@ -170,150 +170,149 @@ label values mtype mtype_
 sort country mtype date 
 
 
-** HEATMAP -- CASES
-#delimit ;
-    heatplot metric i.country date if mtype==1
-    ,
-    cuts(@min(10)@max)
-    color(spmap, blues)
-    keylabels(all, range(1))
+** CARIBBEAN-WIDE SUMMARY 
 
-    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    ysize(12) xsize(10)
+** 1. Total count of cases across the Caribbean / CARICOM
+** 2. Total count of deaths across the Caribbean / CARICOM
+keep if mtype==1 | mtype==3
+collapse (sum) metric pop, by(date mtype) 
 
-    ylab(   1 "Antigua and Barbuda" 
-            2 "The Bahamas" 
-            3 "Barbados"
-            4 "Belize" 
-            5 "Dominica"
-            6 "Grenada"
-            7 "Guyana"
-            8 "Haiti"
-            9 "Jamaica"
-            10 "St Kitts and Nevis"
-            11 "St Lucia"
-            12 "St Vincent"
-            13 "Suriname"
-            14 "Trinidad and Tobago"
-    , labs(3) notick nogrid glc(gs16) angle(0))
-    yscale(reverse fill noline range(0(1)14)) 
-    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+** New daily cases and deaths
+sort mtype date 
+gen daily = metric - metric[_n-1] if mtype==mtype[_n-1]
 
-    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22014 "9 Apr"
-    , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
-    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+** DOUBLING RATE
+** Then create a rolling average 
+** Using 1-week window for now
+format pop  %14.0fc
+gen growthrate = log(metric/metric[_n-1]) if mtype==mtype[_n-1] 
+gen doublingtime = log(2)/growthrate
+by mtype: asrol doublingtime , stat(mean) window(date 7) gen(dt7)
 
-    title("Confirmed cases by $S_DATE", pos(11) ring(1) size(4))
+** NUMBER OF CASES and NUMBER OF DEATHS
+sort mtype date 
+egen tc1 = max(metric) if mtype==1 
+egen tc2 = min(tc1)
+egen td1 = max(metric) if mtype==3 
+egen td2 = min(td1)
+local ncases = tc2
+local ndeaths = td2 
+drop tc1 tc2 td1 td2 
 
-    legend(size(3) position(2) ring(4) colf cols(1) lc(gs16)
-    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-    sub("Confirmed" "Cases", size(3))
-                    )
-    name(heatmap_cases) 
-    ;
-#delimit cr
-    graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width(4000)
+** LOCAL MACRO FOR MOST RECENT DOUBLING TIME 
+sort mtype date 
+gen tdt1 = dt7 if mtype==1 & mtype!=mtype[_n+1]
+egen tdt2 = min(tdt1)
+gen tdt3 = int(tdt2)
+local dt_cases = tdt3 
+gen tdt4 = dt7 if mtype==3 & mtype!=mtype[_n+1]
+egen tdt5 = min(tdt4)
+gen tdt6 = int(tdt5)
+local dt_deaths = tdt6 
+drop tdt1 tdt2 tdt3 tdt4 tdt5 tdt6
 
-
-** HEATMAP -- DEATHS
-#delimit ;
-    heatplot metric i.country date if mtype==3
-    ,
-    cuts(@min(1)@max)
-    color(spmap, reds)
-    keylabels(all, range(1))
-
-    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    ysize(12) xsize(10)
-
-    ylab(   1 "Antigua and Barbuda" 
-            2 "The Bahamas" 
-            3 "Barbados"
-            4 "Belize" 
-            5 "Dominica"
-            6 "Grenada"
-            7 "Guyana"
-            8 "Haiti"
-            9 "Jamaica"
-            10 "St Kitts and Nevis"
-            11 "St Lucia"
-            12 "St Vincent"
-            13 "Suriname"
-            14 "Trinidad and Tobago"
-    , labs(3) notick nogrid glc(gs16) angle(0))
-    yscale(reverse fill noline range(0(1)14)) 
-    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
-    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22014 "9 Apr"
-    , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
-    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
-    title("Confirmed deaths by $S_DATE", pos(11) ring(1) size(4))
-
-    legend(size(3) position(2) ring(4) colf cols(1) lc(gs16)
-    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-    sub("Confirmed" "Deaths", size(3))
-    order(8 7 6 5 4 3 2 1) 
-        lab(1 "0") 
-        lab(2 "1") 
-        lab(3 "2") 
-        lab(4 "3")
-        lab(5 "4")
-        lab(6 "5")
-        lab(7 "6")
-        lab(8 "7-8")
-    )
-    name(heatmap_deaths) 
-    ;
-#delimit cr 
-    graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace width(4000)
+dis "Cases are: " `ncases'
+dis "Deaths are: " `ndeaths'
+dis "Cases Doubled in: " `dt_cases'
+dis "Deaths Doubled in: " `dt_deaths'
 
 
+** CARICOM SUMMARY: CASES FIRST
+** 1. BAR CHART    --> CUMULATIVE CASES.
+** 2. BAR CHART    --> NEW DAILY CASES.
+** 3. LINE CHART   --> RATE OF DOUBLING
 
-/*
-** ------------------------------------------------------
-** PDF REGIONAL REPORT (COUNTS OF CONFIRMED CASES)
-** ------------------------------------------------------
-    putpdf begin, pagesize(letter) font("Calibri Light", 10) margin(top,0.5cm) margin(bottom,0.25cm) margin(left,0.5cm) margin(right,0.25cm)
+** 2. BAR CHART    --> NEW DAILY CASES.
+        #delimit ;
+        gr twoway 
+            (bar daily date if mtype==1, col("160 199 233"))
+            (bar daily date if mtype==3, col("233 102 80")
+            
+            )
+            ,
 
-** TITLE, ATTRIBUTION, DATE of CREATION
-    putpdf paragraph ,  font("Calibri Light", 12)
-    putpdf text ("COVID-19 Heatmap for 14 CARICOM countries "), bold
-    putpdf text ("(Counts of Confirmed Cases and Deaths)"), bold linebreak
-    putpdf paragraph ,  font("Calibri Light", 8)
-    putpdf text ("Briefing created by staff of the George Alleyne Chronic Disease Research Centre ") 
-    putpdf text ("and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, ") 
-    putpdf text ("The University of the West Indies. ")
-    putpdf text ("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) "), italic
-    putpdf text ("for details of quantitative analyses. "), font("Calibri Light", 8) italic
-    putpdf text ("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) "), italic 
-    putpdf text ("for details of national public health interventions and policy implications."), font("Calibri Light", 8) italic linebreak
-    putpdf text ("Updated on: $S_DATE at $S_TIME"), font("Calibri Light", 8) bold italic
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+            ysize(5) xsize(15)
+            
+            xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22015 "10 Apr"
+            , labs(6) nogrid glc(gs16) angle(0) format(%9.0f))
+            xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+                
+            ylab(
+            , labs(6) notick nogrid glc(gs16) angle(0))
+            yscale(fill noline range(0(1)14)) 
+            ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+            
+            title("Daily cases", pos(11) ring(1) size(9))
 
-** INTRODUCTION
-    putpdf paragraph ,  font("Calibri Light", 9)
-    putpdf text ("Aim of this briefing. ") , bold
-    putpdf text ("We present the cumulative number of confirmed COVID-19 cases and deaths")
-    putpdf text (" 1"), script(super) 
-    putpdf text (" among CARICOM countries since the start of the outbreak.  ") 
-    putpdf text ("We use heatmaps to visually summarise the situation as of $S_DATE. ") 
-    putpdf text ("The intention is to highlight outbreak hotspots."), linebreak 
+            legend(off size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+                region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+                )
+                name(cases_bar_02) 
+                ;
+        #delimit cr
 
-** FIGURES OF REGIONAL COVID-19 COUNT trajectories
-    putpdf table f1 = (1,2), width(100%) border(all,nil) halign(center)
-    putpdf table f1(1,1)=image("`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png")
-    putpdf table f1(1,2)=image("`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png")
+** 2. LINE CHART    --> RATE OF DOUBLING (CASES)
+        #delimit ;
+        gr twoway 
+            (line dt7 date if mtype==1, lw(1) lc("23 83 135") lp("-"))
+            ///(line dt7 date if mtype==3, lw(1) lc("168 39 29") lp("- -")
+            ///)
+            ,
 
-** DATA REFERENCE
-    putpdf table p3 = (1,1), width(100%) halign(center) 
-    putpdf table p3(1,1), font("Calibri Light", 8) border(all,nil,000000) bgcolor(ffffff)
-    putpdf table p3(1,1)=("(1) Data Source. "), bold halign(left)
-    putpdf table p3(1,1)=("Dong E, Du H, Gardner L. An interactive web-based dashboard to track COVID-19 "), append 
-    putpdf table p3(1,1)=("in real time. Lancet Infect Dis; published online Feb 19. https://doi.org/10.1016/S1473-3099(20)30120-1"), append
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+            ysize(5) xsize(15)
+            
+            xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22015 "10 Apr"
+            , labs(6) nogrid glc(gs16) angle(0) format(%9.0f))
+            xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+                
+            ylab(
+            , labs(6) notick nogrid glc(gs16) angle(0))
+            yscale(fill noline range(0(1)14)) 
+            ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+            
+            title("Doubling time (days)", pos(11) ring(1) size(9))
 
-** Save the PDF
-    local c_date = c(current_date)
-    local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`date_string'", replace
+            legend(off size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+                region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+                )
+                name(cases_dt_01) 
+                ;
+        #delimit cr
+
+** 2. LINE CHART    --> RATE OF DOUBLING (CASES + DEATHS)
+        #delimit ;
+        gr twoway 
+            (line dt7 date if mtype==1, lw(1) lc("23 83 135") lp("-"))
+            (line dt7 date if mtype==3, lw(1) lc("168 39 29") lp("- -")
+            )
+            ,
+
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+            ysize(5) xsize(15)
+            
+            xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22015 "10 Apr"
+            , labs(6) nogrid glc(gs16) angle(0) format(%9.0f))
+            xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+                
+            ylab(
+            , labs(6) notick nogrid glc(gs16) angle(0))
+            yscale(fill noline range(0(1)14)) 
+            ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+            
+            title("Doubling time (days)", pos(11) ring(1) size(9))
+
+            legend(off size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+                region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+                )
+                name(cases_dt_02) 
+                ;
+        #delimit cr
+

@@ -113,7 +113,7 @@ label var usa_d "USA deaths"
 label var usa_r "USA recovered"
 
 ** Days since first case
-local days = 25
+local days = 34
 
 ** CHART _ DAYS SINCE FIRST CASE 
 ** Without Caribbean
@@ -121,7 +121,7 @@ local days = 25
         gr twoway 
             (line usa_c elapsed       if elapsed<=`days', lc(green) lw(0.35) lp("-"))
             (line uk_c elapsed        if elapsed<=`days', lc(blue) lw(0.35) lp("-"))
-            (line skorea_c elapsed    if elapsed<=`days' , lc(red) lw(0.35) lp("-"))
+            ///(line skorea_c elapsed    if elapsed<=`days' , lc(red) lw(0.35) lp("-"))
             (line sgp_c elapsed       if elapsed<=`days' , lc(purple) lw(0.35) lp("-"))
             ,
 
@@ -144,11 +144,11 @@ local days = 25
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(1 2 3 4) 
+                order(1 2 3) 
                 lab(1 "USA") 
                 lab(2 "UK") 
-                lab(3 "South Korea")
-                lab(4 "Singapore") 
+                ///lab(3 "South Korea")
+                lab(3 "Singapore") 
                 )
                 name(trajectory_001) 
                 ;
@@ -162,7 +162,7 @@ local days = 25
         gr twoway 
             (line usa_c elapsed       if elapsed<=`days', lc(green%20) lw(0.35) lp("-"))
             (line uk_c elapsed        if elapsed<=`days', lc(blue%20) lw(0.35) lp("-"))
-            (line skorea_c elapsed    if elapsed<=`days' , lc(red%20) lw(0.35) lp("-"))
+            ///(line skorea_c elapsed    if elapsed<=`days' , lc(red%20) lw(0.35) lp("-"))
             (line sgp_c elapsed       if elapsed<=`days' , lc(purple%20) lw(0.35) lp("-"))
            (line jam_c elapsed       if elapsed<=`days', lc(gs0) lw(0.35) lp("-"))
             ,
@@ -186,12 +186,12 @@ local days = 25
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(1 2 3 4 5) 
+                order(1 2 3 4) 
                 lab(1 "USA") 
                 lab(2 "UK") 
-                lab(3 "South Korea")
-                lab(4 "Singapore") 
-                lab(5 "Jamaica") 
+                ///lab(3 "South Korea")
+                lab(3 "Singapore") 
+                lab(4 "Jamaica") 
                 )
                 name(trajectory_002) 
                 ;
@@ -203,7 +203,7 @@ local days = 25
         gr twoway 
             (line usa_c elapsed       if elapsed<=`days', lc(green%20) lw(0.35) lp("-"))
             (line uk_c elapsed        if elapsed<=`days', lc(blue%20) lw(0.35) lp("-"))
-            (line skorea_c elapsed    if elapsed<=`days' , lc(red%20) lw(0.35) lp("-"))
+            ///(line skorea_c elapsed    if elapsed<=`days' , lc(red%20) lw(0.35) lp("-"))
             (line sgp_c elapsed       if elapsed<=`days' , lc(purple%20) lw(0.35) lp("-"))
            (line jam_c elapsed       if elapsed<=`days', lc(gs0%20) lw(0.35) lp("-"))
            (line bar_c elapsed       if elapsed<=`days', lc(gs0) lw(0.35) lp("-"))
@@ -228,13 +228,13 @@ local days = 25
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(1 2 3 4 5 6) 
+                order(1 2 3 4 5) 
                 lab(1 "USA") 
                 lab(2 "UK") 
-                lab(3 "South Korea") 
-                lab(4 "Singapore") 
-                lab(5 "Jamaica") 
-                lab(6 "Barbados") 
+                ///lab(3 "South Korea") 
+                lab(3 "Singapore") 
+                lab(4 "Jamaica") 
+                lab(5 "Barbados") 
                 )
                 name(trajectory_003) 
                 ;
@@ -245,7 +245,7 @@ local days = 25
         gr twoway 
             (line usa_c elapsed       if elapsed<=`days', lc(green%20) lw(0.35) lp("-"))
             (line uk_c elapsed        if elapsed<=`days', lc(blue%20) lw(0.35) lp("-"))
-            (line skorea_c elapsed    if elapsed<=`days' , lc(red%20) lw(0.35) lp("-"))
+            ///(line skorea_c elapsed    if elapsed<=`days' , lc(red%20) lw(0.35) lp("-"))
             (line sgp_c elapsed       if elapsed<=`days' , lc(purple%20) lw(0.35) lp("-"))
            (line bar_c elapsed       if elapsed<=`days', lc(gs0) lw(0.35) lp("-"))
             ,
@@ -269,12 +269,12 @@ local days = 25
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(1 2 3 4 5) 
+                order(1 2 3 4) 
                 lab(1 "USA") 
                 lab(2 "UK") 
-                lab(3 "South Korea") 
-                lab(4 "Singapore") 
-                lab(5 "Barbados") 
+                ///lab(3 "South Korea") 
+                lab(3 "Singapore") 
+                lab(4 "Barbados") 
                 )
                 name(trajectory_004) 
                 ;
