@@ -39,7 +39,7 @@
 
 *! CHANGE DAILY FILE 
 ** JH time series COVD-19 data 
-use "`datapath'\version01\2-working\jh_time_series_14Apr2020", clear
+use "`datapath'\version01\2-working\jh_time_series_17Apr2020", clear
 
 ** Country Labels
 #delimit ; 
@@ -93,17 +93,33 @@ foreach country of local clist {
     egen con_`country' = min(con_`country'1)
     local con_`country' = con_`country'
 }
-local con_BHS = `con_BHS'+4
 
 ** Range for HI CASE-LOAD CHART
-local range_hi = `el_JAM'+4 
+local range_hi = `el_JAM'+5
+local te_UK = `el_JAM'-1 
+
+local con1_JAM = `con_JAM'+8
+local te1_JAM = `te_JAM'-1
+
+local con1_TTO = `con_TTO'+10
+local te1_TTO = `te_TTO'-5
+
+local con1_GUY = `con_GUY'-14
+local te1_GUY = `te_GUY'-1
+
+local con1_BRB = `con_BRB'+5 
+local te1_BRB = `te_BRB' 
+
+local con1_BHS = `con_BHS'+4
+local te1_BHS = `te_BHS' 
+
 
 ** GRAPHIC: HIGH CASE COUNTRIES
     ** BHS, BRB, JAM, TTO   
         #delimit ;
         gr twoway 
             (line confirmed elapsed if iso=="USA" & elapsed<=`te_JAM', lc(green%20) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="GBR" & elapsed<=`te_JAM', lc(orange%20) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="GBR" & elapsed<=`te_UK', lc(orange%20) lw(0.35) lp("-"))
             ///(line confirmed elapsed if iso=="KOR" & elapsed<=`te_JAM', lc(red%20) lw(0.35) lp("-"))
             (line confirmed elapsed if iso=="SGP" & elapsed<=`te_JAM', lc(purple%20) lw(0.35) lp("-"))
             /// BAHAMAS
@@ -133,16 +149,18 @@ local range_hi = `el_JAM'+4
                 xscale(fill noline range(0(1)`range_hi')) 
                 xtitle("Days since first case", size(5) margin(l=2 r=2 t=2 b=2)) 
                 
-                ylab(
+                ylab(0(40)180
                 ,
                 labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative # of Cases", size(5) margin(l=2 r=2 t=2 b=2)) 
+                yscale(log)
 
-                text(`con_BHS' `te_BHS' "The Bahamas" "(`con_BHS', `el_BHS' days)", size(3) place(e) color(gs8) j(left))
-                text(`con_BRB' `te_BRB' "Barbados" "(`con_BRB', `el_BRB' days)", size(3) place(e) color(gs8) j(left))
-                text(`con_JAM' `te_JAM' "Jamaica" "(`con_JAM' cases, `el_JAM' days)", size(3) place(e) color(gs8) j(left))
-                text(`con_TTO' `te_TTO' "Trinidad and Tobago" "(`con_TTO' cases, `el_TTO' days)", size(3) place(e) color(gs8) j(left))
-                text(`con_GUY' `te_GUY' "Guyana" "(`con_GUY' cases, `el_GUY' days)", size(3) place(e) color(gs8) j(left))
+
+                text(`con1_BHS' `te1_BHS' "The Bahamas" "(`con_BHS', `el_BHS'd)", size(3) place(e) color(gs8) j(left))
+                text(`con1_BRB' `te1_BRB' "Barbados" "(`con_BRB', `el_BRB'd)", size(3) place(e) color(gs8) j(left))
+                text(`con1_JAM' `te1_JAM' "Jamaica" "(`con_JAM' cases, `el_JAM' days)", size(3) place(e) color(gs8) j(left))
+                text(`con1_TTO' `te1_TTO' "Trinidad and Tobago" "(`con_TTO' cases, `el_TTO' days)", size(3) place(e) color(gs8) j(left))
+                text(`con1_GUY' `te1_GUY' "Guyana" "(`con_GUY' cases, `el_GUY' days)", size(3) place(e) color(gs8) j(left))
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -158,13 +176,13 @@ local range_hi = `el_JAM'+4
         graph export "`outputpath'/04_TechDocs/trajectory_region01_$S_DATE.png", replace width(4000)
 
 ** Placements for LO CASE-LOAD CHART 
-local range_lo = `range_hi' 
-local title = `range_hi'-10
-local ctitle = `title'+5
-
+local range_lo = `range_hi' -1
+local title = `range_lo' - 12
+local ctitle = `title'+8
+/*
 ** GRAPHIC: LOW CASE COUNTRIES
     ** 3-APR-2020: The REST (!) --> ATG BLZ DMA GRD GUY HTI KNA LCA VCT SUR 
-    keep if iso=="ATG" | iso=="BLZ" | iso=="DMA" | iso=="GRD" |  /// 
+    keep if iso=="ATG" | iso=="BLZ" | iso=="DMA" | iso=="GRD" |   /// 
             iso=="HTI" | iso=="KNA" | iso=="LCA" | iso=="VCT" | iso=="SUR" | ///
             iso=="SGP" | iso=="KOR" | iso=="GBR" | iso=="USA"
     keep date country country2 iso pop confirmed confirmed_rate elapsed
@@ -204,22 +222,22 @@ local ctitle = `title'+5
                 xscale(fill noline range(0(1)`range_hi')) 
                 xtitle("Days since first case", size(5) margin(l=2 r=2 t=2 b=2)) 
                 
-                ylab(0(20)100
+                ylab(
                 ,
                 labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative # of Cases", size(5) margin(l=2 r=2 t=2 b=2)) 
 
-                text(100 `title' "Current Situation" "($S_DATE)", size(3) place(e) color(4) j(left))
-                text(100 `ctitle' "Antigua and Barbuda" "(`con_ATG' cases, `el_ATG' days)", size(3) place(e) color(gs8) j(left))
-                text(90 `ctitle' "Belize" "(`con_BLZ' cases, `el_BLZ' days)", size(3) place(e) color(gs8) j(left))
-                text(80 `ctitle' "Dominica" "(`con_ATG' cases, `el_ATG' days)", size(3) place(e) color(gs8) j(left))
-                text(70 `ctitle' "Grenada" "(`con_GRD' cases, `el_GRD' days)", size(3) place(e) color(gs8) j(left))
-                ///text(60 28 "Guyana" "(`con_GUY' cases, `el_GUY' days)", size(3) place(e) color(gs8) j(left))
-                text(60 `ctitle' "Haiti" "(`con_HTI' cases, `el_HTI' days)", size(3) place(e) color(gs8) j(left))
-                text(50 `ctitle' "St Kitts and Nevis" "(`con_KNA' cases, `el_KNA' days)", size(3) place(e) color(gs8) j(left))
-                text(40 `ctitle' "St Lucia" "(`con_LCA' cases, `el_LCA' days)", size(3) place(e) color(gs8) j(left))
-                text(30 `ctitle' "St Vincent" "(`con_VCT' cases, `el_VCT' days)", size(3) place(e) color(gs8) j(left))
-                text(20 `ctitle' "Suriname" "(`con_SUR' cases, `el_SUR' days)", size(3) place(e) color(gs8) j(left))
+                text(150 `title' "Current Situation" "($S_DATE)", size(3) place(e) color(4) j(left))
+                text(150 `ctitle' "Antigua and Barbuda" "(`con_ATG' cases, `el_ATG' days)", size(3) place(e) color(gs8) j(left))
+                text(135 `ctitle' "Belize" "(`con_BLZ' cases, `el_BLZ' days)", size(3) place(e) color(gs8) j(left))
+                text(120 `ctitle' "Dominica" "(`con_DMA' cases, `el_DMA' days)", size(3) place(e) color(gs8) j(left))
+                text(105 `ctitle' "Grenada" "(`con_GRD' cases, `el_GRD' days)", size(3) place(e) color(gs8) j(left))
+                ///text(60 `ctitle' "Guyana" "(`con_GUY' cases, `el_GUY' days)", size(3) place(e) color(gs8) j(left))
+                text(90 `ctitle' "Haiti" "(`con_HTI' cases, `el_HTI' days)", size(3) place(e) color(gs8) j(left))
+                text(75 `ctitle' "St Kitts and Nevis" "(`con_KNA' cases, `el_KNA' days)", size(3) place(e) color(gs8) j(left))
+                text(60 `ctitle' "St Lucia" "(`con_LCA' cases, `el_LCA' days)", size(3) place(e) color(gs8) j(left))
+                text(45 `ctitle' "St Vincent" "(`con_VCT' cases, `el_VCT' days)", size(3) place(e) color(gs8) j(left))
+                text(30 `ctitle' "Suriname" "(`con_SUR' cases, `el_SUR' days)", size(3) place(e) color(gs8) j(left))
 
                 legend(size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -228,7 +246,7 @@ local ctitle = `title'+5
                 lab(2 "UK") 
                 ///lab(3 "South Korea") 
                 lab(3 "Singapore") 
-                lab(4 "9 Caribbean countries") 
+                lab(4 "10 Caribbean countries") 
                 )
                 name(trajectory_region_02) 
                 ;
@@ -266,8 +284,8 @@ local ctitle = `title'+5
     putpdf text ("compared to interventions in comparator countries. Epidemic progress is likely to vary markedly between countries, ") 
     putpdf text ("and these graphics are presented as a guide only. ") 
     *! CHANGE THESE TWO ROWS - EACH DAY
-    putpdf text ("As of $S_DATE, there is one country with more than 100 confirmed cases, 2 countries with more than 70 confirmed cases, ") 
-    putpdf text ("1 country with more than 50 confirmed cases, and 2 countries with 40 or more confirmed cases (Figures 1 and 2). ") 
+    putpdf text ("As of $S_DATE, there are two countries with more than 100 confirmed cases, 1 country with more than 70 confirmed cases, ") 
+    putpdf text ("2 countries with more than 50 confirmed cases, and 1 country with more than 40 or more confirmed cases (Figures 1 and 2). ") 
     putpdf text ("The remaining 8 countries have confirmed case numbers ranging from 10 to 23 (Figure 2)."), linebreak 
 
 ** FIGURES OF REGIONAL COVID-19 COUNT trajectories

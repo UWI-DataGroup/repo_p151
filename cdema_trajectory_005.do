@@ -200,7 +200,7 @@ sort country mtype date
     yscale(reverse fill noline range(0(1)14)) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
-    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22014 "9 Apr"
+    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22015 "10 Apr"
     , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
@@ -246,7 +246,7 @@ sort country mtype date
     yscale(reverse fill noline range(0(1)14)) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
-    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22014 "9 Apr"
+    xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22015 "10 Apr"
     , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
@@ -272,7 +272,6 @@ sort country mtype date
 
 
 
-/*
 ** ------------------------------------------------------
 ** PDF REGIONAL REPORT (COUNTS OF CONFIRMED CASES)
 ** ------------------------------------------------------

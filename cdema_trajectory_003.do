@@ -197,13 +197,18 @@ label define cname_ 1 "Antigua and Barbuda"
                     ;
 #delimit cr 
 
+
+
 *! -------------------------------------------
 *! Temporary Daily Updates
 *! Review each morning
 *! CHANGE FOR THE 7APR figures --> FEED INTO the 5APR REPORT
-replace confirmed = 49 if confirmed == 47 & iso=="BHS" & date==d(13apr2020)
-replace confirmed = 47 if confirmed == 45 & iso=="GUY" & date==d(13apr2020)
+replace confirmed = 43 if confirmed == 41 & iso=="HTI" & date==d(16apr2020)
+///replace confirmed = 75 if confirmed == 73 & iso=="BRB" & date==d(16apr2020)
 *! -------------------------------------------
+
+
+
 
 ** Rate per 1,000 (not yet used)
 gen confirmed_rate = (confirmed / pop) * 10000

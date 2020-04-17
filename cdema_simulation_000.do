@@ -1,11 +1,12 @@
 
 ** DO file descriptions
-** Verion 1.0.0
-** 30-MAR-2020
+** Verion 1.1.0
+** 15-APR-2020
 ** Produced by: Ian R Hambleton
 
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_simulation_barbados.do
+*! DO FILE: cdema_simulation_barbados.do 
+*! (ARCHIVAL MODEL)
 ** -----------------------------------------------------------------
 ** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
 ** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
@@ -27,7 +28,8 @@
 ** -----------------------------------------------------------------
 
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_simulation_antigua.do
+*! DO FILE: cdema_simulation_antigua.do 
+*! (ARCHIVAL MODEL)
 ** -----------------------------------------------------------------
 ** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
 ** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
@@ -37,7 +39,8 @@
 ** -----------------------------------------------------------------
 
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_simulation_001.do
+*! DO FILE: cdema_simulation_001.do 
+*! (ARCHIVAL MODEL PREPARATION)
 ** -----------------------------------------------------------------
 ** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
 ** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
@@ -54,7 +57,8 @@
 ** -----------------------------------------------------------------
 
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_simulation_002.do
+*! DO FILE: cdema_simulation_002.do 
+*! (ARCHIVAL MODEL PREPARATION)
 ** -----------------------------------------------------------------
 ** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
 ** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
@@ -69,7 +73,8 @@
 ** -----------------------------------------------------------------
 
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_trajectory_001.do
+*! DO FILE: cdema_trajectory_001.do 
+*! LOAD THE DAILY JHOPKINS DATA
 ** -----------------------------------------------------------------
 ** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
 ** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
@@ -84,7 +89,8 @@
 
 
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_trajectory_002.do
+*! DO FILE: cdema_trajectory_002.do 
+*! (ARCHIVAL DO FILE)
 ** -----------------------------------------------------------------
 ** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
 ** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
@@ -186,7 +192,7 @@
 
 
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_trajectory_006.do
+*! DO FILE: cdema_trajectory_xxx.do
 *! TABULAR GRAPHICS BY COUNTRY SHOWING GROWING BAR CHARTS OF 
 *! CUMULATIVE CONFIRMED CASES
 *! USE THE "DOUBLING" METRIC
@@ -194,14 +200,14 @@
 
 
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_trajectory_007.do
+*! DO FILE: cdema_trajectory_xxx.do
 *! ATTACK RATE - SIMILAR TO THE REGIONAL BRIEFING 
 *! cdema_trajectory_004.do
 ** -----------------------------------------------------------------
 
 
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_trajectory_007.do
+*! DO FILE: cdema_trajectory_xxx.do
 *! ATTACK RATE - SIMILAR TO THE REGIONAL BRIEFING 
 *! cdema_trajectory_004.do
 ** -----------------------------------------------------------------
@@ -212,12 +218,16 @@
 *! OTHER CODE
 ** -----------------------------------------------------------------
 ** -----------------------------------------------------------------
-*! DO FILE: cdema_simulation_presentation_graphics.do
+*! DO FILE: 
+*! cdema_simulation_presentation_graphics.do
+*! cdema_simulation_presentation_graphics2.do
+*! cdema_trajectory_004_presentation.do
+*! cdema_trajectory_006_presentation.do
 ** -----------------------------------------------------------------
 ** LOCAL PATH: X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151\
 ** GitHub PATH: :https://github.com/UWI-DataGroup/repo_p151
 **
 ** DESCRIPTION
-** Produces PPTX-friendly graphics for presentation #1 to CDEMA / CARPHA
-** on 26-MAR-2020 
+** Produces PPTX-friendly graphics for various presentations to CDEMA, COHSOD, and Heads of Government
+** up to and including 15-APR-2020 
 ** -----------------------------------------------------------------
