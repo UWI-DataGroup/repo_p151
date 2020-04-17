@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					cdema_trajectory_001.do
+    //  algorithm name					covidprofiles_002_jhopkins.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	      15-APR-2020
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\cdema_trajectory_001", replace
+    log using "`logpath'\covidprofiles_002_jhopkins", replace
 ** HEADER -----------------------------------------------------
 
 ** Data import from Johns Hopkins (DAILY UPDATES)
