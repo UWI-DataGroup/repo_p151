@@ -193,12 +193,8 @@ foreach country of local clist {
     putpdf table intro(1,2)=("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) "), halign(left) append italic 
     putpdf table intro(1,2)=("for details of national public health interventions and policy implications. "), halign(left) append italic linebreak
     putpdf table intro(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
-    putpdf table intro(1,2)=("https://tinyurl.com/caricom-surveillance "), halign(left) underline append linebreak 
+    putpdf table intro(1,2)=("https://tinyurl.com/uwi-covid19-surveillance "), halign(left) underline append linebreak 
     putpdf table intro(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
-
-*! TO ADD TEXT
-** For all our COVID-19 surveillance outputs, go to https://tinyurl.com/caricom-surveillance
-** Also text on the logarithm chart
 
 ** INTRODUCTION
     putpdf paragraph ,  font("Calibri Light", 10)
@@ -212,7 +208,7 @@ foreach country of local clist {
 
 ** TABLE: KEY SUMMARY METRICS
     putpdf table t1 = (4,6), width(100%) halign(center)    
-    putpdf table t1(1,1), font("Calibri Light", 12, 000000) border(left,single,ffffff) border(right,single,ffffff) border(top, nil) border(bottom, nil) bgcolor(e6e6e6)  
+    putpdf table t1(1,1), font("Calibri Light", 11, 000000) border(left,single,ffffff) border(right,single,ffffff) border(top, nil) border(bottom, nil) bgcolor(e6e6e6)  
     putpdf table t1(2,1), font("Calibri Light", 12, 000000) border(left,single,ffffff) border(right,single,ffffff) border(top, nil) border(bottom, nil) bgcolor(e6e6e6)
     putpdf table t1(3,1), font("Calibri Light", 12, 0e497c) border(all,single,ffffff) bgcolor(b5d7f4) 
     putpdf table t1(4,1), font("Calibri Light", 12, 7c0a07) border(all,single,ffffff) bgcolor(ff9e83) 
@@ -262,19 +258,29 @@ foreach country of local clist {
     putpdf table t1(3,6)=("${m05_`country'}"), halign(center) 
     putpdf table t1(4,6)=("${m06_`country'}"), halign(center) 
 
+** TEXT TO ACCOMPANY FIGURE 1
+    putpdf paragraph ,  font("Calibri Light", 10)
+    putpdf text ("The first graph shows the rise in the absolute numbers of cases and deaths in `cname' since the start of the outbreak. ")
+    putpdf text ("It is good for assessing the extent of the COVID-19 burden, when thinking about healthcare demand for example. ")
 
 ** FIGURE 1. OF COVID-19 trajectory
     putpdf paragraph ,  font("Calibri Light", 10)
     putpdf text ("Graph."), bold
     putpdf text (" Cumulative cases and deaths in `cname' as of $S_DATE (${m05_`country'} outbreak days)"), linebreak
-    putpdf table f1 = (1,1), width(85%) border(all,nil) halign(center)
+    putpdf table f1 = (1,1), width(76%) border(all,nil) halign(center)
     putpdf table f1(1,1)=image("`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png")
+
+** TEXT TO ACCOMPANY FIGURE 2
+    putpdf paragraph ,  font("Calibri Light", 10)
+    putpdf text ("The second graph shows the number of cases on a different scale (called a logarithm scale). It shows us the ")
+    putpdf text ("growth rate "), italic
+    putpdf text ("over time, and is good for comparing progress against other countries. ")
 
 ** FIGURE 2. OF COVID-19 trajectory
     putpdf paragraph ,  font("Calibri Light", 10)
     putpdf text ("Graph."), bold
     putpdf text (" Cumulative cases in `cname' as of $S_DATE, with international comparisons"), linebreak
-    putpdf table f2 = (1,1), width(85%) border(all,nil) halign(center)
+    putpdf table f2 = (1,1), width(76%) border(all,nil) halign(center)
     putpdf table f2(1,1)=image("`outputpath'/04_TechDocs/line_`country'_$S_DATE.png")
 
 ** DATA REFERENCE
@@ -287,6 +293,6 @@ foreach country of local clist {
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_`date_string'_test", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_version2_`date_string'", replace
 
 }

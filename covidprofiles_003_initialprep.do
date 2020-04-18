@@ -190,7 +190,7 @@ sort iso date
 *! (8) If so, complete one line of code as below
 *! (9) FOUR ITEMS to alter:
 *!              --> New #. Old #. iso code. Date.
-replace confirmed = 43 if confirmed == 41 & iso=="HTI" & date==d(16apr2020)
+replace confirmed = 163 if confirmed == 143 & iso=="JAM" & date==d(17apr2020)
 *! -------------------------------------------
 
 ** Save the cleaned and restricted dataset
