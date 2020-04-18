@@ -128,6 +128,14 @@ label define cname_ 1 "Antigua and Barbuda"
                     ;
 #delimit cr 
 
+*! -------------------------------------------
+*! Temporary Daily Updates
+*! Review each morning
+*! CHANGE FOR THE 7APR figures --> FEED INTO the 5APR REPORT
+replace confirmed = 163 if confirmed == 143 & iso=="JAM" & date==d(17apr2020)
+///replace confirmed = 75 if confirmed == 73 & iso=="BRB" & date==d(16apr2020)
+*! -------------------------------------------
+
 ** Attack Rate (per 1,000 --> not yet used)
 gen confirmed_rate = (confirmed / pop) * 10000
 
@@ -255,7 +263,7 @@ sort country mtype date
     legend(size(3) position(2) ring(4) colf cols(1) lc(gs16)
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
     sub("Confirmed" "Deaths", size(3))
-    order(8 7 6 5 4 3 2 1) 
+    order(9 8 7 6 5 4 3 2 1) 
         lab(1 "0") 
         lab(2 "1") 
         lab(3 "2") 
@@ -263,7 +271,8 @@ sort country mtype date
         lab(5 "4")
         lab(6 "5")
         lab(7 "6")
-        lab(8 "7-8")
+        lab(8 "7")
+        lab(9 "8-9")
     )
     name(heatmap_deaths) 
     ;
