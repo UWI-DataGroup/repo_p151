@@ -26,36 +26,61 @@
     log using "`logpath'\covidprofiles_008_region3", replace
 ** HEADER -----------------------------------------------------
 
-** JH time series COVD-19 data 
-use "`datapath'\version01\2-working\jh_time_series", clear
 
-** JH database correction
-** UK has 2 names in database
-replace countryregion = "UK" if countryregion=="United Kingdom"
-** Bahamas has 3 names in database 
-replace countryregion = "Bahamas" if countryregion=="Bahamas, The" | countryregion=="The Bahamas"
-** South Korea has 2 names
-replace countryregion = "South Korea" if countryregion=="Korea, South" 
+** -----------------------------------------
+** Pre-Load the COVID metrics --> as Global Macros
+** -----------------------------------------
+qui do "`logpath'\covidprofiles_004_metrics"
+** -----------------------------------------
+
+** Close any open log file and open a new log file
+capture log close
+log using "`logpath'\covidprofiles_005_country1", replace
+
+** Country Labels
+#delimit ; 
+label define cname_ 1 "Antigua and Barbuda"
+                    2 "The Bahamas"
+                    3 "Barbados"
+                    4 "Belize"
+                    5 "Cuba"
+                    6 "Dominica"
+                    7 "Dominican Republic"
+                    8 "Grenada"
+                    9 "Guyana"
+                    10 "Haiti"
+                    11 "Jamaica"
+                    12 "Saint Kitts and Nevis"
+                    13 "Saint Lucia"
+                    14 "Saint Vincent and the Grenadines"
+                    15 "Singapore"
+                    16 "South Korea"
+                    17 "Suriname"
+                    18 "Trinidad and Tobago"
+                    19 "UK"
+                    20 "USA"
+                    ;
+#delimit cr 
+
 
 ** COUNTRY RESTRICTION: CARICOM countries only (N=14)
 #delimit ; 
 keep if 
-        countryregion=="Antigua and Barbuda" |
-        countryregion=="Bahamas" |
-        countryregion=="Barbados" |
-        countryregion=="Belize" |
-        countryregion=="Dominica" |
-        countryregion=="Grenada" |
-        countryregion=="Guyana" |
-        countryregion=="Haiti" |
-        countryregion=="Jamaica" |
-        countryregion=="Saint Kitts and Nevis" |
-        countryregion=="Saint Lucia" |
-        countryregion=="Saint Vincent and the Grenadines" |
-        countryregion=="Suriname" |
-        countryregion=="Trinidad and Tobago";
-#delimit cr    
-collapse (sum) confirmed deaths recovered, by(date countryregion)
+        iso=="ATG" |
+        iso=="BHS" |
+        iso=="BRB" |
+        iso=="BLZ" |
+        iso=="DMA" |
+        iso=="GRD" |
+        iso=="GUY" |
+        iso=="HTI" |
+        iso=="JAM" |
+        iso=="KNA" |
+        iso=="LCA" |
+        iso=="VCT" |
+        iso=="SUR" |
+        iso=="TTO";
+#delimit cr   
 
 ** HEATMAP preparation - ADD ROWS
 ** Want symmetric / rectangular matrix of dates. So we need 
@@ -66,68 +91,6 @@ collapse (sum) confirmed deaths recovered, by(date countryregion)
     replace deaths = 0 if deaths==.
     replace recovered = 0 if recovered==.
 
-** Add ISO codes
-gen iso = ""
-order iso, after(countryregion)
-replace iso = "ATG" if countryregion=="Antigua and Barbuda"
-replace iso = "BHS" if countryregion=="Bahamas"
-replace iso = "BRB" if countryregion=="Barbados"
-replace iso = "BLZ" if countryregion=="Belize"
-replace iso = "DMA" if countryregion=="Dominica"
-replace iso = "GRD" if countryregion=="Grenada"
-replace iso = "GUY" if countryregion=="Guyana"
-replace iso = "HTI" if countryregion=="Haiti"
-replace iso = "JAM" if countryregion=="Jamaica"
-replace iso = "KNA" if countryregion=="Saint Kitts and Nevis"
-replace iso = "LCA" if countryregion=="Saint Lucia"
-replace iso = "VCT" if countryregion=="Saint Vincent and the Grenadines"
-replace iso = "SUR" if countryregion=="Suriname"
-replace iso = "TTO" if countryregion=="Trinidad and Tobago"
-
-** Create internal numeric code for country (1-14)
-encode countryregion, gen(country)
-label list country
-* Add days since first reported cases
-bysort country: gen elapsed = _n 
-
-** Add country populations
-gen pop = . 
-** CARICOM COUNTRIES (2020 estimates from UN WPP, 2019 release)
-replace pop = 97928 if iso == "ATG"
-replace pop = 393248 if iso == "BHS"
-replace pop = 287371 if iso == "BRB"
-replace pop = 397621 if iso == "BLZ"
-replace pop = 71991 if iso == "DMA"
-replace pop = 112519 if iso == "GRD"
-replace pop = 786559 if iso == "GUY"
-replace pop = 11402533 if iso == "HTI"
-replace pop = 2961161 if iso == "JAM"
-replace pop = 53192 if iso == "KNA"
-replace pop = 183629 if iso == "LCA"
-replace pop = 110947 if iso == "VCT"
-replace pop = 586634 if iso == "SUR"
-replace pop = 1399491 if iso == "TTO"
-order pop, after(iso)
-
-** Labelling
-#delimit ; 
-label define cname_ 1 "Antigua and Barbuda"
-                    2 "The Bahamas"
-                    3 "Barbados"
-                    4 "Belize"
-                    5 "Dominica"
-                    6 "Grenada"
-                    7 "Guyana"
-                    8 "Haiti"
-                    9 "Jamaica"
-                    10 "Saint Kitts and Nevis"
-                    11 "Saint Lucia"
-                    12 "Saint Vincent and the Grenadines"
-                    13 "Suriname"
-                    14 "Trinidad and Tobago"
-                    ;
-#delimit cr 
-
 ** Attack Rate (per 1,000 --> not yet used)
 gen confirmed_rate = (confirmed / pop) * 10000
 
@@ -136,30 +99,12 @@ decode country, gen(country2)
 keep date country country2 iso pop confirmed confirmed_rate deaths recovered
 order date country country2 iso pop confirmed confirmed_rate deaths recovered
 bysort country : gen elapsed = _n 
-
-** Scroll through multiple identical graphics
-** They vary only by Caribbean country
 bysort country: egen elapsed_max = max(elapsed)
-local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO"
-foreach country of local clist {
-    /// Elapsed days for each country
-    gen el_`country'1 = elapsed_max if iso=="`country'"
-    egen el_`country' = min(el_`country'1) 
-    local el_`country' = el_`country' 
-    local te_`country' = el_`country' + 0.25
-    /// Long version name for each country
-    gen c3 = country if iso=="`country'"
-    label values c3 cname_
-    egen c4 = min(c3)
-    label values c4 cname_
-    decode c4, gen(c5)
-    local cname = c5
-    drop c3 c4 c5
-}
+
 
 keep country date pop confirmed confirmed_rate deaths recovered
 ** Fix Guyana 
-replace confirmed = 4 if country==7 & date>=d(17mar2020) & date<=d(23mar2020)
+replace confirmed = 4 if country==9 & date>=d(17mar2020) & date<=d(23mar2020)
 rename confirmed metric1
 rename confirmed_rate metric2
 rename deaths metric3
@@ -187,7 +132,7 @@ gen daily = metric - metric[_n-1] if mtype==mtype[_n-1]
 format pop  %14.0fc
 gen growthrate = log(metric/metric[_n-1]) if mtype==mtype[_n-1] 
 gen doublingtime = log(2)/growthrate
-by mtype: asrol doublingtime , stat(mean) window(date 7) gen(dt7)
+by mtype: asrol doublingtime , stat(mean) window(date 10) gen(dt7)
 
 ** NUMBER OF CASES and NUMBER OF DEATHS
 sort mtype date 
@@ -216,6 +161,11 @@ dis "Deaths are: " `ndeaths'
 dis "Cases Doubled in: " `dt_cases'
 dis "Deaths Doubled in: " `dt_deaths'
 
+** Automate final date on x-axis 
+** Use latest date in dataset 
+egen fdate1 = max(date)
+global fdate = fdate1 
+global fdatef : di %tdD_m date("$S_DATE", "DMY")
 
 ** CARICOM SUMMARY: CASES FIRST
 ** 1. BAR CHART    --> CUMULATIVE CASES.
@@ -236,7 +186,11 @@ dis "Deaths Doubled in: " `dt_deaths'
             bgcolor(white) 
             ysize(10) xsize(10)
             
-            xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22010 "5 Apr"
+   xlab(   21984 "10 Mar" 
+            21994 "20 Mar" 
+            22004 "30 Mar" 
+            22015 "10 Apr"
+            $fdate "$fdatef"
             , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
             xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
                 
@@ -270,7 +224,11 @@ dis "Deaths Doubled in: " `dt_deaths'
             bgcolor(white) 
             ysize(10) xsize(10)
             
-            xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22010 "5 Apr"
+   xlab(   21984 "10 Mar" 
+            21994 "20 Mar" 
+            22004 "30 Mar" 
+            22015 "10 Apr"
+            $fdate "$fdatef"
             , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
             xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
                 
@@ -302,7 +260,11 @@ dis "Deaths Doubled in: " `dt_deaths'
             bgcolor(white) 
             ysize(10) xsize(10)
             
-            xlab(21984 "10 Mar" 21994 "20 Mar" 22004 "30 Mar" 22010 "5 Apr"
+    xlab(   21984 "10 Mar" 
+            21994 "20 Mar" 
+            22004 "30 Mar" 
+            22015 "10 Apr"
+            $fdate "$fdatef"
             , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
             xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
                 
@@ -328,24 +290,30 @@ dis "Deaths Doubled in: " `dt_deaths'
     putpdf begin, pagesize(letter) font("Calibri Light", 10) margin(top,0.5cm) margin(bottom,0.25cm) margin(left,0.5cm) margin(right,0.25cm)
 
 ** TITLE, ATTRIBUTION, DATE of CREATION
-    putpdf paragraph ,  font("Calibri Light", 12)
-    putpdf text ("COVID-19 Doubling Time for 14 CARICOM countries "), bold linebreak
-    putpdf paragraph ,  font("Calibri Light", 8)
-    putpdf text ("Briefing created by staff of the George Alleyne Chronic Disease Research Centre ") 
-    putpdf text ("and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, ") 
-    putpdf text ("The University of the West Indies. ")
-    putpdf text ("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) "), italic
-    putpdf text ("for details of quantitative analyses. "), font("Calibri Light", 8) italic
-    putpdf text ("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) "), italic 
-    putpdf text ("for details of national public health interventions and policy implications."), font("Calibri Light", 8) italic linebreak
-    putpdf text ("Updated on: $S_DATE at $S_TIME"), font("Calibri Light", 8) bold italic
+    putpdf table intro = (1,12), width(100%) halign(left)    
+    putpdf table intro(.,.), border(all, nil)
+    putpdf table intro(1,.), font("Calibri Light", 8, 000000)  
+    putpdf table intro(1,1)
+    putpdf table intro(1,2), colspan(11)
+    putpdf table intro(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
+    putpdf table intro(1,2)=("COVID-19 Doubling Time for 14 CARICOM countries"), halign(left) linebreak font("Calibri Light", 12, 000000)
+    putpdf table intro(1,2)=("Briefing created by staff of the George Alleyne Chronic Disease Research Centre "), append halign(left) 
+    putpdf table intro(1,2)=("and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, "), halign(left) append  
+    putpdf table intro(1,2)=("The University of the West Indies. "), halign(left) append 
+    putpdf table intro(1,2)=("Group Contacts: Ian Hambleton (analytics), Maddy Murphy (public health interventions), "), halign(left) append italic  
+    putpdf table intro(1,2)=("Kim Quimby (logistics planning), Natasha Sobers (surveillance). "), halign(left) append italic   
+    putpdf table intro(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
+    putpdf table intro(1,2)=("https://tinyurl.com/uwi-covid19-surveillance "), halign(left) underline append linebreak 
+    putpdf table intro(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
 
 ** INTRODUCTION
     putpdf paragraph ,  font("Calibri Light", 9)
     putpdf text ("Aim of this briefing. ") , bold
     putpdf text ("We present the numbers of confirmed COVID-19 cases and deaths")
-    putpdf text (" 1"), script(super) 
-    putpdf text (" among CARICOM countries since the start of the outbreak.  ") 
+    putpdf text (" (see note 1)"), bold
+    putpdf text (" among 14 CARICOM countries ")
+    putpdf text (" (see note 2)"), bold   
+    putpdf text (" since the start of the outbreak.  ") 
     putpdf text ("In an outbreak such as this we must monitor the numbers of cases and deaths, and also the rate at which ") 
     putpdf text ("these numbers are increasing. Even if current numbers are small, a fast growth rate can quickly lead to ")
     putpdf text ("very large numbers. To report this rate of change we focus on the question: ") 
@@ -353,8 +321,13 @@ dis "Deaths Doubled in: " `dt_deaths'
     putpdf text ("If cases go up by a fixed number over a fixed period – say, by 20 every three days – we call that “linear” growth. ") 
     putpdf text ("If instead, numbers double every three days (for example) we call that “exponential” growth. ") 
     putpdf text ("Without any national interventions for containment, we should expect near exponential growth. ") 
-    putpdf text ("National policies to encourage social distancing should encourage linear growth or better. ") 
-    putpdf text ("Daily tracking of the growth rate is therefore an important monitoring metric. "), linebreak
+    putpdf text ("National policies to encourage physical distancing should encourage linear growth or better. ") 
+    putpdf text ("Daily tracking of the growth rate is therefore a useful monitoring metric. ")
+
+    putpdf text ("In a companion briefing ") 
+    putpdf text ("(COVID-19 trajectories for 14 CARICOM countries,"), italic 
+    putpdf text ("available at: https://tinyurl.com/uwi-covid19-surveillance) "), italic
+    putpdf text (" we report the estimated growth rate for each country."), linebreak
     putpdf text (" "), linebreak
     putpdf text ("We use three graphics to explore the rate of increase of cases and deaths up to $S_DATE. ") 
     putpdf text ("(graph 1) "), italic 
@@ -363,7 +336,7 @@ dis "Deaths Doubled in: " `dt_deaths'
     putpdf text ("Daily cases and deaths across the 14 CARICOM member states, and ")
     putpdf text ("(graph 3) "), italic 
     putpdf text ("Doubling time (in days) for cases and for deaths (1-week rolling average). ")
-    putpdf text ("An increasing doubling time can be an early indication that a national response is working."), linebreak
+    putpdf text ("An increasing doubling time can be an early indication that the regional response is working."), linebreak
     putpdf text (" "), linebreak
 
 ** TABLE: KEY SUMMARY METRICS
@@ -387,18 +360,28 @@ dis "Deaths Doubled in: " `dt_deaths'
     putpdf table f1(1,2)=image("`outputpath'/04_TechDocs/newcases_region_$S_DATE.png")
     putpdf table f1(1,3)=image("`outputpath'/04_TechDocs/dt_region_$S_DATE.png")
 
-** FINAL WORD ON FTURE COUNTRY-LEVEL COUNTS
+** FINAL WORD ON FUTURE COUNTRY-LEVEL COUNTS
     putpdf paragraph ,  font("Calibri Light", 9)
-    putpdf text ("Final Note on Country-Level Estimates. "), bold 
+    putpdf text ("Country-Level estimates of doubling rate. "), bold 
     putpdf text ("As of $S_DATE, the numbers of confirmed cases and deaths in individual countries remains thankfully low. ")
     putpdf text ("We will begin reporting the doubling rate for individual countries as the need arises. ")
 
-** DATA REFERENCE
-    putpdf table p3 = (1,1), width(100%) halign(center) 
-    putpdf table p3(1,1), font("Calibri Light", 8) border(all,nil,000000) bgcolor(ffffff)
-    putpdf table p3(1,1)=("(1) Data Source. "), bold halign(left)
+** CASE IDENTIFICATION BIAS
+    putpdf paragraph ,  font("Calibri Light", 9)
+    putpdf text ("Case identification affects the doubling time for confirmed cases. "), bold 
+    putpdf text ("The doubling time for confirmed cases is heavily influenced by the extent of testing in individual countries. ")
+    putpdf text ("For this reason, a doubling time produced using confirmed cases should be interpreted cautiously. ")
+
+** FOOTNOTE 1. DATA REFERENCE
+** FOOTNOTE 2. CARICOM COUNTRIES
+    putpdf table p3 = (2,1), width(100%) halign(center) 
+    putpdf table p3(.,1), font("Calibri Light", 8) border(all,nil,000000) bgcolor(ffffff)
+    putpdf table p3(1,1)=("(NOTE 1) Data Source. "), bold halign(left)
     putpdf table p3(1,1)=("Dong E, Du H, Gardner L. An interactive web-based dashboard to track COVID-19 "), append 
     putpdf table p3(1,1)=("in real time. Lancet Infect Dis; published online Feb 19. https://doi.org/10.1016/S1473-3099(20)30120-1"), append
+    putpdf table p3(2,1)=("(NOTE 2) CARICOM member states reported in this briefing.  "), bold halign(left)
+    putpdf table p3(2,1)=("Antigua and Barbuda, The Bahamas, Barbados, Belize, Dominica, Grenada, Guyana, Haiti, Jamaica, "), append 
+    putpdf table p3(2,1)=("St. Kitts and Nevis, St. Lucia, St. Vincent and the Grenadines, Suriname, Trinidad and Tobago."), append
 
 ** Save the PDF
     local c_date = c(current_date)

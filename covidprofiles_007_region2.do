@@ -285,9 +285,11 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 ** INTRODUCTION
     putpdf paragraph ,  font("Calibri Light", 9)
     putpdf text ("Aim of this briefing. ") , bold
-    putpdf text ("We present the cumulative number of confirmed COVID-19 cases and deaths")
-    putpdf text (" 1"), script(super) 
-    putpdf text (" among CARICOM countries since the start of the outbreak.  ") 
+    putpdf text ("We present the cumulative number of confirmed COVID-19 cases and deaths ")
+    putpdf text ("(see note 1)"), bold 
+    putpdf text (" among CARICOM countries ") 
+    putpdf text ("(see note 2)"), bold
+    putpdf text (" since the start of the outbreak. ") 
     putpdf text ("We use heatmaps to visually summarise the situation as of $S_DATE. ") 
     putpdf text ("The intention is to highlight outbreak hotspots."), linebreak 
 
@@ -296,12 +298,16 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
     putpdf table f1(1,1)=image("`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png")
     putpdf table f1(1,2)=image("`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png")
 
-** DATA REFERENCE
-    putpdf table p3 = (1,1), width(100%) halign(center) 
-    putpdf table p3(1,1), font("Calibri Light", 8) border(all,nil,000000) bgcolor(ffffff)
-    putpdf table p3(1,1)=("(1) Data Source. "), bold halign(left)
+** FOOTNOTE 1: DATA REFERENCE
+** FOOTNOTE 2. CARICOM COUNTRIES
+    putpdf table p3 = (2,1), width(100%) halign(center) 
+    putpdf table p3(.,1), font("Calibri Light", 8) border(all,nil) bgcolor(ffffff)
+    putpdf table p3(1,1)=("(NOTE 1) Data Source. "), bold halign(left)
     putpdf table p3(1,1)=("Dong E, Du H, Gardner L. An interactive web-based dashboard to track COVID-19 "), append 
     putpdf table p3(1,1)=("in real time. Lancet Infect Dis; published online Feb 19. https://doi.org/10.1016/S1473-3099(20)30120-1"), append
+    putpdf table p3(2,1)=("(NOTE 2) CARICOM member states reported in this briefing.  "), bold halign(left)
+    putpdf table p3(2,1)=("Antigua and Barbuda, The Bahamas, Barbados, Belize, Dominica, Grenada, Guyana, Haiti, Jamaica, "), append 
+    putpdf table p3(2,1)=("St. Kitts and Nevis, St. Lucia, St. Vincent and the Grenadines, Suriname, Trinidad and Tobago."), append
 
 ** Save the PDF
     local c_date = c(current_date)

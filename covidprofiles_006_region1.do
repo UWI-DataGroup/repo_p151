@@ -154,7 +154,6 @@ restore
 
 ** LOOP through N=14 CARICOM member states
 local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO"
-local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM"
 foreach country of local clist {
 
     ** country  = 3-character ISO name
@@ -298,8 +297,8 @@ preserve
             (rarea p25s p75s elapsed if elapsed<=${m05_`country'}   & mtype==1 & out==0 , col("121 169 211%50") lw(none))
             (rarea p75s p95s elapsed if elapsed<=${m05_`country'}   & mtype==1 & out==0 , col("181 215 244%50") lw(none))
 
-            (line metric_tot elapsed if elapsed<=${m05_`country'}   & mtype==1 & out==1, lc("14 73 124") lw(0.4) lp("-"))
-            (scat metric_tot elapsed if elapsed<=${m05_`country'}   & mtype==1 & out==1, msize(2.5) mc("14 73 124") m(o))
+            (line tots elapsed if elapsed<=${m05_`country'}   & mtype==1 & out==1, lc("14 73 124") lw(0.4) lp("-"))
+            (scat tots elapsed if elapsed<=${m05_`country'}   & mtype==1 & out==1, msize(2.5) mc("14 73 124") m(o))
             ,
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -353,13 +352,15 @@ restore
 ** INTRODUCTION
     putpdf paragraph ,  font("Calibri Light", 9)
     putpdf text ("Aim of this briefing. ") , bold
-    putpdf text ("We present the cumulative number of confirmed cases")
-    putpdf text (" 1"), script(super) 
-    putpdf text (" of COVID-19 infection among CARICOM countries since the start of the outbreak, which ") 
-    putpdf text ("we measure as the number of days since the first confirmed case in each country. We compare trajectories with selected countries ") 
-    putpdf text ("further along the epidemic curve. This allows us to assess progress in restricting COVID-19 transmission ") 
-    putpdf text ("compared to interventions in comparator countries. Epidemic progress is likely to vary markedly between countries, ") 
-    putpdf text ("and these graphics are presented as a guide only. "), linebreak 
+    putpdf text ("We present the cumulative number of confirmed cases and deaths ")
+    putpdf text ("(see note 1)"), bold 
+    putpdf text (" from COVID-19 infection among CARICOM countries since the start of the outbreak (we define the outbreak length as ") 
+    putpdf text ("the number of days since the first confirmed case in each country). ") 
+    putpdf text ("In our first table, we summarise the situation among the 14 CARICOM member states ") 
+    putpdf text ("(see note 2)"), bold
+    putpdf text (" as of $S_DATE.") 
+    putpdf text (" We then summarise the situation each each country visually, describing cumulative cases, cumulative deaths, ") 
+    putpdf text (" and outbreak growth rates."), linebreak 
 
 ** TABLE: REGIONAL SUMMARY METRICS
     putpdf table t1 = (4,6), width(100%) halign(center)    
@@ -415,8 +416,8 @@ restore
 
 
 
-** TABLE: COUNTRY SUMMARY METRICS
-    putpdf table t2 = (16,11), width(100%) halign(center)    
+** TABLE PAGE 1: COUNTRY SUMMARY METRICS
+    putpdf table t2 = (8,11), width(100%) halign(center)    
 
     putpdf table t2(1,.), font("Calibri Light", 9, 000000) border(all, nil) valign(middle) 
     putpdf table t2(2,.), font("Calibri Light", 9, 000000) border(all, nil) bgcolor(e6e6e6) valign(middle)
@@ -426,38 +427,46 @@ restore
     putpdf table t2(6,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
     putpdf table t2(7,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
     putpdf table t2(8,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
-    putpdf table t2(9,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
-    putpdf table t2(10,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
-    putpdf table t2(11,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
-    putpdf table t2(12,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
-    putpdf table t2(13,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
-    putpdf table t2(14,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
-    putpdf table t2(15,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
-    putpdf table t2(16,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)    
+ 
 
     putpdf table t2(.,1), font("Calibri Light", 11, 000000) halign(right)
     putpdf table t2(.,2), font("Calibri Light", 11, 000000) halign(right) 
     putpdf table t2(.,3), font("Calibri Light", 11, 000000) halign(right)
-    putpdf table t2(.,4), font("Calibri Light", 11, 000000) halign(right)
-    putpdf table t2(.,5), font("Calibri Light", 11, 000000) halign(right)
+    putpdf table t2(.,4), font("Calibri Light", 12, 0e497c) halign(right)
+    putpdf table t2(.,5), font("Calibri Light", 12, 0e497c) halign(right)
     putpdf table t2(.,6), font("Calibri Light", 11, 000000) halign(right)
     putpdf table t2(.,7), font("Calibri Light", 11, 000000) halign(right)
-    putpdf table t2(.,8), font("Calibri Light", 11, 000000) halign(right) 
-    putpdf table t2(.,9), font("Calibri Light", 11, 000000) halign(right)
+    putpdf table t2(.,8), font("Calibri Light", 12, 7c0a07) halign(right) 
+    putpdf table t2(.,9), font("Calibri Light", 12, 7c0a07) halign(right)
     putpdf table t2(.,10), font("Calibri Light", 11, 000000) halign(right)
     putpdf table t2(.,11), font("Calibri Light", 11, 000000) halign(right)
 
+    putpdf table t2(1,1), font("Calibri Light", 9, 000000) colspan(11) halign(left)
     putpdf table t2(2,1), font("Calibri Light", 10, 000000) bold halign(left)
-    putpdf table t2(2,2), font("Calibri Light", 10, 000000) bold halign(center)
-    putpdf table t2(2,3), font("Calibri Light", 10, 000000) bold halign(center)
-    putpdf table t2(2,4), font("Calibri Light", 10, 000000) bold halign(center)
-    putpdf table t2(2,5), font("Calibri Light", 10, 000000) bold halign(center)
-    putpdf table t2(2,6), font("Calibri Light", 10, 000000) bold halign(center)
-    putpdf table t2(2,7), font("Calibri Light", 10, 000000) bold halign(center)
-    putpdf table t2(2,8), font("Calibri Light", 10, 000000) bold halign(center)
-    putpdf table t2(2,9), font("Calibri Light", 10, 000000) bold halign(center)
-    putpdf table t2(2,10), font("Calibri Light", 10, 000000) bold halign(center)
-    putpdf table t2(2,11), font("Calibri Light", 10, 000000) bold halign(center)
+    putpdf table t2(2,2), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(2,3), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(2,4), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(2,5), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(2,6), font("Calibri Light", 10, 7c0a07) bold halign(center)
+    putpdf table t2(2,7), font("Calibri Light", 10, 7c0a07) bold halign(center)
+    putpdf table t2(2,8), font("Calibri Light", 10, 7c0a07) bold halign(center)
+    putpdf table t2(2,9), font("Calibri Light", 10, 7c0a07) bold halign(center)
+    putpdf table t2(2,10), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(2,11), font("Calibri Light", 10, 0e497c) bold halign(center)
+
+    putpdf table t2(1,1)=("The Table below summarises the progression of the COVID-19 outbreak as of $S_DATE. "),  halign(left) 
+    putpdf table t2(1,1)=("The first THREE colums "),  halign(left) append
+    putpdf table t2(1,1)=("IN BLUE"),  halign(left) font("Calibri Light", 10, 0e497c) append underline
+    putpdf table t2(1,1)=(" summarise the number of cases. The next THREE columns "),  halign(left) append
+    putpdf table t2(1,1)=("IN RED"),  halign(left) font("Calibri Light", 10, 7c0a07) append underline
+    putpdf table t2(1,1)=(" summarise the number of deaths. The final column "), append 
+    putpdf table t2(1,1)=("IN BLUE"),  halign(left) font("Calibri Light", 10, 0e497c) append underline
+    putpdf table t2(1,1)=(" describes the growth rate of the "),  halign(left) append
+    putpdf table t2(1,1)=("outbreak in each country. The dark line represents the rate in the country. "),  halign(left) append
+    putpdf table t2(1,1)=("The shaded region represents the range of rates in the remaining 13 CARICOM member states "),  halign(left) append 
+    putpdf table t2(1,1)=("(see note 3)"), bold append
+    putpdf table t2(1,1)=("."),  halign(left) append linebreak
+    putpdf table t2(1,1)=(" "),  halign(left) append 
 
     putpdf table t2(2,1)=("Country"),  halign(left) bgcolor(e6e6e6) 
     putpdf table t2(3,1)=("Antigua"), bold halign(left)
@@ -466,31 +475,14 @@ restore
     putpdf table t2(6,1)=("Belize"), bold halign(left)
     putpdf table t2(7,1)=("Dominica"), bold halign(left)
     putpdf table t2(8,1)=("Grenada"), bold halign(left)
-    putpdf table t2(9,1)=("Guyana"), bold halign(left)
-    putpdf table t2(10,1)=("Haiti"), bold halign(left)
-    putpdf table t2(11,1)=("Jamaica"), bold halign(left)
-    putpdf table t2(12,1)=("St.Kitts"), bold halign(left)
-    putpdf table t2(13,1)=("St.Lucia"), bold halign(left)
-    putpdf table t2(14,1)=("St.Vincent"), bold halign(left)
-    putpdf table t2(15,1)=("Suriname"), bold halign(left)
-    putpdf table t2(16,1)=("Trinidad"), bold halign(left)
 
-    putpdf table t2(2,2)=("Total Cases"),  halign(center) colspan(2) bgcolor(e6e6e6) 
+    putpdf table t2(2,2)=("Total cases"),  halign(center) colspan(2) bgcolor(e6e6e6) 
     putpdf table t2(3,2)=image("`outputpath'/04_TechDocs/cases_ATG_$S_DATE.png") , colspan(2)
     putpdf table t2(4,2)=image("`outputpath'/04_TechDocs/cases_BHS_$S_DATE.png") , colspan(2)
     putpdf table t2(5,2)=image("`outputpath'/04_TechDocs/cases_BRB_$S_DATE.png") , colspan(2)
     putpdf table t2(6,2)=image("`outputpath'/04_TechDocs/cases_BLZ_$S_DATE.png") , colspan(2)
     putpdf table t2(7,2)=image("`outputpath'/04_TechDocs/cases_DMA_$S_DATE.png") , colspan(2)
     putpdf table t2(8,2)=image("`outputpath'/04_TechDocs/cases_GRD_$S_DATE.png") , colspan(2)
-    putpdf table t2(9,2)=image("`outputpath'/04_TechDocs/cases_GUY_$S_DATE.png") , colspan(2)
-    putpdf table t2(10,2)=image("`outputpath'/04_TechDocs/cases_HTI_$S_DATE.png") , colspan(2)
-    putpdf table t2(11,2)=image("`outputpath'/04_TechDocs/cases_JAM_$S_DATE.png") , colspan(2)
-   /* putpdf table t2(12,2)=image("`outputpath'/04_TechDocs/cases_KNA_$S_DATE.png") , colspan(2)
-    putpdf table t2(13,2)=image("`outputpath'/04_TechDocs/cases_LCA_$S_DATE.png") , colspan(2)
-    putpdf table t2(14,2)=image("`outputpath'/04_TechDocs/cases_VCT_$S_DATE.png") , colspan(2)
-    putpdf table t2(15,2)=image("`outputpath'/04_TechDocs/cases_SUR_$S_DATE.png") , colspan(2)
-    putpdf table t2(16,2)=image("`outputpath'/04_TechDocs/cases_TTO_$S_DATE.png") , colspan(2)
-*/
 
     putpdf table t2(2,4)=("Cases in past week"),  halign(center) bgcolor(e6e6e6) 
     putpdf table t2(3,4)=(${m62_ATG}), halign(center) 
@@ -499,47 +491,23 @@ restore
     putpdf table t2(6,4)=(${m62_BLZ}), halign(center) 
     putpdf table t2(7,4)=(${m62_DMA}), halign(center) 
     putpdf table t2(8,4)=(${m62_GRD}), halign(center) 
-    putpdf table t2(9,4)=(${m62_GUY}), halign(center) 
-    putpdf table t2(10,4)=(${m62_HTI}), halign(center) 
-    putpdf table t2(11,4)=(${m62_JAM}), halign(center) 
-    /*putpdf table t2(12,4)=(${m62_KNA}), halign(center) 
-    putpdf table t2(13,4)=(${m62_LCA}), halign(center) 
-    putpdf table t2(14,4)=(${m62_VCT}), halign(center) 
-    putpdf table t2(15,4)=(${m62_SUR}), halign(center) 
-    putpdf table t2(16,4)=(${m62_TTO}), halign(center) 
-*/
-    putpdf table t2(2,5)=("Days Since 1st Case"),  halign(center)  bgcolor(e6e6e6) 
+
+    putpdf table t2(2,5)=("Days since 1st case"),  halign(center)  bgcolor(e6e6e6) 
     putpdf table t2(3,5)=(${m05_ATG}), halign(center) 
     putpdf table t2(4,5)=(${m05_BHS}), halign(center) 
     putpdf table t2(5,5)=(${m05_BRB}), halign(center) 
     putpdf table t2(6,5)=(${m05_BLZ}), halign(center) 
     putpdf table t2(7,5)=(${m05_DMA}), halign(center) 
     putpdf table t2(8,5)=(${m05_GRD}), halign(center) 
-    putpdf table t2(9,5)=(${m05_GUY}), halign(center) 
-    putpdf table t2(10,5)=(${m05_HTI}), halign(center) 
-    putpdf table t2(11,5)=(${m05_JAM}), halign(center) 
-   /* putpdf table t2(12,5)=(${m05_KNA}), halign(center) 
-    putpdf table t2(13,5)=(${m05_LCA}), halign(center) 
-    putpdf table t2(14,5)=(${m05_VCT}), halign(center) 
-    putpdf table t2(15,5)=(${m05_SUR}), halign(center) 
-    putpdf table t2(16,5)=(${m05_TTO}), halign(center) 
-*/
-    putpdf table t2(2,6)=("Total Deaths"),  halign(center) colspan(2) bgcolor(e6e6e6) 
+
+    putpdf table t2(2,6)=("Total deaths"),  halign(center) colspan(2) bgcolor(e6e6e6) 
     putpdf table t2(3,6)=image("`outputpath'/04_TechDocs/deaths_ATG_$S_DATE.png") , colspan(2) 
     putpdf table t2(4,6)=image("`outputpath'/04_TechDocs/deaths_BHS_$S_DATE.png") , colspan(2) 
     putpdf table t2(5,6)=image("`outputpath'/04_TechDocs/deaths_BRB_$S_DATE.png") , colspan(2) 
     putpdf table t2(6,6)=image("`outputpath'/04_TechDocs/deaths_BLZ_$S_DATE.png") , colspan(2)
     putpdf table t2(7,6)=image("`outputpath'/04_TechDocs/deaths_DMA_$S_DATE.png") , colspan(2)
     putpdf table t2(8,6)=image("`outputpath'/04_TechDocs/deaths_GRD_$S_DATE.png") , colspan(2)
-    putpdf table t2(9,6)=image("`outputpath'/04_TechDocs/deaths_GUY_$S_DATE.png") , colspan(2)
-    putpdf table t2(10,6)=image("`outputpath'/04_TechDocs/deaths_HTI_$S_DATE.png") , colspan(2)
-    putpdf table t2(11,6)=image("`outputpath'/04_TechDocs/deaths_JAM_$S_DATE.png") , colspan(2)
-    /*putpdf table t2(12,6)=image("`outputpath'/04_TechDocs/deaths_KNA_$S_DATE.png") , colspan(2)
-    putpdf table t2(13,6)=image("`outputpath'/04_TechDocs/deaths_LCA_$S_DATE.png") , colspan(2)
-    putpdf table t2(14,6)=image("`outputpath'/04_TechDocs/deaths_VCT_$S_DATE.png") , colspan(2)
-    putpdf table t2(15,6)=image("`outputpath'/04_TechDocs/deaths_SUR_$S_DATE.png") , colspan(2)
-    putpdf table t2(16,6)=image("`outputpath'/04_TechDocs/deaths_TTO_$S_DATE.png") , colspan(2)
-*/
+
     putpdf table t2(2,8)=("Deaths in past week"),  halign(center)  bgcolor(e6e6e6) 
     putpdf table t2(3,8)=(${m63_ATG}), halign(center) 
     putpdf table t2(4,8)=(${m63_BHS}), halign(center) 
@@ -547,58 +515,164 @@ restore
     putpdf table t2(6,8)=(${m63_BLZ}), halign(center) 
     putpdf table t2(7,8)=(${m63_DMA}), halign(center) 
     putpdf table t2(8,8)=(${m63_GRD}), halign(center) 
-    putpdf table t2(9,8)=(${m63_GUY}), halign(center) 
-    putpdf table t2(10,8)=(${m63_HTI}), halign(center) 
-    putpdf table t2(11,8)=(${m63_JAM}), halign(center) 
-    /*putpdf table t2(12,8)=(${m63_KNA}), halign(center) 
-    putpdf table t2(13,8)=(${m63_LCA}), halign(center) 
-    putpdf table t2(14,8)=(${m63_VCT}), halign(center) 
-    putpdf table t2(15,8)=(${m63_SUR}), halign(center) 
-    putpdf table t2(16,8)=(${m63_TTO}), halign(center) 
-*/
-    putpdf table t2(2,9)=("Days Since 1st Death"),  halign(center)  bgcolor(e6e6e6) 
+
+    putpdf table t2(2,9)=("Days since 1st death"),  halign(center)  bgcolor(e6e6e6) 
     putpdf table t2(3,9)=(${m06_ATG}), halign(center) 
     putpdf table t2(4,9)=(${m06_BHS}), halign(center) 
     putpdf table t2(5,9)=(${m06_BRB}), halign(center) 
     putpdf table t2(6,9)=(${m06_BLZ}), halign(center) 
     putpdf table t2(7,9)=(${m06_DMA}), halign(center) 
     putpdf table t2(8,9)=(${m06_GRD}), halign(center) 
-    putpdf table t2(9,9)=(${m06_GUY}), halign(center) 
-    putpdf table t2(10,9)=(${m06_HTI}), halign(center) 
-    putpdf table t2(11,9)=(${m06_JAM}), halign(center) 
-    /*putpdf table t2(12,9)=(${m06_KNA}), halign(center) 
-    putpdf table t2(13,9)=(${m06_LCA}), halign(center) 
-    putpdf table t2(14,9)=(${m06_VCT}), halign(center) 
-    putpdf table t2(15,9)=(${m06_SUR}), halign(center) 
-    putpdf table t2(16,9)=(${m06_TTO}), halign(center) 
-*/
-    putpdf table t2(2,10)=("Growth Rate among Cases"),  halign(center) colspan(2) bgcolor(e6e6e6) 
+
+    putpdf table t2(2,10)=("CARICOM growth rates among cases"),  halign(center) colspan(2) bgcolor(e6e6e6) 
     putpdf table t2(3,10)=image("`outputpath'/04_TechDocs/spark_ATG_$S_DATE.png") , colspan(2)
     putpdf table t2(4,10)=image("`outputpath'/04_TechDocs/spark_BHS_$S_DATE.png") , colspan(2)
     putpdf table t2(5,10)=image("`outputpath'/04_TechDocs/spark_BRB_$S_DATE.png") , colspan(2)
     putpdf table t2(6,10)=image("`outputpath'/04_TechDocs/spark_BLZ_$S_DATE.png") , colspan(2)
     putpdf table t2(7,10)=image("`outputpath'/04_TechDocs/spark_DMA_$S_DATE.png") , colspan(2)
     putpdf table t2(8,10)=image("`outputpath'/04_TechDocs/spark_GRD_$S_DATE.png") , colspan(2)
-    putpdf table t2(9,10)=image("`outputpath'/04_TechDocs/spark_GUY_$S_DATE.png") , colspan(2)
-    putpdf table t2(10,10)=image("`outputpath'/04_TechDocs/spark_HTI_$S_DATE.png") , colspan(2)
-    putpdf table t2(11,10)=image("`outputpath'/04_TechDocs/spark_JAM_$S_DATE.png") , colspan(2)
-    /*putpdf table t2(12,10)=image("`outputpath'/04_TechDocs/spark_KNA_$S_DATE.png") , colspan(2)
-    putpdf table t2(13,10)=image("`outputpath'/04_TechDocs/spark_LCA_$S_DATE.png") , colspan(2)
-    putpdf table t2(14,10)=image("`outputpath'/04_TechDocs/spark_VCT_$S_DATE.png") , colspan(2)
-    putpdf table t2(15,10)=image("`outputpath'/04_TechDocs/spark_SUR_$S_DATE.png") , colspan(2)
-    putpdf table t2(16,10)=image("`outputpath'/04_TechDocs/spark_TTO_$S_DATE.png") , colspan(2)
-*/
 
-** DATA REFERENCE
-    putpdf table p3 = (1,1), width(100%) halign(center) 
-    putpdf table p3(1,1), font("Calibri Light", 8) border(all,nil,000000) bgcolor(ffffff)
-    putpdf table p3(1,1)=("(1) Data Source. "), bold halign(left)
+
+
+
+** TABLE PAGE 2: COUNTRY SUMMARY METRICS
+    putpdf table t2 = (9,11), width(100%) halign(center)    
+
+    putpdf table t2(1,.), font("Calibri Light", 9, 000000) border(all, nil) bgcolor(e6e6e6) valign(middle)
+    putpdf table t2(2,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
+    putpdf table t2(3,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
+    putpdf table t2(4,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
+    putpdf table t2(5,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
+    putpdf table t2(6,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
+    putpdf table t2(7,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
+    putpdf table t2(8,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
+    putpdf table t2(9,.), font("Calibri Light", 11, 000000) border(all, nil) valign(middle)
+
+    putpdf table t2(.,1), font("Calibri Light", 11, 000000) halign(right)
+    putpdf table t2(.,2), font("Calibri Light", 11, 000000) halign(right) 
+    putpdf table t2(.,3), font("Calibri Light", 11, 000000) halign(right)
+    putpdf table t2(.,4), font("Calibri Light", 12, 0e497c) halign(right)
+    putpdf table t2(.,5), font("Calibri Light", 12, 0e497c) halign(right)
+    putpdf table t2(.,6), font("Calibri Light", 11, 000000) halign(right)
+    putpdf table t2(.,7), font("Calibri Light", 11, 000000) halign(right)
+    putpdf table t2(.,8), font("Calibri Light", 12, 7c0a07) halign(right) 
+    putpdf table t2(.,9), font("Calibri Light", 12, 7c0a07) halign(right)
+    putpdf table t2(.,10), font("Calibri Light", 11, 000000) halign(right)
+    putpdf table t2(.,11), font("Calibri Light", 11, 000000) halign(right)
+
+    putpdf table t2(1,1), font("Calibri Light", 10, 000000) bold halign(left)
+    putpdf table t2(1,2), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(1,3), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(1,4), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(1,5), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(1,6), font("Calibri Light", 10, 7c0a07) bold halign(center)
+    putpdf table t2(1,7), font("Calibri Light", 10, 7c0a07) bold halign(center)
+    putpdf table t2(1,8), font("Calibri Light", 10, 7c0a07) bold halign(center)
+    putpdf table t2(1,9), font("Calibri Light", 10, 7c0a07) bold halign(center)
+    putpdf table t2(1,10), font("Calibri Light", 10, 0e497c) bold halign(center)
+    putpdf table t2(1,11), font("Calibri Light", 10, 0e497c) bold halign(center)
+
+    putpdf table t2(1,1)=("Country"),  halign(left) bgcolor(e6e6e6) 
+    putpdf table t2(2,1)=("Guyana"), bold halign(left)
+    putpdf table t2(3,1)=("Haiti"), bold halign(left)
+    putpdf table t2(4,1)=("Jamaica"), bold halign(left)
+    putpdf table t2(5,1)=("St.Kitts"), bold halign(left)
+    putpdf table t2(6,1)=("St.Lucia"), bold halign(left)
+    putpdf table t2(7,1)=("St.Vincent"), bold halign(left)
+    putpdf table t2(8,1)=("Suriname"), bold halign(left)
+    putpdf table t2(9,1)=("Trinidad"), bold halign(left)
+
+    putpdf table t2(1,2)=("Total cases"),  halign(center) colspan(2) bgcolor(e6e6e6) 
+    putpdf table t2(2,2)=image("`outputpath'/04_TechDocs/cases_GUY_$S_DATE.png") , colspan(2)
+    putpdf table t2(3,2)=image("`outputpath'/04_TechDocs/cases_HTI_$S_DATE.png") , colspan(2)
+    putpdf table t2(4,2)=image("`outputpath'/04_TechDocs/cases_JAM_$S_DATE.png") , colspan(2)
+    putpdf table t2(5,2)=image("`outputpath'/04_TechDocs/cases_KNA_$S_DATE.png") , colspan(2)
+    putpdf table t2(6,2)=image("`outputpath'/04_TechDocs/cases_LCA_$S_DATE.png") , colspan(2)
+    putpdf table t2(7,2)=image("`outputpath'/04_TechDocs/cases_VCT_$S_DATE.png") , colspan(2)
+    putpdf table t2(8,2)=image("`outputpath'/04_TechDocs/cases_SUR_$S_DATE.png") , colspan(2)
+    putpdf table t2(9,2)=image("`outputpath'/04_TechDocs/cases_TTO_$S_DATE.png") , colspan(2)
+
+    putpdf table t2(1,4)=("Cases in past week"),  halign(center) bgcolor(e6e6e6) 
+    putpdf table t2(2,4)=(${m62_GUY}), halign(center) 
+    putpdf table t2(3,4)=(${m62_HTI}), halign(center) 
+    putpdf table t2(4,4)=(${m62_JAM}), halign(center) 
+    putpdf table t2(5,4)=(${m62_KNA}), halign(center) 
+    putpdf table t2(6,4)=(${m62_LCA}), halign(center) 
+    putpdf table t2(7,4)=(${m62_VCT}), halign(center) 
+    putpdf table t2(8,4)=(${m62_SUR}), halign(center) 
+    putpdf table t2(9,4)=(${m62_TTO}), halign(center) 
+
+    putpdf table t2(1,5)=("Days since 1st case"),  halign(center)  bgcolor(e6e6e6) 
+    putpdf table t2(2,5)=(${m05_GUY}), halign(center) 
+    putpdf table t2(3,5)=(${m05_HTI}), halign(center) 
+    putpdf table t2(4,5)=(${m05_JAM}), halign(center) 
+    putpdf table t2(5,5)=(${m05_KNA}), halign(center) 
+    putpdf table t2(6,5)=(${m05_LCA}), halign(center) 
+    putpdf table t2(7,5)=(${m05_VCT}), halign(center) 
+    putpdf table t2(8,5)=(${m05_SUR}), halign(center) 
+    putpdf table t2(9,5)=(${m05_TTO}), halign(center) 
+
+    putpdf table t2(1,6)=("Total deaths"),  halign(center) colspan(2) bgcolor(e6e6e6) 
+    putpdf table t2(2,6)=image("`outputpath'/04_TechDocs/deaths_GUY_$S_DATE.png") , colspan(2)
+    putpdf table t2(3,6)=image("`outputpath'/04_TechDocs/deaths_HTI_$S_DATE.png") , colspan(2)
+    putpdf table t2(4,6)=image("`outputpath'/04_TechDocs/deaths_JAM_$S_DATE.png") , colspan(2)
+    putpdf table t2(5,6)=image("`outputpath'/04_TechDocs/deaths_KNA_$S_DATE.png") , colspan(2)
+    putpdf table t2(6,6)=image("`outputpath'/04_TechDocs/deaths_LCA_$S_DATE.png") , colspan(2)
+    putpdf table t2(7,6)=image("`outputpath'/04_TechDocs/deaths_VCT_$S_DATE.png") , colspan(2)
+    putpdf table t2(8,6)=image("`outputpath'/04_TechDocs/deaths_SUR_$S_DATE.png") , colspan(2)
+    putpdf table t2(9,6)=image("`outputpath'/04_TechDocs/deaths_TTO_$S_DATE.png") , colspan(2)
+
+    putpdf table t2(1,8)=("Deaths in past week"),  halign(center)  bgcolor(e6e6e6) 
+    putpdf table t2(2,8)=(${m63_GUY}), halign(center) 
+    putpdf table t2(3,8)=(${m63_HTI}), halign(center) 
+    putpdf table t2(4,8)=(${m63_JAM}), halign(center) 
+    putpdf table t2(5,8)=(${m63_KNA}), halign(center) 
+    putpdf table t2(6,8)=(${m63_LCA}), halign(center) 
+    putpdf table t2(7,8)=(${m63_VCT}), halign(center) 
+    putpdf table t2(8,8)=(${m63_SUR}), halign(center) 
+    putpdf table t2(9,8)=(${m63_TTO}), halign(center) 
+
+    putpdf table t2(1,9)=("Days since 1st death"),  halign(center)  bgcolor(e6e6e6) 
+    putpdf table t2(2,9)=(${m06_GUY}), halign(center) 
+    putpdf table t2(3,9)=(${m06_HTI}), halign(center) 
+    putpdf table t2(4,9)=(${m06_JAM}), halign(center) 
+    putpdf table t2(5,9)=(${m06_KNA}), halign(center) 
+    putpdf table t2(6,9)=(${m06_LCA}), halign(center) 
+    putpdf table t2(7,9)=(${m06_VCT}), halign(center) 
+    putpdf table t2(8,9)=(${m06_SUR}), halign(center) 
+    putpdf table t2(9,9)=(${m06_TTO}), halign(center) 
+
+    putpdf table t2(1,10)=("CARICOM growth rates among cases"),  halign(center) colspan(2) bgcolor(e6e6e6) 
+    putpdf table t2(2,10)=image("`outputpath'/04_TechDocs/spark_GUY_$S_DATE.png") , colspan(2)
+    putpdf table t2(3,10)=image("`outputpath'/04_TechDocs/spark_HTI_$S_DATE.png") , colspan(2)
+    putpdf table t2(4,10)=image("`outputpath'/04_TechDocs/spark_JAM_$S_DATE.png") , colspan(2)
+    putpdf table t2(5,10)=image("`outputpath'/04_TechDocs/spark_KNA_$S_DATE.png") , colspan(2)
+    putpdf table t2(6,10)=image("`outputpath'/04_TechDocs/spark_LCA_$S_DATE.png") , colspan(2)
+    putpdf table t2(7,10)=image("`outputpath'/04_TechDocs/spark_VCT_$S_DATE.png") , colspan(2)
+    putpdf table t2(8,10)=image("`outputpath'/04_TechDocs/spark_SUR_$S_DATE.png") , colspan(2)
+    putpdf table t2(9,10)=image("`outputpath'/04_TechDocs/spark_TTO_$S_DATE.png") , colspan(2)
+
+
+
+** FOOTNOTE 1. DATA REFERENCE
+** FOOTNOTE 2. CARICOM COUNTRIES
+** FOOTNOTE 3. GROWTH RATE
+    putpdf table p3 = (3,1), width(100%) halign(center) 
+    putpdf table p3(.,1), font("Calibri Light", 8) border(all,nil) bgcolor(ffffff)
+    putpdf table p3(1,1)=("(NOTE 1) Data Source. "), bold halign(left)
     putpdf table p3(1,1)=("Dong E, Du H, Gardner L. An interactive web-based dashboard to track COVID-19 "), append 
     putpdf table p3(1,1)=("in real time. Lancet Infect Dis; published online Feb 19. https://doi.org/10.1016/S1473-3099(20)30120-1"), append
+    putpdf table p3(2,1)=("(NOTE 2) CARICOM member states reported in this briefing.  "), bold halign(left)
+    putpdf table p3(2,1)=("Antigua and Barbuda, The Bahamas, Barbados, Belize, Dominica, Grenada, Guyana, Haiti, Jamaica, "), append 
+    putpdf table p3(2,1)=("St. Kitts and Nevis, St. Lucia, St. Vincent and the Grenadines, Suriname, Trinidad and Tobago."), append
+    putpdf table p3(3,1)=("(NOTE 3) Growth Rate.  "), bold halign(left)
+    putpdf table p3(3,1)=("The blue graph in the final column shows the number of cases on a different scale (called a logarithm scale). "), append 
+    putpdf table p3(3,1)=("This gives us the growth rate over time, and is good for comparing progress against other countries. "), append
+    putpdf table p3(3,1)=("The shaded region behind the country growth curve is the range of outbreak growth for the remaining 13 CARICOM member states. "), append
+    putpdf table p3(3,1)=("This range is represented by percentiles (darker blue region represents 25th to 75th percentile, lighter blue "), append
+    putpdf table p3(3,1)=("region represents 5th to 95th percntiles). all curves and regions are 7-day smoothed averages."), append
 
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     putpdf save "`outputpath'/05_Outputs/covid19_trajectory_regional_version2_`date_string'", replace
-
-

@@ -200,7 +200,7 @@ foreach country of local clist {
     putpdf text ("Aim of this briefing. ") , bold
     putpdf text ("We present the cumulative number of confirmed cases and deaths ")
     putpdf text ("1"), script(super) 
-    putpdf text (" of COVID-19 infection in `cname' since the start of the outbreak, which ") 
+    putpdf text (" from COVID-19 infection in `cname' since the start of the outbreak, which ") 
     putpdf text ("we measure as the number of days since the first confirmed case. We compare the `cname' trajectory against key comparator countries ") 
     putpdf text ("(Singapore, UK, USA), which are further along their epidemic curves. Epidemic progress is likely to vary markedly ") 
     putpdf text ("between countries, and this graphic is presented as a guide only. "), linebreak 
