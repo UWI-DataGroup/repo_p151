@@ -97,6 +97,7 @@ bysort country deaths_i: gen elapsedd = _n
 bysort country deaths_i: egen m06t = max(elapsedd)
 replace m06t = . if deaths_i==0 
 bysort country: egen m06 = min(m06t)
+replace m06 = 0 if m06==. 
 
 ** METRICS 20-29: DAYS UNTIL N=X CASES
 local metric = 20 
@@ -266,7 +267,8 @@ foreach country of local clist {
 
 }
 
+drop m* deaths_i dr_cases dr_deaths countryregion
+order country iso pop date confirmed deaths recovered elapsed elapsedd
+
 ** Save the metrics dataset
 save "`datapath'\version01\2-working\jh_time_series_metrics", replace
-
-

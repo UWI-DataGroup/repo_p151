@@ -209,6 +209,7 @@ replace confirmed = 163 if confirmed == 143 & iso=="JAM" & date==d(17apr2020)
 
 
 
+
 ** Rate per 1,000 (not yet used)
 gen confirmed_rate = (confirmed / pop) * 10000
 

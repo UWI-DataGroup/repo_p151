@@ -77,7 +77,6 @@ by country: asrol deaths , stat(mean) window(date 3) gen(deaths_av3)
 
 ** LOOP through N=14 CARICOM member states
 local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO"
-local clist "JAM"
 foreach country of local clist {
 
     ** country  = 3-character ISO name
@@ -93,6 +92,8 @@ foreach country of local clist {
     label values c4 cname_
     decode c4, gen(c5)
     local cname = c5
+
+
 
 ** GRAPHIC: CASES + DEATHS (Bar with line overlay)
         #delimit ;
@@ -188,10 +189,8 @@ foreach country of local clist {
     putpdf table intro(1,2)=("Briefing created by staff of the George Alleyne Chronic Disease Research Centre "), append halign(left) 
     putpdf table intro(1,2)=("and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, "), halign(left) append  
     putpdf table intro(1,2)=("The University of the West Indies. "), halign(left) append 
-    putpdf table intro(1,2)=("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) "), halign(left) append italic  
-    putpdf table intro(1,2)=("for details of quantitative analyses. "), halign(left) append italic   
-    putpdf table intro(1,2)=("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) "), halign(left) append italic 
-    putpdf table intro(1,2)=("for details of national public health interventions and policy implications. "), halign(left) append italic linebreak
+    putpdf table intro(1,2)=("Group Contacts: Ian Hambleton (analytics), Maddy Murphy (public health interventions), "), halign(left) append italic  
+    putpdf table intro(1,2)=("Kim Quimby (logistics planning), Natasha Sobers (surveillance). "), halign(left) append italic   
     putpdf table intro(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
     putpdf table intro(1,2)=("https://tinyurl.com/uwi-covid19-surveillance "), halign(left) underline append linebreak 
     putpdf table intro(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append

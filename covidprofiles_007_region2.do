@@ -272,14 +272,12 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
     putpdf table intro(1,1)
     putpdf table intro(1,2), colspan(11)
     putpdf table intro(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
-    putpdf table intro(1,2)=("COVID-19 Heatmap for 14 CARICOM countries "), halign(left) linebreak font("Calibri Light", 12, 000000)
+    putpdf table intro(1,2)=("COVID-19 Heatmap for 14 CARICOM countries"), halign(left) linebreak font("Calibri Light", 12, 000000)
     putpdf table intro(1,2)=("Briefing created by staff of the George Alleyne Chronic Disease Research Centre "), append halign(left) 
     putpdf table intro(1,2)=("and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, "), halign(left) append  
     putpdf table intro(1,2)=("The University of the West Indies. "), halign(left) append 
-    putpdf table intro(1,2)=("Contact Ian Hambleton (ian.hambleton@cavehill.uwi.edu) "), halign(left) append italic  
-    putpdf table intro(1,2)=("for details of quantitative analyses. "), halign(left) append italic   
-    putpdf table intro(1,2)=("Contact Maddy Murphy (madhuvanti.murphy@cavehill.uwi.edu) "), halign(left) append italic 
-    putpdf table intro(1,2)=("for details of national public health interventions and policy implications. "), halign(left) append italic linebreak
+    putpdf table intro(1,2)=("Group Contacts: Ian Hambleton (analytics), Maddy Murphy (public health interventions), "), halign(left) append italic  
+    putpdf table intro(1,2)=("Kim Quimby (logistics planning), Natasha Sobers (surveillance). "), halign(left) append italic   
     putpdf table intro(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
     putpdf table intro(1,2)=("https://tinyurl.com/uwi-covid19-surveillance "), halign(left) underline append linebreak 
     putpdf table intro(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
@@ -308,4 +306,4 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_version2_`date_string'", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_heatmap_version2_`date_string'", replace

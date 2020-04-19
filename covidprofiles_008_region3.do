@@ -407,4 +407,4 @@ dis "Deaths Doubled in: " `dt_deaths'
     local time_string = subinstr("`c_time_date'", ":", "_", .)
     local time_string = subinstr("`time_string'", " ", "", .)
     ///putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`time_string'", replace
-    putpdf save "`outputpath'/05_Outputs/covid19_caricom_doublingtime_`c_date'", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_doublingtime_`c_date'", replace
