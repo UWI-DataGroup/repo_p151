@@ -330,10 +330,6 @@ gen acutebeds = 240
 ///graph export "`outputpath'/04_TechDocs/barbados_acutecare_presentation.png", replace width(4000)
 
 
-
-
-
-** Hospital beds (ACUTE CARE)
     #delimit ;
         gr twoway 
             ///(line acutebeds day,  lc(gs10) lw(0.35))
@@ -371,6 +367,49 @@ gen acutebeds = 240
                 lab(1 "Earlier") 
                 lab(2 "Later") 
                 )
-                name(final) 
+                name(final1) 
+                ;
+        #delimit cr
+
+** UWI Tv presentation
+** Hospital beds (ACUTE CARE)
+    #delimit ;
+        gr twoway 
+            ///(line acutebeds day,  lc(gs10) lw(0.35))
+            (rarea cdiff_p75_1 cdiff_p25_1 day , col(green%15) lw(none))
+            ///(rarea cdiff_p75_2 cdiff_p25_2 day , col(orange%15) lw(none))
+            (rarea cdiff_p75_3 cdiff_p25_3 day , col(red%15) lw(none))
+            (line cdiff_p50_1 day , lc(green%50) lw(0.25) lp("-"))
+            ///(line cdiff_p50_2 day , lc(orange%50) lw(0.25) lp("-"))
+            (line cdiff_p50_3 day , lc(red%50) lw(0.25) lp("-"))
+            ,
+
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+            ysize(4) xsize(12)
+            
+                xlab(none, labs(4) nogrid glc(gs16))
+                ///xscale(off) 
+                xscale(noline fill) 
+                xtitle("Days from start of national outbreak", size(9) margin(l=2 r=2 t=2 b=2)) 
+                ///xmtick(0(5)85, tl(1))
+                
+                ylab(0(250)1000
+                ,
+                labs(10) labc(gs10) nogrid notick glc(gs16) angle(0) format(%9.0f))
+                yscale(off fill noline) 
+                ytitle("", size(4) margin(l=2 r=2 t=2 b=2)) 
+                ///ymtick(0(100)1000)
+
+                ///text(330 60 "# Acute beds", size(10) place(e) color(gs10))
+
+                legend(size(10) color(gs10) position(2) ring(0) bm(t=1 b=2 l=2 r=0) colf cols(1)
+                region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2)) 
+                order(1 2) 
+                lab(1 "Earlier Suppression") 
+                lab(2 "Later Suppression") 
+                )
+                name(barbados_acutecare1) 
                 ;
         #delimit cr
