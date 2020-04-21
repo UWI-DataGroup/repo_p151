@@ -203,7 +203,7 @@ replace confirmed = 196 if confirmed == 173 & iso=="JAM" & date==d(19apr2020)
 replace confirmed = 15 if confirmed == 14 & iso=="KNA" & date==d(19apr2020)
 
 ** 20-Apr-2020
-** NO UPDATE NEEDED
+replace confirmed = 66 if confirmed == 65 & iso=="GUY" & date==d(20apr2020)
 
 *! -------------------------------------------
 

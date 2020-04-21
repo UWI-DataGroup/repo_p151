@@ -77,7 +77,7 @@ by country: asrol deaths , stat(mean) window(date 3) gen(deaths_av3)
 
 ** LOOP through N=14 CARICOM member states
 local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO"
-local clist "BHS"
+///local clist "BHS"
 foreach country of local clist {
 
     ** country  = 3-character ISO name
@@ -172,8 +172,7 @@ foreach country of local clist {
         #delimit cr
         graph export "`outputpath'/04_TechDocs/line_`country'_$S_DATE.png", replace width(6000)
         drop c3 c4 c5
-}
-/*
+
 ** ------------------------------------------------------
 ** PDF COUNTRY REPORT
 ** ------------------------------------------------------
