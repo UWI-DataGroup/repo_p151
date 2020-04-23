@@ -205,8 +205,15 @@ replace confirmed = 15 if confirmed == 14 & iso=="KNA" & date==d(19apr2020)
 ** 20-Apr-2020
 replace confirmed = 66 if confirmed == 65 & iso=="GUY" & date==d(20apr2020)
 
+** 21-Apr-2020
+replace confirmed = 24 if confirmed == 23 & iso=="ATG" & date==d(21apr2020)
+replace confirmed = 58 if confirmed == 57 & iso=="HTI" & date==d(21apr2020)
+
+** 22-Apr-2020
+replace confirmed = 76 if confirmed == 75 & iso=="BRB" & date==d(22apr2020)
+replace confirmed = 252 if confirmed == 233 & iso=="JAM" & date==d(22apr2020)
+
 *! -------------------------------------------
 
 ** Save the cleaned and restricted dataset
 save "`datapath'\version01\2-working\jh_time_series_restricted", replace
-
