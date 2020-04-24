@@ -43,13 +43,13 @@ drop day month year geoId continentExp
 ** DATE OF EVENTS
 rename dateRep date 
 format date %tdNN/DD/CCYY
-** Text name for country (string)
+** TEXT NAME FOR COUNTRY (STRING)
 rename countriesAndTerritories countryregion 
-** Three digit ISO country code (upper case string)
+** THREE DIGIT ISO COUNTRY CODE (UPPER CASE STRING)
 rename countryterritoryCode iso 
-** Population
+** POPULATION
 rename popData2018 pop
-** Cases
+** CASES
 rename cases confirmed 
 
 ** Save out the dataset for next DO file

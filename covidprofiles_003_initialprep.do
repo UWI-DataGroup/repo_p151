@@ -26,9 +26,8 @@
     log using "`logpath'\covidprofiles_003_initialprep", replace
 ** HEADER -----------------------------------------------------
 
-** JH time series COVD-19 data 
 ** RUN covidprofiles_002_jhopkins.do BEFORE this algorithm
-use "`datapath'\version01\2-working\jh_time_series", clear
+use "`datapath'\version01\2-working\jh_time_series", clear 
 
 ** JOHNS HOKINS DATABASE CORRECTIONS TO COUNTRY NAMES
 ** UK has 2 names in database
@@ -37,6 +36,10 @@ replace countryregion = "UK" if countryregion=="United Kingdom"
 replace countryregion = "Bahamas" if countryregion=="Bahamas, The" | countryregion=="The Bahamas"
 ** South Korea has 2 names
 replace countryregion = "South Korea" if countryregion=="Korea, South" 
+** Hong Kong has 2 names
+replace countryregion = "Hong Kong" if countryregion=="Hong Kong SAR" 
+replace countryregion = "Hong Kong" if countryregion=="China" & combined_key=="Hong Kong, China" 
+
 
 ** RESTRICT TO SELECTED COUNTRIES
 ** Keep UK, USA, Sth Korea, Singapore as comparators. Then keep all Caribbean nations
@@ -78,7 +81,10 @@ keep if countryregion=="South Korea" |
         countryregion=="Grenada" |
         countryregion=="Guyana" |
         countryregion=="Haiti" |
+        countryregion=="Hong Kong" |
+        countryregion=="Iceland" |
         countryregion=="Jamaica" |
+        countryregion=="New Zealand" |
         countryregion=="Saint Kitts and Nevis" |
         countryregion=="Saint Lucia" |
         countryregion=="Saint Vincent and the Grenadines" |
@@ -102,7 +108,10 @@ replace iso = "DOM" if countryregion=="Dominican Republic"
 replace iso = "GRD" if countryregion=="Grenada"
 replace iso = "GUY" if countryregion=="Guyana"
 replace iso = "HTI" if countryregion=="Haiti"
+replace iso = "HKG" if countryregion=="Hong Kong"
+replace iso = "ISL" if countryregion=="Iceland"
 replace iso = "JAM" if countryregion=="Jamaica"
+replace iso = "NZL" if countryregion=="New Zealand"
 replace iso = "KNA" if countryregion=="Saint Kitts and Nevis"
 replace iso = "LCA" if countryregion=="Saint Lucia"
 replace iso = "VCT" if countryregion=="Saint Vincent and the Grenadines"
@@ -113,67 +122,6 @@ replace iso = "KOR" if countryregion=="South Korea"
 replace iso = "GBR" if countryregion=="UK"
 replace iso = "USA" if countryregion=="US"
 
-** Create internal numeric variable for countries 
-encode countryregion, gen(country)
-
-** METRIC: Days since first reported case
-** bysort country: gen elapsed = _n 
-
-** save "`datapath'\version01\2-working\jh_covide19_long", replace
-
-** METRIC: Country populations
-gen pop = . 
-** SGP. Singapore
-replace pop = 5850343 if iso=="SGP"
-** USA. United States
-replace pop = 331002647 if iso=="USA"
-** UK. UNited Kingdom
-replace pop = 67886004 if iso=="GBR"
-** KOR. South Korea
-replace pop = 51269183 if iso=="KOR"
-** 14 CARICOM countries + Cuba + Dominican Republic
-replace pop = 97928 if iso == "ATG"
-replace pop = 393248 if iso == "BHS"
-replace pop = 287371 if iso == "BRB"
-replace pop = 397621 if iso == "BLZ"
-replace pop = 11326616 if iso == "CUB"
-replace pop = 71991 if iso == "DMA"
-replace pop = 10847904 if iso == "DOM"
-replace pop = 112519 if iso == "GRD"
-replace pop = 786559 if iso == "GUY"
-replace pop = 11402533 if iso == "HTI"
-replace pop = 2961161 if iso == "JAM"
-replace pop = 53192 if iso == "KNA"
-replace pop = 183629 if iso == "LCA"
-replace pop = 110947 if iso == "VCT"
-replace pop = 586634 if iso == "SUR"
-replace pop = 1399491 if iso == "TTO"
-order pop, after(iso)
-
-** Labelling of the internal country numeric
-#delimit ; 
-label define cname_ 1 "Antigua and Barbuda"
-                    2 "The Bahamas"
-                    3 "Barbados"
-                    4 "Belize"
-                    5 "Cuba"
-                    6 "Dominica"
-                    7 "Dominican Republic"
-                    8 "Grenada"
-                    9 "Guyana"
-                    10 "Haiti"
-                    11 "Jamaica"
-                    12 "Saint Kitts and Nevis"
-                    13 "Saint Lucia"
-                    14 "Saint Vincent and the Grenadines"
-                    15 "Singapore"
-                    16 "South Korea"
-                    17 "Suriname"
-                    18 "Trinidad and Tobago"
-                    19 "UK"
-                    20 "USA"
-                    ;
-#delimit cr 
 
 ** Sort the dataset, ready for morning manual review 
 sort iso date
@@ -216,6 +164,130 @@ replace confirmed = 252 if confirmed == 233 & iso=="JAM" & date==d(22apr2020)
 ** 23-Apr-2020
 replace confirmed = 14 if confirmed == 13 & iso=="VCT" & date==d(23apr2020)
 *! -------------------------------------------
+
+** Rename JHopkins variables and save 
+drop countryregion
+order iso date confirmed deaths recovered
+rename (confirmed deaths recovered)  =1
+save "`datapath'\version01\2-working\jh_time_series_clean", replace 
+
+
+** ------------------------------------------------
+** ECDC data
+** ------------------------------------------------
+use "`datapath'\version01\2-working\ecdc_time_series"
+rename (confirmed deaths pop)  =2
+drop pop2 
+
+** ECDC cleaning - adding a few ISO codes
+replace iso = "AIA" if iso=="" & countryregion=="Anguilla"
+replace iso = "FLK" if iso=="" & countryregion=="Falkland_Islands_(Malvinas)"
+replace iso = "ANT" if iso=="" & countryregion=="Bonaire, Saint Eustatius and Saba"
+drop countryregion 
+
+** Create cumulative CASE and DEATH data for ecdc
+sort iso date
+rename confirmed2 temp2 
+bysort iso: gen confirmed2 = sum(temp2)
+drop temp2
+sort iso date
+rename deaths2 temp2 
+bysort iso: gen deaths2 = sum(temp2)
+drop temp2
+sort iso date
+
+** Link the two datasets and bring across jhopkins data (#1) to ecdc data (#2)
+** Keep all countries in both datasets +
+** HKG -- HONG KONG from jhopkins
+** CYM -- CAYMAN ISLANDS from ECDC
+** VGB -- BVI from ECDC
+** AIA -- ANGUILLA from ECDC
+** TCA -- TURKS and CAICOS from ECDC
+** ANT -- Bonaire, Saint Eustatius and Saba from ECDC
+** BMU - Bermuda
+merge 1:1 iso date using "`datapath'\version01\2-working\jh_time_series_clean"
+
+sort iso date 
+replace _merge = 3 if _merge==1 & _merge[_n-1]==3 & iso==iso[_n-1]
+#delimit ;
+    keep if (_merge==3 | _merge==2)                     | 
+            (iso=="AIA" | iso=="ANT" | iso=="BMU" | iso=="CYM" | iso=="VGB" | iso=="TCA" | iso=="HKG" | iso=="MSR");
+#delimit cr
+drop _merge
+
+
+order date iso confirmed1 confirmed2 deaths1 deaths2 recovered1
+
+
+
+** ---------------------------------------------------------
+** FINAL PREPARATION
+** ---------------------------------------------------------
+
+** Create internal numeric variable for countries 
+encode iso, gen(iso_num)
+
+
+** METRIC: Country populations
+** SOURCE UN WPP 2019
+gen pop = . 
+replace pop = 15002 if iso == "AIA"
+replace pop = 26221 if iso == "ANT"
+replace pop = 97928 if iso == "ATG"
+replace pop = 393248 if iso == "BHS"
+replace pop = 397621 if iso == "BLZ"
+
+replace pop = 62273 if iso == "BMU"
+replace pop = 287371 if iso == "BRB"
+replace pop = 11326616 if iso == "CUB"
+replace pop = 65720 if iso == "CYM"
+replace pop = 71991 if iso == "DMA"
+
+replace pop = 10847904 if iso == "DOM"
+replace pop = 67886004 if iso=="GBR"
+replace pop = 112519 if iso == "GRD"
+replace pop = 786559 if iso == "GUY"
+replace pop = 7496988 if iso == "HKG"
+
+replace pop = 11402533 if iso == "HTI"
+replace pop = 341250 if iso == "ISL"
+replace pop = 2961161 if iso == "JAM"
+replace pop = 53192 if iso == "KNA"
+replace pop = 51269183 if iso=="KOR"
+
+replace pop = 183629 if iso == "LCA"
+replace pop = 4999 if iso == "MSR"
+replace pop = 4822233 if iso == "NZL"
+replace pop = 5850343 if iso=="SGP"
+replace pop = 586634 if iso == "SUR"
+
+replace pop = 5850343 if iso=="TCA"
+replace pop = 1399491 if iso == "TTO"
+replace pop = 331002647 if iso=="USA"
+replace pop = 110947 if iso == "VCT"
+replace pop = 30237 if iso=="VGB"
+order iso_num pop, after(iso)
+
+** Final CASE and DEATH variables
+
+** CASES
+sort iso date 
+gen confirmed = confirmed1
+replace confirmed = confirmed2 if confirmed1==. & (iso==iso[_n-1]) & (confirmed2>confirmed1[_n-1])
+replace confirmed = confirmed1[_n-1] if confirmed==. & confirmed1[_n-1]<. & (iso==iso[_n-1]) 
+replace confirmed = confirmed2 if confirmed==. & confirmed1==. & confirmed2<. 
+** DEATHS
+sort iso date 
+gen deaths = deaths1
+replace deaths = deaths2 if deaths1==. & (iso==iso[_n-1]) & (deaths2>deaths1[_n-1])
+replace deaths = deaths1[_n-1] if deaths==. & deaths1[_n-1]<. & (iso==iso[_n-1]) 
+replace deaths = deaths2 if deaths==. & deaths1==. & deaths2<. 
+
+drop confirmed1 confirmed2 deaths1 deaths2 
+sort iso date
+drop if date>date[_n+1] & iso!=iso[_n+1]
+
+rename recovered1 recovered 
 
 ** Save the cleaned and restricted dataset
 save "`datapath'\version01\2-working\jh_time_series_restricted", replace

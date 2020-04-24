@@ -34,37 +34,46 @@ qui do "`logpath'\covidprofiles_004_metrics"
 capture log close
 log using "`logpath'\covidprofiles_005_country1", replace
 
-** Country Labels
+** Labelling of the internal country numeric
 #delimit ; 
-label define cname_ 1 "Antigua"
-                    2 "The Bahamas"
-                    3 "Barbados"
-                    4 "Belize"
-                    5 "Cuba"
-                    6 "Dominica"
-                    7 "Dominican Republic"
-                    8 "Grenada"
-                    9 "Guyana"
-                    10 "Haiti"
-                    11 "Jamaica"
-                    12 "Saint Kitts"
-                    13 "Saint Lucia"
-                    14 "Saint Vincent"
-                    15 "Singapore"
-                    16 "South Korea"
-                    17 "Suriname"
-                    18 "Trinidad & Tobago"
-                    19 "UK"
-                    20 "USA"
+label define cname_ 1 "Anguilla" 
+                    2 "Bonaire, Saint Eustatius, Saba" 
+                    3 "Antigua and Barbuda"
+                    4 "The Bahamas"
+                    5 "Belize"
+                    6 "Bermuda"
+                    7 "Barbados"
+                    8 "Cuba"
+                    9 "Cayman Islands" 
+                    10 "Dominica"
+                    11 "Dominican Republic"
+                    12 "UK" 
+                    13 "Grenada"
+                    14 "Guyana"
+                    15 "Hong Kong"
+                    16 "Haiti"
+                    17 "Iceland"
+                    18 "Jamaica"
+                    19 "Saint Kitts and Nevis"
+                    20 "South Korea"
+                    21 "Saint Lucia"
+                    22 "Monserrat"
+                    23 "New Zeland"
+                    24 "Singapore"
+                    25 "Suriname"
+                    26 "Turks and Caicos"
+                    27 "Trinidad and Tobago"
+                    28 "USA"
+                    29 "Saint Vincent and the Grenadines"
+                    30 "British Virgin Islands"
                     ;
 #delimit cr 
-
 
 ** Scroll through multiple identical graphics
 ** They vary only by Caribbean country
 
 ** BY Country: Elapased time in days from first case
-bysort country: egen elapsed_max = max(elapsed)
+bysort iso: egen elapsed_max = max(elapsed)
 
 ** SAVE THE FILE FOR REGIONAL WORK 
     local c_date = c(current_date)
@@ -72,15 +81,12 @@ bysort country: egen elapsed_max = max(elapsed)
     save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
 
 ** SMOOTHED CASES for graphic
-by country: asrol confirmed , stat(mean) window(date 3) gen(confirmed_av3)
-by country: asrol deaths , stat(mean) window(date 3) gen(deaths_av3)
+by iso: asrol confirmed , stat(mean) window(date 3) gen(confirmed_av3)
+by iso: asrol deaths , stat(mean) window(date 3) gen(deaths_av3)
 
 ** LOOP through N=14 CARICOM member states
-local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO"
-///local clist "ATG"
-///local clist "BHS"
+local clist "AIA ATG BHS BLZ BMU BRB CYM DMA GRD GUY HTI JAM KNA LCA MSR SUR TCA TTO VCT VGB"
 foreach country of local clist {
-
     ** country  = 3-character ISO name
     ** cname    = FULL country name
     ** -country- used in all loop structures
@@ -88,7 +94,7 @@ foreach country of local clist {
     gen el_`country'1 = elapsed_max if iso=="`country'"
     egen el_`country'2 = min(el_`country'1) 
     local elapsed = el_`country'2
-    gen c3 = country if iso=="`country'"
+    gen c3 = iso_num if iso=="`country'"
     label values c3 cname_
     egen c4 = min(c3)
     label values c4 cname_
@@ -121,7 +127,7 @@ foreach country of local clist {
                 
             ylab(
             , labs(6) notick nogrid glc(gs16) angle(0))
-            yscale(fill noline range(0(1)14)) 
+            yscale(fill noline) 
             ytitle("Cumulative # of Cases", size(6) margin(l=2 r=2 t=2 b=2)) 
             
             ///title("(1) Cumulative cases in `country'", pos(11) ring(1) size(4))
@@ -137,8 +143,11 @@ foreach country of local clist {
 ** LINE CHART (LOGARITHM)
     #delimit ;
         gr twoway             
-            (line confirmed elapsed if iso=="USA" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="GBR" & elapsed<=`elapsed', lc(orange%40) lw(0.35) lp("-"))
+            ///(line confirmed elapsed if iso=="USA" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
+            ///(line confirmed elapsed if iso=="GBR" & elapsed<=`elapsed', lc(orange%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="NZL" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="ISL" & elapsed<=`elapsed', lc(orange%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="HKG" & elapsed<=`elapsed', lc(red%40) lw(0.35) lp("-"))
             (line confirmed elapsed if iso=="SGP" & elapsed<=`elapsed', lc(purple%40) lw(0.35) lp("-"))
             (line confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', lc("14 73 124") lw(0.4) lp("-"))
             (scat confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', msize(2.5) mc("14 73 124") m(o))
@@ -162,11 +171,12 @@ foreach country of local clist {
 
                 legend(size(6) position(4) ring(1) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(4 1 2 3) 
-                lab(1 "USA") 
-                lab(2 "UK") 
-                lab(3 "Singapore") 
-                lab(4 "`cname'")
+                order(5 1 2 3 4) 
+                lab(1 "New Zealand") 
+                lab(2 "Iceland")
+                lab(3 "Hong Kong") 
+                lab(4 "Singapore") 
+                lab(5 "`cname'")
                 )
                 name(line_`country') 
                 ;
@@ -293,6 +303,6 @@ foreach country of local clist {
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_version2_`date_string'", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_version3_`date_string'", replace
 
 }

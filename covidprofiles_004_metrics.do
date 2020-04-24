@@ -75,37 +75,37 @@ use "`datapath'\version01\2-working\jh_time_series_restricted", clear
 ** ---------------------------------------------------
 
 ** METRIC 01 : CURRENT CONFIRMED CASES BY COUNTRY 
-bysort country: egen m01 = max(confirmed)
+bysort iso: egen m01 = max(confirmed)
 ** METRIC 02: CURRENT CONFIRMED DEATHS BY COUNTRY 
-bysort country: egen m02 = max(deaths)
+bysort iso: egen m02 = max(deaths)
 ** METRIC 03: The DATE OF FIRST CONFIRMED CASE
-bysort country: egen m03 = min(date)
+bysort iso: egen m03 = min(date)
 format m03 %td 
 ** METRIC 04: The DATE OF FIRST CONFIRMED DEATH
 gen deaths_i = 0 
 replace deaths_i = 1 if deaths>0 
-bysort country deaths_i: egen m04t = min(date) if deaths_i==1
-bysort country: egen m04 = min(m04t)
+bysort iso deaths_i: egen m04t = min(date) if deaths_i==1
+bysort iso: egen m04 = min(m04t)
 format m04 %td 
 ** METRIC 05: Days since first reported case
-sort country date 
-bysort country: gen elapsed = _n 
-bysort country: egen m05 = max(elapsed)
+sort iso date 
+bysort iso: gen elapsed = _n 
+bysort iso: egen m05 = max(elapsed)
 ** METRIC 06: Days since first reported death
-sort country date 
-bysort country deaths_i: gen elapsedd = _n
-bysort country deaths_i: egen m06t = max(elapsedd)
+sort iso date 
+bysort iso deaths_i: gen elapsedd = _n
+bysort iso deaths_i: egen m06t = max(elapsedd)
 replace m06t = . if deaths_i==0 
-bysort country: egen m06 = min(m06t)
+bysort iso: egen m06 = min(m06t)
 replace m06 = 0 if m06==. 
 
 ** METRICS 20-29: DAYS UNTIL N=X CASES
 local metric = 20 
 local numv = "25 50 100 200 400 800 1600 3200 6400 12800"
 foreach num of local numv {
-sort country date 
+sort iso date 
 gen t`num' = date if confirmed>=`num' & confirmed[_n-1]<`num'
-bysort country: egen d`num' = min(t`num')
+bysort iso: egen d`num' = min(t`num')
 gen m`metric' = d`num' - m03 
 drop t`num' d`num'
 local metric = `metric'+1
@@ -115,9 +115,9 @@ local metric = `metric'+1
 local metric = 40 
 local numv = "25 50 100 200 400 800 1600 3200 6400 12800"
 foreach num of local numv {
-sort country date 
+sort iso date 
 gen t`num' = date if deaths>=`num' & deaths[_n-1]<`num'
-bysort country: egen d`num' = min(t`num')
+bysort iso: egen d`num' = min(t`num')
 gen m`metric' = d`num' - m03 
 drop t`num' d`num'
 local metric = `metric'+1
@@ -125,23 +125,23 @@ local metric = `metric'+1
 
 ** METRIC 70 and 71:
 ** Growth rate - Cases / Deaths
-sort country date 
-gen m70  = log(confirmed/confirmed[_n-1]) if country==country[_n-1] 
-gen m71 = log(deaths/deaths[_n-1]) if country==country[_n-1] 
+sort iso date 
+gen m70  = log(confirmed/confirmed[_n-1]) if iso==iso[_n-1] 
+gen m71 = log(deaths/deaths[_n-1]) if iso==iso[_n-1] 
 
 ** METRIC 72 and 73: 
 ** Doubling time - Cases / Deaths
-sort country date 
+sort iso date 
 gen dr_cases  = log(2)/m70
-by country: asrol dr_cases , stat(mean) window(date 10) gen(m72)
+by iso: asrol dr_cases , stat(mean) window(date 10) gen(m72)
 gen dr_deaths = log(2)/m71
-by country: asrol dr_deaths , stat(mean) window(date 10) gen(m73)
+by iso: asrol dr_deaths , stat(mean) window(date 10) gen(m73)
 
 
 ** Create local macros for the various metrics
 ** These will be used to create graphics and post to PDF briefings
 local numz = "25 50 100 200 400 800 1600 3200 6400 12800"
-local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO SGP KOR GBR USA"
+local clist "AIA ANT ATG BHS BLZ BMU BRB CUB CYM DMA DOM GBR GRD GUY HKG HTI ISL JAM KNA KOR LCA MSR NZL SGP SUR TCA TTO USA VCT VGB"
 foreach country of local clist {
 
     ** METRIC 01
@@ -208,8 +208,8 @@ foreach country of local clist {
 
     ** METRIC 60:
     ** 1 DAY INCREASE in CASES
-    sort country date 
-    gen t1 = confirmed - confirmed[_n-1] if country!=country[_n+1] & iso=="`country'"
+    sort iso date 
+    gen t1 = confirmed - confirmed[_n-1] if iso!=iso[_n+1] & iso=="`country'"
     egen t2 = min(t1)
     local m60_`country' = t2 
     global m60_`country' = t2 
@@ -217,8 +217,8 @@ foreach country of local clist {
 
     ** METRIC 61:
     ** 1 DAY INCREASE in DEATHS
-    sort country date 
-    gen t1 = deaths - deaths[_n-1] if country!=country[_n+1] & iso=="`country'"
+    sort iso date 
+    gen t1 = deaths - deaths[_n-1] if iso!=iso[_n+1] & iso=="`country'"
     egen t2 = min(t1)
     local m61_`country' = t2 
     global m61_`country' = t2 
@@ -226,8 +226,8 @@ foreach country of local clist {
 
     ** METRIC 62:
     ** 7 DAY INCREASE in CASES
-    sort country date 
-    gen t1 = confirmed - confirmed[_n-7] if country!=country[_n+1] & iso=="`country'"
+    sort iso date 
+    gen t1 = confirmed - confirmed[_n-7] if iso!=iso[_n+1] & iso=="`country'"
     egen t2 = min(t1)
     local m62_`country' = t2
     global m62_`country' = t2
@@ -235,8 +235,8 @@ foreach country of local clist {
 
     ** METRIC 63:
     ** 7 DAY INCREASE in DEATHS
-    sort country date 
-    gen t1 = deaths - deaths[_n-7] if country!=country[_n+1] & iso=="`country'"
+    sort iso date 
+    gen t1 = deaths - deaths[_n-7] if iso!=iso[_n+1] & iso=="`country'"
     egen t2 = min(t1)
     local m63_`country' = t2
     global m63_`country' = t2
@@ -244,9 +244,9 @@ foreach country of local clist {
 
     ** METRIC 72:
     ** DOUBLING RATE in CASES
-    sort country date 
+    sort iso date 
     gen i1 = 0
-    replace i1 = 1 if country!=country[_n+1]
+    replace i1 = 1 if iso!=iso[_n+1]
     gen m72_`country'1 = int(m72) if i1==1 & iso=="`country'"
     egen m72_`country'2 = min(m72_`country'1) 
     local m72_`country' = m72_`country'2
@@ -255,9 +255,9 @@ foreach country of local clist {
     **m72_`country'1 m72_`country'2
 
     ** DOUBLING RATE in DEATHS
-    sort country date 
+    sort iso date 
     gen i1 = 0
-    replace i1 = 1 if country!=country[_n+1]
+    replace i1 = 1 if iso!=iso[_n+1]
     gen m73_`country'1 = int(m73) if i1==1 & iso=="`country'"
     egen m73_`country'2 = min(m73_`country'1) 
     local m73_`country' = m73_`country'2
@@ -267,8 +267,10 @@ foreach country of local clist {
 
 }
 
-drop m* deaths_i dr_cases dr_deaths countryregion
-order country iso pop date confirmed deaths recovered elapsed elapsedd
+drop if confirmed==0 
+
+drop m* deaths_i dr_cases dr_deaths
+order iso iso_num pop date confirmed deaths recovered elapsed elapsedd
 
 ** Save the metrics dataset
 save "`datapath'\version01\2-working\jh_time_series_metrics", replace
