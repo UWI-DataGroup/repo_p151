@@ -1,9 +1,9 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_002_ecdc.do
+    //  algorithm name				  covidprofiles_002_ecdc.do
     //  project:				        
-    //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	      21-APR-2020
+    //  analysts:				  	  Ian HAMBLETON
+    // 	date last modified	          214-APR-2020
     //  algorithm task			      Draw Open Access Data from ECDC (link below)
 
     ** General algorithm set-up
@@ -27,6 +27,11 @@
 ** HEADER -----------------------------------------------------
 
 ** Data import from European Centre for Disease Control (ECDC, DAILY UPDATES)
+** 24-APR-2020
+** This will allow 2 things:
+**   --> Formal check of ECDC against JHopkins, taking the latest available data
+**   --> easier inclusion of the 4 UKOTS 
+**   --> Cayman Islands, Turks and Caicos, Monserrat, BVI
 ** https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide.xlsx
 ** https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
 local URL_csv = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
