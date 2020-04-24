@@ -36,7 +36,7 @@ log using "`logpath'\covidprofiles_005_country1", replace
 
 ** Country Labels
 #delimit ; 
-label define cname_ 1 "Antigua and Barbuda"
+label define cname_ 1 "Antigua"
                     2 "The Bahamas"
                     3 "Barbados"
                     4 "Belize"
@@ -47,13 +47,13 @@ label define cname_ 1 "Antigua and Barbuda"
                     9 "Guyana"
                     10 "Haiti"
                     11 "Jamaica"
-                    12 "Saint Kitts and Nevis"
+                    12 "Saint Kitts"
                     13 "Saint Lucia"
-                    14 "Saint Vincent and the Grenadines"
+                    14 "Saint Vincent"
                     15 "Singapore"
                     16 "South Korea"
                     17 "Suriname"
-                    18 "Trinidad and Tobago"
+                    18 "Trinidad & Tobago"
                     19 "UK"
                     20 "USA"
                     ;
@@ -77,6 +77,7 @@ by country: asrol deaths , stat(mean) window(date 3) gen(deaths_av3)
 
 ** LOOP through N=14 CARICOM member states
 local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO"
+///local clist "ATG"
 ///local clist "BHS"
 foreach country of local clist {
 
@@ -159,7 +160,7 @@ foreach country of local clist {
                 ytitle("Cumulative # of Cases", size(6) margin(l=2 r=2 t=2 b=2)) 
                 yscale(log)
 
-                legend(size(6) position(5) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+                legend(size(6) position(4) ring(1) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
                 order(4 1 2 3) 
                 lab(1 "USA") 

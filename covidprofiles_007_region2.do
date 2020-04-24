@@ -141,7 +141,7 @@ bysort mtype: egen minv = min(metric)
 gen diffv = maxv - minv 
 gen diffc1 = diffv if mtype==1
 egen diffc2 = min(diffc1) 
-gen diffc = round(diffc2/15)
+gen diffc = round(diffc2/20)
 global binc = diffc 
 gen diffd1 = diffv if mtype==3
 egen diffd2 = min(diffd) 
@@ -162,8 +162,9 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 #delimit ;
     heatplot metric i.country date if mtype==1
     ,
-    cuts(@min($binc)@max)
     color(spmap, blues)
+    ///ramp(right)
+    cuts(@min($binc)@max)
     keylabels(all, range(1))
 
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
