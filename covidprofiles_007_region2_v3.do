@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_007_region2.do
+    //  algorithm name					covidprofiles_007_region2_v3.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            04-APR-2020
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_007_region2", replace
+    log using "`logpath'\covidprofiles_007_region2_v3", replace
 ** HEADER -----------------------------------------------------
 
 
@@ -313,4 +313,4 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_heatmap_version2_`date_string'", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_heatmap_version3_`date_string'", replace

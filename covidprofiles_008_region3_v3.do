@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_008_region3.do
+    //  algorithm name					covidprofiles_008_region3_v3.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            04-APR-2020
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_008_region3", replace
+    log using "`logpath'\covidprofiles_008_region3_v3", replace
 ** HEADER -----------------------------------------------------
 
 
@@ -390,4 +390,4 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
     local time_string = subinstr("`c_time_date'", ":", "_", .)
     local time_string = subinstr("`time_string'", " ", "", .)
     ///putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`time_string'", replace
-    putpdf save "`outputpath'/05_Outputs/covid19_doublingtime_`c_date'", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_doublingtime_version3_`c_date'", replace
