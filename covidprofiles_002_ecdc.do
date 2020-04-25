@@ -3,7 +3,7 @@
     //  algorithm name				  covidprofiles_002_ecdc.do
     //  project:				        
     //  analysts:				  	  Ian HAMBLETON
-    // 	date last modified	          214-APR-2020
+    // 	date last modified	          25-APR-2020
     //  algorithm task			      Draw Open Access Data from ECDC (link below)
 
     ** General algorithm set-up

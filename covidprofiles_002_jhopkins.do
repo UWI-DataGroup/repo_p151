@@ -3,7 +3,7 @@
     //  algorithm name					covidprofiles_002_jhopkins.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	      15-APR-2020
+    // 	date last modified	      25-APR-2020
     //  algorithm task			      Draw Open Access Data from JHopkins (link below)
 
     ** General algorithm set-up
