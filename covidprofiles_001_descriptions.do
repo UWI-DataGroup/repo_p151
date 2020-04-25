@@ -1,8 +1,11 @@
 
 ** DO file descriptions
-** Verion 1.1.0
 ** 25-APR-2020
 ** Produced by: Ian R Hambleton
+
+** VERSION 3
+** ACTIVE FILES LISTED FIRST
+** THEN THE DEPFRECATED FILES
 
 ** -----------------------------------------------------------------
 *! DO FILE: cdema_simulation_barbados.do 
