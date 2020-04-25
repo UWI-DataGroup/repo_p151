@@ -3,7 +3,7 @@
     //  algorithm name					covidprofiles_005_country1.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	            31-MAR-2020
+    // 	date last modified	            25-APR-2020
     //  algorithm task			        xxx
 
     ** General algorithm set-up
