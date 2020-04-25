@@ -215,6 +215,10 @@ replace confirmed = 252 if confirmed == 233 & iso=="JAM" & date==d(22apr2020)
 
 ** 23-Apr-2020
 replace confirmed = 14 if confirmed == 13 & iso=="VCT" & date==d(23apr2020)
+
+** 24-Apr-2020
+** None to update
+
 *! -------------------------------------------
 
 ** Save the cleaned and restricted dataset
