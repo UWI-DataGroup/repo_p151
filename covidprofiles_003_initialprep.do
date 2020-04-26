@@ -163,6 +163,13 @@ replace confirmed = 252 if confirmed == 233 & iso=="JAM" & date==d(22apr2020)
 
 ** 23-Apr-2020
 replace confirmed = 14 if confirmed == 13 & iso=="VCT" & date==d(23apr2020)
+
+** 24-Apr-2020
+** NO CHANGES
+
+** 25-Apr-2020
+** replace confirmed = 78 if confirmed == 73 & iso=="BHS" & date==d(25apr2020)
+
 *! -------------------------------------------
 
 ** Rename JHopkins variables and save 
@@ -206,7 +213,6 @@ sort iso date
 ** ANT -- Bonaire, Saint Eustatius and Saba from ECDC
 ** BMU - Bermuda
 merge 1:1 iso date using "`datapath'\version01\2-working\jh_time_series_clean"
-
 sort iso date 
 replace _merge = 3 if _merge==1 & _merge[_n-1]==3 & iso==iso[_n-1]
 #delimit ;
@@ -217,7 +223,6 @@ drop _merge
 
 
 order date iso confirmed1 confirmed2 deaths1 deaths2 recovered1
-
 
 
 ** ---------------------------------------------------------
@@ -285,7 +290,7 @@ replace deaths = deaths2 if deaths==. & deaths1==. & deaths2<.
 
 drop confirmed1 confirmed2 deaths1 deaths2 
 sort iso date
-drop if date>date[_n+1] & iso!=iso[_n+1]
+** drop if date>date[_n+1] & iso!=iso[_n+1]
 
 rename recovered1 recovered 
 

@@ -65,7 +65,7 @@ label define cname_ 1 "Anguilla"
                     27 "Trinidad and Tobago"
                     28 "USA"
                     29 "Saint Vincent and the Grenadines"
-                    30 "British Virgin Islands"
+                    30 "The British Virgin Islands"
                     ;
 #delimit cr 
 
@@ -213,7 +213,7 @@ foreach country of local clist {
     putpdf text ("1"), script(super) 
     putpdf text (" from COVID-19 infection in `cname' since the start of the outbreak, which ") 
     putpdf text ("we measure as the number of days since the first confirmed case. We compare the `cname' trajectory against key comparators ") 
-    putpdf text ("(Hong Kong, Singapore, Iceland, New Zealand, USA), all island territories that are along their epidemic curves. Outbreak progress is likely to vary markedly ") 
+    putpdf text ("(Hong Kong, Singapore, Iceland, New Zealand), all island territories that are further along their epidemic curves. Outbreak progress is likely to vary markedly ") 
     putpdf text ("between countries, and this graphic is presented as a guide only. "), linebreak 
 
 ** TABLE: KEY SUMMARY METRICS

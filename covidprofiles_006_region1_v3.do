@@ -223,7 +223,6 @@ restore
 ** LOOP through N=14 CARICOM member states and 6 UKOTS
 local clist "ATG BHS BLZ BRB DMA GRD GUY HTI JAM KNA LCA SUR TTO VCT AIA BMU VGB CYM MSR TCA"
 foreach country of local clist {
-
     ** country  = 3-character ISO name
     ** cname    = FULL country name
     ** -country- used in all loop structures
@@ -977,3 +976,30 @@ restore
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     putpdf save "`outputpath'/05_Outputs/covid19_trajectory_regional_version3_`date_string'", replace
+
+
+
+
+
+/*
+** 26-APR-2020
+** First day of adding ECDC data
+** This created a small quirk on the days - pushing the reporting date from 25th PM (JH) to 26th (AM) ECDC
+** This meant incorrect new cases in past 24 hrs - which we corrected one-time for the regional report
+** one correction for 14 CARICOM and 1 correction for the 6 UKOTS
+** Code for UKOTS below
+** different restrction for 14 CARICOM
+ #delimit ; 
+    keep if 
+        iso=="AIA" |
+        iso=="BMU" |
+        iso=="VGB" |
+        iso=="CYM" |
+        iso=="MSR" |
+        iso=="TCA";
+#delimit cr
+gen diff1  = metric - metric[_n-1]               
+gen diff2  = metric - metric[_n-2]               
+keep if date == d(26apr2020) 
+bysort mtype: egen tot2 = sum(diff2)
+bysort mtype: egen tot1 = sum(diff1)

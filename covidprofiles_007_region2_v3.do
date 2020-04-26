@@ -35,7 +35,7 @@ qui do "`logpath'\covidprofiles_004_metrics"
 
 ** Close any open log file and open a new log file
 capture log close
-log using "`logpath'\covidprofiles_005_country1", replace
+log using "`logpath'\covidprofiles_005_region2", replace
 
 ** Country Labels
 #delimit ; 
@@ -86,7 +86,7 @@ keep if
 ** Want symmetric / rectangular matrix of dates. So we need 
 ** to backfill dates foreach country to date of first 
 ** COVID appearance - which I think was in JAM
-    fillin date country 
+    fillin date iso_num 
     replace confirmed = 0 if confirmed==.
     replace deaths = 0 if deaths==.
     replace recovered = 0 if recovered==.
@@ -95,43 +95,24 @@ keep if
 gen confirmed_rate = (confirmed / pop) * 10000
 
 ** Keep selected variables
-decode country, gen(country2)
-keep date country country2 iso pop confirmed confirmed_rate deaths recovered
-order date country country2 iso pop confirmed confirmed_rate deaths recovered
-bysort country : gen elapsed = _n 
+decode iso_num, gen(country2)
+keep date iso_num country2 iso pop confirmed confirmed_rate deaths recovered
+order date iso_num country2 iso pop confirmed confirmed_rate deaths recovered
+bysort iso_num : gen elapsed = _n 
 
-** Scroll through multiple identical graphics
-** They vary only by Caribbean country
-bysort country: egen elapsed_max = max(elapsed)
-local clist "ATG BHS BRB BLZ DMA GRD GUY HTI JAM KNA LCA VCT SUR TTO"
-foreach country of local clist {
-    /// Elapsed days for each country
-    gen el_`country'1 = elapsed_max if iso=="`country'"
-    egen el_`country' = min(el_`country'1) 
-    local el_`country' = el_`country' 
-    local te_`country' = el_`country' + 0.25
-    /// Long version name for each country
-    gen c3 = country if iso=="`country'"
-    label values c3 cname_
-    egen c4 = min(c3)
-    label values c4 cname_
-    decode c4, gen(c5)
-    local cname = c5
-    drop c3 c4 c5
-}
  
-keep country date confirmed confirmed_rate deaths recovered
+keep iso_num date confirmed confirmed_rate deaths recovered
 
 ** Fix Guyana 
-replace confirmed = 4 if country==9 & date>=d(17mar2020) & date<=d(23mar2020)
+replace confirmed = 4 if iso_num==14 & date>=d(17mar2020) & date<=d(23mar2020)
 rename confirmed metric1
 rename confirmed_rate metric2
 rename deaths metric3
 rename recovered metric4
-reshape long metric, i(country date) j(mtype)
+reshape long metric, i(iso_num date) j(mtype)
 label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths" 4 "recovered"
 label values mtype mtype_
-sort country mtype date 
+sort iso_num mtype date 
 
 ** Automate changing bin-width for color bins
 ** Do this by calulcating # needed to have 10 bina
@@ -155,12 +136,29 @@ egen fdate1 = max(date)
 global fdate = fdate1 
 global fdatef : di %tdD_m date("$S_DATE", "DMY")
 
+** New numeric running from 1 to 14 
+gen corder = .
+replace corder = 1 if iso_num==3        
+replace corder = 2 if iso_num==4        
+replace corder = 4 if iso_num==5        /* Belize order */
+replace corder = 3 if iso_num==7        /* Barbados order */
+replace corder = 5 if iso_num==10
+replace corder = 6 if iso_num==13
+replace corder = 7 if iso_num==14
+replace corder = 8 if iso_num==16
+replace corder = 9 if iso_num==18
+replace corder = 10 if iso_num==19
+replace corder = 11 if iso_num==21
+replace corder = 12 if iso_num==25
+replace corder = 14 if iso_num==27      /* Trinidad switched order*/ 
+replace corder = 13 if iso_num==29      /* St Vincent switched order*/
+
 
 ** -----------------------------------------
 ** HEATMAP -- CASES
 ** -----------------------------------------
 #delimit ;
-    heatplot metric i.country date if mtype==1
+    heatplot metric i.corder date if mtype==1
     ,
     color(spmap, blues)
     ///ramp(right)
@@ -213,7 +211,7 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 ** HEATMAP -- DEATHS
 ** -----------------------------------------
 #delimit ;
-    heatplot metric i.country date if mtype==3
+    heatplot metric i.corder date if mtype==3
     ,
     cuts(@min($bind)@max)
     color(spmap, reds)
