@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_004_metrics.do
+    //  algorithm name					covidprofiles_004_metrics_v3.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            17-APR-2020
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_004_metrics", replace
+    log using "`logpath'\covidprofiles_004_metrics_v3", replace
 ** HEADER -----------------------------------------------------
 
 ** JH time series COVD-19 data 

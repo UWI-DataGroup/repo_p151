@@ -1,9 +1,9 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_005_country1.do
+    //  algorithm name					covidprofiles_005_country1_v3.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	            25-APR-2020
+    // 	date last modified	            27-APR-2020
     //  algorithm task			        xxx
 
     ** General algorithm set-up
@@ -27,12 +27,12 @@
 ** -----------------------------------------
 ** Pre-Load the COVID metrics --> as Global Macros
 ** -----------------------------------------
-qui do "`logpath'\covidprofiles_004_metrics"
+qui do "`logpath'\covidprofiles_004_metrics_v3"
 ** -----------------------------------------
 
 ** Close any open log file and open a new log file
 capture log close
-log using "`logpath'\covidprofiles_005_country1", replace
+log using "`logpath'\covidprofiles_005_country1_v3", replace
 
 ** Labelling of the internal country numeric
 #delimit ; 

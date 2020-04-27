@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_003_initialprep.do
+    //  algorithm name					covidprofiles_003_initialprep_v3.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            17-APR-2020
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_003_initialprep", replace
+    log using "`logpath'\covidprofiles_003_initialprep_v3", replace
 ** HEADER -----------------------------------------------------
 
 ** RUN covidprofiles_002_jhopkins.do BEFORE this algorithm

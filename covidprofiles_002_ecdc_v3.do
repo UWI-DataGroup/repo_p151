@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name				  covidprofiles_002_ecdc.do
+    //  algorithm name				  covidprofiles_002_ecdc_v3.do
     //  project:				        
     //  analysts:				  	  Ian HAMBLETON
     // 	date last modified	          25-APR-2020
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_002_ecdc", replace
+    log using "`logpath'\covidprofiles_002_ecdc_v3", replace
 ** HEADER -----------------------------------------------------
 
 ** Data import from European Centre for Disease Control (ECDC, DAILY UPDATES)

@@ -3,7 +3,7 @@
     //  algorithm name					covidprofiles_008_region3_v3.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	            04-APR-2020
+    // 	date last modified	            27-APR-2020
     //  algorithm task			        HEATMAP
 
     ** General algorithm set-up
@@ -30,7 +30,7 @@
 ** -----------------------------------------
 ** Pre-Load the COVID metrics --> as Global Macros
 ** -----------------------------------------
-qui do "`logpath'\covidprofiles_004_metrics"
+qui do "`logpath'\covidprofiles_004_metrics_v3"
 ** -----------------------------------------
 
 ** Close any open log file and open a new log file
