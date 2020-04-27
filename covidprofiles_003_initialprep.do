@@ -168,7 +168,10 @@ replace confirmed = 14 if confirmed == 13 & iso=="VCT" & date==d(23apr2020)
 ** NO CHANGES
 
 ** 25-Apr-2020
-** replace confirmed = 78 if confirmed == 73 & iso=="BHS" & date==d(25apr2020)
+** NO CHANGES
+
+** 26-Apr-2020
+** NO CHANGES
 
 *! -------------------------------------------
 

@@ -37,8 +37,10 @@
 local URL_csv = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
 local URL_xlsx = "https://www.ecdc.europa.eu/sites/default/files/documents/"
 local URL_file = "COVID-19-geographic-disbtribution-worldwide.xlsx"
-import excel using "`URL_xlsx'`URL_file'", first clear 
+cap import excel using "`URL_xlsx'`URL_file'", first clear 
+import excel using "`datapath'/version01/1-input/temp_ecdc/COVID-19-geographic-disbtribution-worldwide.xlsx", first clear
 drop day month year geoId continentExp 
+
 
 ** DATE OF EVENTS
 rename dateRep date 

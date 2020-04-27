@@ -60,7 +60,7 @@ label define cname_ 1 "Anguilla"
                     19 "Saint Kitts and Nevis"
                     20 "South Korea"
                     21 "Saint Lucia"
-                    22 "Monserrat"
+                    22 "Montserrat"
                     23 "New Zeland"
                     24 "Singapore"
                     25 "Suriname"
@@ -878,7 +878,7 @@ restore
     putpdf table t5(4,1)=("Bermuda"), bold halign(left)
     putpdf table t5(5,1)=("British Virgin Islands"), bold halign(left)
     putpdf table t5(6,1)=("Cayman Islands"), bold halign(left)
-    putpdf table t5(7,1)=("Monserrat"), bold halign(left)
+    putpdf table t5(7,1)=("Mont- serrat"), bold halign(left)
     putpdf table t5(8,1)=("Turks and Caicos Islands"), bold halign(left)
 
     putpdf table t5(2,2)=("Total cases"),  halign(center) colspan(2) bgcolor(e6e6e6) 
