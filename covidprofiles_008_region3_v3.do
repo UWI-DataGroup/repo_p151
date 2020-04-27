@@ -86,7 +86,7 @@ keep if
 ** Want symmetric / rectangular matrix of dates. So we need 
 ** to backfill dates foreach country to date of first 
 ** COVID appearance - which I think was in JAM
-    fillin date country 
+    fillin date iso_num 
     replace confirmed = 0 if confirmed==.
     replace deaths = 0 if deaths==.
     replace recovered = 0 if recovered==.
@@ -95,24 +95,24 @@ keep if
 gen confirmed_rate = (confirmed / pop) * 10000
 
 ** Keep selected variables
-decode country, gen(country2)
-keep date country country2 iso pop confirmed confirmed_rate deaths recovered
-order date country country2 iso pop confirmed confirmed_rate deaths recovered
-bysort country : gen elapsed = _n 
-bysort country: egen elapsed_max = max(elapsed)
+decode iso_num, gen(country2)
+keep date iso_num country2 iso pop confirmed confirmed_rate deaths recovered
+order date iso_num country2 iso pop confirmed confirmed_rate deaths recovered
+bysort iso_num : gen elapsed = _n 
+bysort iso_num: egen elapsed_max = max(elapsed)
 
 
-keep country date pop confirmed confirmed_rate deaths recovered
+keep iso_num date pop confirmed confirmed_rate deaths recovered
 ** Fix Guyana 
-replace confirmed = 4 if country==9 & date>=d(17mar2020) & date<=d(23mar2020)
+replace confirmed = 4 if iso_num==14 & date>=d(17mar2020) & date<=d(23mar2020)
 rename confirmed metric1
 rename confirmed_rate metric2
 rename deaths metric3
 rename recovered metric4
-reshape long metric, i(country date) j(mtype)
+reshape long metric, i(iso_num date) j(mtype)
 label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths" 4 "recovered"
 label values mtype mtype_
-sort country mtype date 
+sort iso_num mtype date 
 
 
 ** CARIBBEAN-WIDE SUMMARY 
@@ -390,4 +390,4 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
     local time_string = subinstr("`c_time_date'", ":", "_", .)
     local time_string = subinstr("`time_string'", " ", "", .)
     ///putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`time_string'", replace
-    putpdf save "`outputpath'/05_Outputs/covid19_doublingtime_version3_`c_date'", replace
+    putpdf save "`outputpath'/05_Outputs/test_covid19_doublingtime_version3_`c_date'", replace

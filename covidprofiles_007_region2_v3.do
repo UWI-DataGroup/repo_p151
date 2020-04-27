@@ -101,7 +101,7 @@ order date iso_num country2 iso pop confirmed confirmed_rate deaths recovered
 bysort iso_num : gen elapsed = _n 
 
  
-keep iso_num date confirmed confirmed_rate deaths recovered
+keep iso_num pop date confirmed confirmed_rate deaths recovered
 
 ** Fix Guyana 
 replace confirmed = 4 if iso_num==14 & date>=d(17mar2020) & date<=d(23mar2020)
@@ -109,26 +109,76 @@ rename confirmed metric1
 rename confirmed_rate metric2
 rename deaths metric3
 rename recovered metric4
-reshape long metric, i(iso_num date) j(mtype)
+reshape long metric, i(iso_num pop date) j(mtype)
 label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths" 4 "recovered"
 label values mtype mtype_
 sort iso_num mtype date 
 
+
+** DOUBLING RATE
+** Then create a rolling average 
+** Using 1-week window for now
+** And we only calculate ONCE cases reach N=10 - for stability reasons 
+format pop  %14.0fc
+sort iso_num mtype date 
+gen growthrate = log(metric/metric[_n-1]) if iso_num==iso_num[_n-1] & mtype==mtype[_n-1] 
+replace growthrate = 0 if metric<10 & mtype==1
+gen doublingtime = log(2)/growthrate
+sort iso_num mtype date 
+gen gr100 = growthrate*100
+bysort iso_num mtype: asrol gr100, stat(mean) window(date 10) gen(gr7)
+bysort iso_num mtype: asrol doublingtime , stat(mean) window(date 10) gen(dt7)
+
+** NEW CASES EACH DAY
+by iso_num mtype: gen new = metric - metric[_n-1]
+
 ** Automate changing bin-width for color bins
-** Do this by calulcating # needed to have 10 bina
+** Do this by calulcating # needed to have XX bins
 ** Max anad Min across ALL countries
 bysort mtype: egen maxv = max(metric)
 bysort mtype: egen minv = min(metric) 
+bysort mtype: egen maxgr = max(gr7)
+bysort mtype: egen mingr = min(gr7) 
+bysort mtype: egen maxnc = max(new)
+bysort mtype: egen minnc = min(new) 
+
+** Count: cumulative cases
 gen diffv = maxv - minv 
 gen diffc1 = diffv if mtype==1
 egen diffc2 = min(diffc1) 
-gen diffc = round(diffc2/20)
+gen diffc = round(diffc2/25)
 global binc = diffc 
+
+** Count: attack rate
+gen diffar1 = diffv if mtype==2
+egen diffar2 = min(diffar1) 
+gen diffar = diffar2/20
+global binar = diffar 
+
+** Count: cumulative deaths
 gen diffd1 = diffv if mtype==3
 egen diffd2 = min(diffd) 
 gen diffd = round(diffd2/15)
 global bind = diffd 
-drop maxv minv diffv diffd diffd1 diffd2 diffc diffc1 diffc2
+
+** Daily new events: cases
+gen diffnc = maxnc - minnc 
+gen diffnc1 = diffnc if mtype==1
+egen diffnc2 = min(diffnc1) 
+gen diffnc3 = round(diffnc2/15)
+global binnc = diffnc3 
+
+** Growth rate : cases
+replace gr7 = round(gr7, 1) 
+gen diffgrc = maxgr - mingr 
+gen diffgrc1 = diffgrc if mtype==1
+egen diffgrc2 = min(diffgrc1) 
+gen diffgrc3 = round(diffgrc2/10, 0.1)
+global bingrc = diffgrc3 
+
+drop maxv minv diffv diffd diffd1 diffd2 diffc diffc1 diffc2 diffar diffar1 diffar2 diffgrc diffgrc1 diffgrc2 diffgrc3
+drop maxgr mingr minnc maxnc diffnc diffnc1 diffnc2 diffnc3
+
 
 ** Automate final date on x-axis 
 ** Use latest date in dataset 
@@ -136,26 +186,139 @@ egen fdate1 = max(date)
 global fdate = fdate1 
 global fdatef : di %tdD_m date("$S_DATE", "DMY")
 
+
 ** New numeric running from 1 to 14 
 gen corder = .
-replace corder = 1 if iso_num==3        
-replace corder = 2 if iso_num==4        
+replace corder = 1 if iso_num==3        /* Antigua */
+replace corder = 2 if iso_num==4        /* Bahamas */
 replace corder = 4 if iso_num==5        /* Belize order */
 replace corder = 3 if iso_num==7        /* Barbados order */
-replace corder = 5 if iso_num==10
-replace corder = 6 if iso_num==13
-replace corder = 7 if iso_num==14
-replace corder = 8 if iso_num==16
-replace corder = 9 if iso_num==18
-replace corder = 10 if iso_num==19
-replace corder = 11 if iso_num==21
-replace corder = 12 if iso_num==25
+replace corder = 5 if iso_num==10       /* Dominica */
+replace corder = 6 if iso_num==13       /* Grenada */
+replace corder = 7 if iso_num==14       /* Guyana */
+replace corder = 8 if iso_num==16       /* Haiti */
+replace corder = 9 if iso_num==18       /* Jamaica */
+replace corder = 10 if iso_num==19       /* St Kitts */
+replace corder = 11 if iso_num==21       /* St Lucia */
+replace corder = 13 if iso_num==25       /* Suriname switched order*/
 replace corder = 14 if iso_num==27      /* Trinidad switched order*/ 
-replace corder = 13 if iso_num==29      /* St Vincent switched order*/
+replace corder = 12 if iso_num==29      /* St Vincent switched order*/
+
+
+
 
 
 ** -----------------------------------------
-** HEATMAP -- CASES
+** HEATMAP -- NEW CASES
+** -----------------------------------------
+#delimit ;
+    heatplot new i.corder date if mtype==1
+    ,
+    color(spmap, blues)
+    cuts(1($binnc)@max)
+    keylabels(all, range(1))
+    p(lcolor(gs11) lalign(center) lw(0.1))
+
+    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    ysize(12) xsize(10)
+
+    ylab(   1 "Antigua and Barbuda" 
+            2 "The Bahamas" 
+            3 "Barbados"
+            4 "Belize" 
+            5 "Dominica"
+            6 "Grenada"
+            7 "Guyana"
+            8 "Haiti"
+            9 "Jamaica"
+            10 "St Kitts and Nevis"
+            11 "St Lucia"
+            12 "St Vincent"
+            13 "Suriname"
+            14 "Trinidad and Tobago"
+    , labs(3) notick nogrid glc(gs16) angle(0))
+    yscale(reverse fill noline range(0(1)14)) 
+    ///yscale(log reverse fill noline) 
+    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+
+    xlab(   21984 "10 Mar" 
+            21994 "20 Mar" 
+            22004 "30 Mar" 
+            22015 "10 Apr"
+            $fdate "$fdatef"
+    , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
+    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+
+    title("Daily confirmed cases by $S_DATE", pos(11) ring(1) size(4))
+
+    legend(size(3) position(2) ring(4) colf cols(1) lc(gs16)
+    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+    sub("New" "Cases", size(3))
+                    )
+    name(heatmap_newcases) 
+    ;
+#delimit cr
+graph export "`outputpath'/04_TechDocs/heatmap_newcases_$S_DATE.png", replace width(4000)
+
+
+
+** -----------------------------------------
+** HEATMAP -- CASES -- GROWTH RATE
+** -----------------------------------------
+#delimit ;
+    heatplot gr7 i.corder date if mtype==1
+    ,
+    color(spmap, blues)
+    cuts(1($bingrc)@max)
+    keylabels(all, range(1))
+    p(lcolor(gs11) lalign(center) lw(0.1))
+
+    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    ysize(12) xsize(10)
+
+    ylab(   1 "Antigua and Barbuda" 
+            2 "The Bahamas" 
+            3 "Barbados"
+            4 "Belize" 
+            5 "Dominica"
+            6 "Grenada"
+            7 "Guyana"
+            8 "Haiti"
+            9 "Jamaica"
+            10 "St Kitts and Nevis"
+            11 "St Lucia"
+            12 "St Vincent"
+            13 "Suriname"
+            14 "Trinidad and Tobago"
+    , labs(3) notick nogrid glc(gs16) angle(0))
+    yscale(reverse fill noline range(0(1)14)) 
+    ///yscale(log reverse fill noline) 
+    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+
+    xlab(   21984 "10 Mar" 
+            21994 "20 Mar" 
+            22004 "30 Mar" 
+            22015 "10 Apr"
+            $fdate "$fdatef"
+    , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
+    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+
+    title("Growth rate by $S_DATE", pos(11) ring(1) size(4))
+
+    legend(size(3) position(2) ring(4) colf cols(1) lc(gs16)
+    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+    sub("Growth" "Rate", size(3))
+                    )
+    name(heatmap_growthrate) 
+    ;
+#delimit cr
+graph export "`outputpath'/04_TechDocs/heatmap_growthrate_$S_DATE.png", replace width(4000)
+
+
+** -----------------------------------------
+** HEATMAP -- CASES -- COUNT
 ** -----------------------------------------
 #delimit ;
     heatplot metric i.corder date if mtype==1
@@ -164,6 +327,7 @@ replace corder = 13 if iso_num==29      /* St Vincent switched order*/
     ///ramp(right)
     cuts(@min($binc)@max)
     keylabels(all, range(1))
+    p(lcolor(gs11) lalign(center) lw(0.1))
 
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -204,11 +368,11 @@ replace corder = 13 if iso_num==29      /* St Vincent switched order*/
     name(heatmap_cases) 
     ;
 #delimit cr
-    graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width(4000)
+graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width(4000)
 
 
 ** -----------------------------------------
-** HEATMAP -- DEATHS
+** HEATMAP -- DEATHS -- COUNT
 ** -----------------------------------------
 #delimit ;
     heatplot metric i.corder date if mtype==3
@@ -216,6 +380,7 @@ replace corder = 13 if iso_num==29      /* St Vincent switched order*/
     cuts(@min($bind)@max)
     color(spmap, reds)
     keylabels(all, range(1))
+    p(lcolor(gs11) lalign(center) lw(0.1))
 
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -311,4 +476,4 @@ replace corder = 13 if iso_num==29      /* St Vincent switched order*/
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_heatmap_version3_`date_string'", replace
+    putpdf save "`outputpath'/05_Outputs/test_covid19_heatmap_version3_`date_string'", replace
