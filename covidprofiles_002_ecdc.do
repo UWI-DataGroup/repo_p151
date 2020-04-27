@@ -28,23 +28,38 @@
 
 ** Data import from European Centre for Disease Control (ECDC, DAILY UPDATES)
 ** 24-APR-2020
+
 ** This will allow 2 things:
 **   --> Formal check of ECDC against JHopkins, taking the latest available data
-**   --> easier inclusion of the 4 UKOTS 
-**   --> Cayman Islands, Turks and Caicos, Monserrat, BVI
+**   --> easier inclusion of the 6 UKOTS 
+**   --> Anguilla, Bermuda, Cayman Islands, Turks and Caicos, Monserrat, BVI
 ** https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide.xlsx
 ** https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
-local URL_csv = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
-local URL_xlsx = "https://www.ecdc.europa.eu/sites/default/files/documents/"
-local URL_file = "COVID-19-geographic-disbtribution-worldwide.xlsx"
-cap import excel using "`URL_xlsx'`URL_file'", first clear 
-import excel using "`datapath'/version01/1-input/temp_ecdc/COVID-19-geographic-disbtribution-worldwide.xlsx", first clear
-drop day month year geoId continentExp 
 
+** Last resort local download if URL access is not available
+** This last happened on Monday 27-Apr-2020
+** import excel using "`datapath'/version01/1-input/temp_ecdc/COVID-19-geographic-disbtribution-worldwide.xlsx", first clear
+** local URL_csv = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
+** local URL_xlsx = "https://www.ecdc.europa.eu/sites/default/files/documents/"
+** local URL_file = "COVID-19-geographic-disbtribution-worldwide.xlsx"
+** import excel using "`URL_xlsx'`URL_file'", first clear 
+
+** Download Daily CSV file from ECDC using PYTHON (-pandas- data analytics library) import and transfer
+python: import pandas as covid_csv
+python: covid_df = covid_csv.read_csv('https://opendata.ecdc.europa.eu/covid19/casedistribution/csv')
+cd "`datapath'\version01\1-input\"
+python: covid_df.to_stata('covid_ecdc.dta')
+use "`datapath'\version01\1-input\covid_ecdc", clear
+
+** Data Preparation of Imported file, in preparation for combining with Johns hopkins dataset 
+drop index day month year geoId continentExp 
 
 ** DATE OF EVENTS
-rename dateRep date 
+** rename dateRep date 
+gen date = date(dateRep, "DMY", 2020)
 format date %tdNN/DD/CCYY
+drop dateRep 
+
 ** TEXT NAME FOR COUNTRY (STRING)
 rename countriesAndTerritories countryregion 
 ** THREE DIGIT ISO COUNTRY CODE (UPPER CASE STRING)
@@ -55,6 +70,5 @@ rename popData2018 pop
 rename cases confirmed 
 
 ** Save out the dataset for next DO file
+order countryregion iso date pop confirmed deaths 
 save "`datapath'\version01\2-working\ecdc_time_series", replace
-
-
