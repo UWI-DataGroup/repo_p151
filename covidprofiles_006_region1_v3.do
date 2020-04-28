@@ -35,7 +35,7 @@ qui do "`logpath'\covidprofiles_004_metrics_v3"
 
 ** Close any open log file and open a new log file
 capture log close
-log using "`logpath'\covidprofiles_005_country1", replace
+log using "`logpath'\covidprofiles_006_region1_v3", replace
 
 ** Labelling of the internal country numeric
 #delimit ; 
@@ -75,6 +75,9 @@ label define cname_ 1 "Anguilla"
 gen confirmed_rate = (confirmed / pop) * 10000
 ** "Fix" --> Early Guyana values 
 replace confirmed = 4 if iso_num==14 & date>=d(17mar2020) & date<=d(23mar2020)
+** Fix --> Single Montserrat value 
+replace confirmed = 5 if confirmed==0 & iso_num==22 & date==d(01apr2020)
+
 
 ** SMOOTHED CASES for graphic
 bysort iso: asrol confirmed , stat(mean) window(date 3) gen(confirmed_av3)
@@ -955,7 +958,7 @@ restore
     putpdf table p3(2,1)=("Antigua and Barbuda, The Bahamas, Barbados, Belize, Dominica, Grenada, Guyana, Haiti, Jamaica, "), append 
     putpdf table p3(2,1)=("St. Kitts and Nevis, St. Lucia, St. Vincent and the Grenadines, Suriname, Trinidad and Tobago."), append
     putpdf table p3(2,1)=("United Kingdom Overseas Territories (UKOTS): "), italic append
-    putpdf table p3(2,1)=("Anguilla, Bermuda, British Virgin Islands, Cayman Islands, Mmonserrat, Turks and Caicos Islands."), append 
+    putpdf table p3(2,1)=("Anguilla, Bermuda, British Virgin Islands, Cayman Islands, Montserrat, Turks and Caicos Islands."), append 
 
     putpdf table p3(3,1)=("(NOTE 3) Growth Rate.  "), bold halign(left)
     putpdf table p3(3,1)=("The blue graph in the final column shows the number of cases on a different scale (called a logarithm scale). "), append 
