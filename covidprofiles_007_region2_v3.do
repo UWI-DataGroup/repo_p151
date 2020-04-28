@@ -476,4 +476,4 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/test_covid19_heatmap_version3_`date_string'", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_heatmap_version3_`date_string'", replace

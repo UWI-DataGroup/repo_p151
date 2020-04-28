@@ -390,4 +390,4 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
     local time_string = subinstr("`c_time_date'", ":", "_", .)
     local time_string = subinstr("`time_string'", " ", "", .)
     ///putpdf save "`outputpath'/05_Outputs/covid19_trajectory_caricom_heatmap_`time_string'", replace
-    putpdf save "`outputpath'/05_Outputs/test_covid19_doublingtime_version3_`c_date'", replace
+    putpdf save "`outputpath'/05_Outputs/covid19_doublingtime_version3_`c_date'", replace

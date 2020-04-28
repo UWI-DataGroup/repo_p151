@@ -164,13 +164,16 @@ replace confirmed = 252 if confirmed == 233 & iso=="JAM" & date==d(22apr2020)
 ** 23-Apr-2020
 replace confirmed = 14 if confirmed == 13 & iso=="VCT" & date==d(23apr2020)
 
-** 24-Apr-2020
+** 24/25-Apr-2020
 ** NO CHANGES
 
-** 25-Apr-2020
+** 25/26-Apr-2020
 ** NO CHANGES
 
-** 26-Apr-2020
+** 26/27-Apr-2020
+** NO CHANGES
+
+** 27/28-Apr-2020
 ** NO CHANGES
 
 *! -------------------------------------------
@@ -293,7 +296,7 @@ replace deaths = deaths2 if deaths==. & deaths1==. & deaths2<.
 
 drop confirmed1 confirmed2 deaths1 deaths2 
 sort iso date
-** drop if date>date[_n+1] & iso!=iso[_n+1]
+drop if date>date[_n+1] & iso!=iso[_n+1] & (iso!="AIA" & iso!="ANT" & iso!="BMU" & iso!="CYM" & iso!="VGB" & iso!="TCA" & iso!="HKG" & iso!="MSR")
 
 rename recovered1 recovered 
 
