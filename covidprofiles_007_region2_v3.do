@@ -94,8 +94,8 @@ label define cname_ 1 "Anguilla"
 ** COVID appearance - which I think was in JAM
     fillin date iso_num 
     sort iso_num date
-    drop if date>date[_n+1] & iso_num!=iso_num[_n+1]
-    drop if inlist(_n, _N)
+    ///drop if date>date[_n+1] & iso_num!=iso_num[_n+1]
+    ///drop if inlist(_n, _N)
     replace confirmed = 0 if confirmed==.
     replace deaths = 0 if deaths==.
     replace recovered = 0 if recovered==.
@@ -228,8 +228,6 @@ replace corder = 17 if iso_num==29      /* St Vincent switched order*/
 replace corder = 18 if iso_num==25      /* Suriname switched order*/
 replace corder = 19 if iso_num==27      /* Trinidad switched order*/ 
 replace corder = 20 if iso_num==26      /* Turks and Caicos Islands*/
-
-
 
 
 ** -----------------------------------------
@@ -493,12 +491,12 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
     heatplot new i.corder date if mtype==3
     ,
     color(spmap, reds)
-    cuts(@min(1)@max)
-    ///cuts(1($binnd)@max)
+    cuts(@min(1){@max+1})
     keylabels(all, range(1))
     p(lcolor(white) lalign(center) lw(0.05))
     discrete
     statistic(asis)
+    srange(1)
 
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 

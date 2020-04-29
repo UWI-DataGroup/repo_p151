@@ -176,6 +176,9 @@ replace confirmed = 14 if confirmed == 13 & iso=="VCT" & date==d(23apr2020)
 ** 27/28-Apr-2020
 ** NO CHANGES
 
+** 28/29-Apr-2020
+** replace confirmed = 381 if confirmed == 364 & iso=="JAM" & date==d(28apr2020)
+
 *! -------------------------------------------
 
 ** Rename JHopkins variables and save 
@@ -282,23 +285,47 @@ order iso_num pop, after(iso)
 ** Final CASE and DEATH variables
 
 ** CASES
-sort iso date 
-gen confirmed = confirmed1
-replace confirmed = confirmed2 if confirmed1==. & (iso==iso[_n-1]) & (confirmed2>confirmed1[_n-1])
-replace confirmed = confirmed1[_n-1] if confirmed==. & confirmed1[_n-1]<. & (iso==iso[_n-1]) 
-replace confirmed = confirmed2 if confirmed==. & confirmed1==. & confirmed2<. 
-** DEATHS
-sort iso date 
-gen deaths = deaths1
-replace deaths = deaths2 if deaths1==. & (iso==iso[_n-1]) & (deaths2>deaths1[_n-1])
-replace deaths = deaths1[_n-1] if deaths==. & deaths1[_n-1]<. & (iso==iso[_n-1]) 
-replace deaths = deaths2 if deaths==. & deaths1==. & deaths2<. 
+** 29-APR-2020
+** We choose to use ECDC data for today - let's see what happens...!!
+gen confirmed = confirmed2 
+replace confirmed = confirmed1 if iso=="HKG" & confirmed==. 
+replace confirmed = confirmed1 if iso=="SUR" & confirmed1<=4
+gen deaths = deaths2 
+replace deaths = deaths1 if iso=="HKG" & deaths==. 
+replace deaths = deaths1 if iso=="SUR" & deaths1==0
+rename recovered1 recovered 
 
+** Some early numbers are missing from the ECDC time series - replace with the JHopkins numbers
+** This applies to:
+** Antigua, Bahamas, Cuba
+#delimit ; 
+replace confirmed = confirmed1 if confirmed==. & confirmed1<. & 
+            (iso=="ATG" | iso=="BHS" | iso=="BLZ" | iso=="CUB" | iso=="DMA" | 
+             iso=="DOM" | iso=="GRD" | iso=="GUY" | iso=="JAM" |
+             iso=="KNA" | iso=="LCA" | iso=="NZL" | iso=="VCT");
+replace deaths = deaths1 if deaths==. & deaths1<. & 
+            (iso=="ATG" | iso=="BHS" | iso=="BLZ" | iso=="CUB" | iso=="DMA" | 
+             iso=="DOM" | iso=="GRD" | iso=="GUY" | iso=="JAM" |
+             iso=="KNA" | iso=="LCA" | iso=="NZL" | iso=="VCT");
+#delimit cr 
+
+** Barbados need to impute backwards
+replace confirmed = confirmed[_n+1] if confirmed==. & confirmed[_n+1]<. & iso=="BRB"
+
+sort iso date 
+** gen confirmed = confirmed1
+** replace confirmed = confirmed2 if confirmed1==. & (iso==iso[_n-1]) & (confirmed2>confirmed1[_n-1])
+** replace confirmed = confirmed1[_n-1] if confirmed==. & confirmed1[_n-1]<. & (iso==iso[_n-1]) 
+** replace confirmed = confirmed2 if confirmed==. & confirmed1==. & confirmed2<. 
+** DEATHS
+** sort iso date 
+** gen deaths = deaths1
+** replace deaths = deaths2 if deaths1==. & (iso==iso[_n-1]) & (deaths2>deaths1[_n-1])
+** replace deaths = deaths1[_n-1] if deaths==. & deaths1[_n-1]<. & (iso==iso[_n-1]) 
+** replace deaths = deaths2 if deaths==. & deaths1==. & deaths2<. 
 drop confirmed1 confirmed2 deaths1 deaths2 
 sort iso date
-drop if date>date[_n+1] & iso!=iso[_n+1] & (iso!="AIA" & iso!="ANT" & iso!="BMU" & iso!="CYM" & iso!="VGB" & iso!="TCA" & iso!="HKG" & iso!="MSR")
-
-rename recovered1 recovered 
+///drop if date>date[_n+1] & iso!=iso[_n+1] & (iso!="AIA" & iso!="ANT" & iso!="BMU" & iso!="CYM" & iso!="VGB" & iso!="TCA" & iso!="HKG" & iso!="MSR")
 
 ** Save the cleaned and restricted dataset
 save "`datapath'\version01\2-working\jh_time_series_restricted", replace
