@@ -86,6 +86,7 @@ by iso: asrol deaths , stat(mean) window(date 3) gen(deaths_av3)
 
 ** LOOP through N=14 CARICOM member states
 local clist "AIA ATG BHS BLZ BMU BRB CYM DMA GRD GUY HTI JAM KNA LCA MSR SUR TCA TTO VCT VGB"
+local clist "AIA ATG"
 foreach country of local clist {
     ** country  = 3-character ISO name
     ** cname    = FULL country name
@@ -182,6 +183,87 @@ foreach country of local clist {
                 ;
         #delimit cr
         graph export "`outputpath'/04_TechDocs/line_`country'_$S_DATE.png", replace width(6000)
+        drop c3 c4 c5
+
+** GRAPHIC: CASES + DEATHS (Bar with line overlay)
+        #delimit ;
+        gr twoway 
+            (bar confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', col("181 215 244"))
+            (bar deaths elapsed if iso=="`country'" & elapsed<=`elapsed', col("255 158 131"))
+            (line confirmed_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', lc("14 73 124") lw(0.4) lp("-"))
+            (scat confirmed_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', msize(2.5) mc("14 73 124") m(o))
+            (line deaths_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', lc("124 10 7") lw(0.4) lp("-"))
+            (scat deaths_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', msize(2.5) mc("124 10 7") m(o)
+
+            )
+            ,
+
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+            ysize(10) xsize(10)
+            
+            xlab(
+            , labs(6) nogrid glc(gs16) angle(0) format(%9.0f))
+            xtitle("Days since first case", size(6) margin(l=2 r=2 t=2 b=2)) 
+                
+            ylab(
+            , labs(6) notick nogrid glc(gs16) angle(0))
+            yscale(fill noline) 
+            ytitle("Cumulative # of Cases", size(6) margin(l=2 r=2 t=2 b=2)) 
+            
+            ///title("(1) Cumulative cases in `country'", pos(11) ring(1) size(4))
+
+            legend(off size(6) position(5) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+                region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+                )
+                name(barsq_`country') 
+                ;
+        #delimit cr
+        graph export "`outputpath'/04_TechDocs/barsq_`country'_$S_DATE.png", replace width(6000)
+
+** LINE CHART (LOGARITHM)
+    #delimit ;
+        gr twoway             
+            ///(line confirmed elapsed if iso=="USA" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
+            ///(line confirmed elapsed if iso=="GBR" & elapsed<=`elapsed', lc(orange%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="NZL" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="ISL" & elapsed<=`elapsed', lc(orange%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="HKG" & elapsed<=`elapsed', lc(red%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="SGP" & elapsed<=`elapsed', lc(purple%40) lw(0.35) lp("-"))
+            (line confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', lc("14 73 124") lw(0.4) lp("-"))
+            (scat confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', msize(2.5) mc("14 73 124") m(o))
+            ,
+
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+            ysize(10) xsize(10)
+            
+                xlab(
+                    , labs(6) notick nogrid glc(gs16))
+                xscale(fill noline) 
+                xtitle("Days since first case", size(6) margin(l=2 r=2 t=2 b=2)) 
+                
+                ylab(
+                ,
+                labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
+                ytitle("Cumulative # of Cases", size(6) margin(l=2 r=2 t=2 b=2)) 
+                yscale(log)
+
+                legend(size(6) position(4) ring(1) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+                region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+                order(5 1 2 3 4) 
+                lab(1 "New Zealand") 
+                lab(2 "Iceland")
+                lab(3 "Hong Kong") 
+                lab(4 "Singapore") 
+                lab(5 "`cname'")
+                )
+                name(linesq_`country') 
+                ;
+        #delimit cr
+        graph export "`outputpath'/04_TechDocs/linesq_`country'_$S_DATE.png", replace width(6000)
         drop c3 c4 c5
 
 ** ------------------------------------------------------
