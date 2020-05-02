@@ -170,7 +170,7 @@ global binar = diffar
 ** Count: cumulative deaths
 gen diffd1 = diffv if mtype==3
 egen diffd2 = min(diffd) 
-gen diffd = round(diffd2/15)
+gen diffd = round(diffd2/20)
 global bind = diffd 
 
 ** Daily new events: cases
