@@ -1,9 +1,9 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name				  covidprofiles_002_ecdc_v3.do
+    //  algorithm name				  paper01_01ecdc.do
     //  project:				        
     //  analysts:				  	  Ian HAMBLETON
-    // 	date last modified	          25-APR-2020
+    // 	date last modified	          04-MAY-2020
     //  algorithm task			      Draw Open Access Data from ECDC (link below)
 
     ** General algorithm set-up
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_002_ecdc_v3", replace
+    log using "`logpath'\paper01_01ecdc", replace
 ** HEADER -----------------------------------------------------
 
 ** Data import from European Centre for Disease Control (ECDC, DAILY UPDATES)
@@ -71,4 +71,4 @@ rename cases confirmed
 
 ** Save out the dataset for next DO file
 order countryregion iso date pop confirmed deaths 
-save "`datapath'\version01\2-working\ecdc_time_series", replace
+save "`datapath'\version02\2-working\paper01_ecdc", replace
