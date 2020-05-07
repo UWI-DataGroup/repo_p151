@@ -34,7 +34,7 @@ qui do "`logpath'\paper01_04metrics"
 
 ** Close any open log file and open a new log file
 capture log close
-log using "`logpath'\covidprofiles_006_region1_v3", replace
+log using "`logpath'\paper01_09scratch", replace
 
 ** Labelling of the internal country numeric
 #delimit ; 
@@ -222,14 +222,13 @@ preserve
 restore
 
 
-
+/*
 
 ** -----------------------------------------
 ** Use the FULL PAPER01 dataset
 ** -----------------------------------------
 use "`datapath'\version02\2-working\paper01_dataset", clear
 
-/*
 ** Basic heatmap of 31 NPI measures 
 ** Initial data preparation
 preserve
@@ -317,8 +316,6 @@ preserve
     ///graph export "`outputpath'/04_TechDocs/heatmap_newcases_$S_DATE.png", replace width(4000)
 restore 
 
-
-*/
 
 ** Bar / Line chart
 ** Number of days pre and post 1st case
@@ -739,3 +736,231 @@ preserve
         #delimit cr
         ///graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(6000)
 restore
+
+*/
+
+** -----------------------------------------------------------
+** GOOGLE MOVEMENT DATA
+** -----------------------------------------------------------
+** HEATMAP1 - Average DAILY drop in retail, grocery, workplace and transit mobility dimensions
+** HEATMAP2 - Average Daily increase in "stay at home" behaviour
+** BAR CHARTS - 2 per country - long and thin
+** -----------------------------------------------------------
+
+use "`datapath'\version02\2-working\paper01_google", clear
+egen movement = rowmean(orig_retail orig_grocery orig_transit orig_work)
+gen home = orig_residential 
+
+bysort iso: asrol movement , stat(mean) window(date 3) gen(movement_av3)
+bysort iso: asrol home , stat(mean) window(date 3) gen(home_av3)
+
+    ** New numeric running from 1 to 14 
+    gen corder = .
+    replace corder = 1 if iso=="ATG"
+    replace corder = 2 if iso=="BHS"       
+    replace corder = 3 if iso=="BRB"      
+    replace corder = 4 if iso=="BLZ"       
+    replace corder = 5 if iso=="DOM"       
+    replace corder = 6 if iso=="HTI"      
+    replace corder = 7 if iso=="JAM"      
+    replace corder = 8 if iso=="TTO"  
+    replace corder = 9 if iso=="ITA"  
+    replace corder = 10 if iso=="NZL"  
+    replace corder = 11 if iso=="SGP"  
+    replace corder = 12 if iso=="ESP"  
+    replace corder = 13 if iso=="GRB"  
+    replace corder = 14 if iso=="USA"  
+    replace corder = 15 if iso=="VNM"  
+
+** Automate final date on x-axis 
+** Use latest date in dataset 
+egen fdate1 = max(date)
+global fdate = fdate1 
+global fdatef : di %tdD_m date("$S_DATE", "DMY")
+
+/*
+#delimit ;
+    heatplot movement_av3 i.corder date
+    ,
+    ///color(spmap, blues)
+    color(RdYlGn, reverse)
+    cuts(@min(10)@max)
+    keylabels(all, range(1))
+    p(lcolor(white) lalign(center) lw(0.05))
+    discrete
+    statistic(asis)
+
+    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    ysize(9) xsize(15)
+
+    ylab(
+            1 "Antigua and Barbuda" 
+            2 "The Bahamas" 
+            3 "Barbados"
+            4 "Belize" 
+            5 "Dominican Republic"
+            6 "Haiti"
+            7 "Jamaica"
+            8 "Trinidad and Tobago"
+            9 "Italy"
+            10 "New Zealand"
+            11 "Singapore"
+            12 "Spain"
+            13 "United Kingdom"
+            14 "United States"
+            15 "Vietnam"
+
+    , labs(2.75) notick nogrid glc(gs16) angle(0))
+    yscale(reverse fill noline range(0(1)14)) 
+    ///yscale(log reverse fill noline) 
+    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+
+    xlab(
+            21964 "19 Feb" 
+            21974 "29 Feb" 
+            21984 "10 Mar" 
+            21994 "20 Mar" 
+            22004 "30 Mar" 
+            22015 "10 Apr"
+            22025 "20 Apr"
+            22035 "30 Apr"
+            ///$fdate "$fdatef"
+    , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+
+    title("Change in movement data $S_DATE", pos(11) ring(1) size(3.5))
+
+    legend(size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
+    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+    sub("Movement" "Change (%)", size(2.75))
+                    )
+    name(heatmap_movement) 
+    ;
+#delimit cr
+/// graph export "`outputpath'/04_TechDocs/heatmap_growthrate_$S_DATE.png", replace width(4000)
+
+*/
+
+** BAR CHART 
+** BARBADOS
+#delimit ;
+    graph twoway
+    (bar movement date if movement>0 & iso=="BRB", color(red%50)  barw(0.75))
+    (bar movement date if movement<=0 & iso=="BRB", color(green%50) barw(0.75) )
+    ,
+    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    ysize(3) xsize(15)
+
+    ylab(-100(40)20
+    , labs(7) notick nogrid glc(gs16) angle(0))
+    yscale(fill noline) 
+    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+
+    xlab(
+            21964 "             " 
+            21974 "      " 
+            21984 "      " 
+            21994 "      " 
+            22004 "      " 
+            22015 "      "
+            22025 "      "
+            22035 "      "
+            ///$fdate "$fdatef"
+    , labs(7) nogrid glc(gs16) angle(45) format(%9.0f))
+    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+    xscale(noline) 
+
+    title("Barbados: $S_DATE", pos(11) ring(1) size(9))
+
+    legend(off size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
+    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+    sub("Movement" "Change (%)", size(2.75))
+                    )
+    name(bar_movement1) 
+    ;
+#delimit cr
+graph export "`outputpath'/04_TechDocs/movement_BRB_$S_DATE.png", replace width(4000)
+
+
+** BARBADOS
+#delimit ;
+    graph twoway
+    (bar movement date if movement>0 & iso=="TTO", color(red%50)  barw(0.75))
+    (bar movement date if movement<=0 & iso=="TTO", color(green%50) barw(0.75) )
+    ,
+    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    ysize(3) xsize(15)
+
+    ylab(-100(40)20
+    , labs(7) notick nogrid glc(gs16) angle(0))
+    yscale(fill noline) 
+    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+
+    xlab(
+            21964 "             " 
+            21974 "      " 
+            21984 "      " 
+            21994 "      " 
+            22004 "      " 
+            22015 "      "
+            22025 "      "
+            22035 "      "
+            ///$fdate "$fdatef"
+    , labs(7) nogrid glc(gs16) angle(45) format(%9.0f))
+    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+    xscale(noline) 
+
+    title("Trinidad and Tobago: $S_DATE", pos(11) ring(1) size(9))
+
+    legend(off size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
+    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+    sub("Movement" "Change (%)", size(2.75))
+                    )
+    name(bar_movement2) 
+    ;
+#delimit cr
+graph export "`outputpath'/04_TechDocs/movement_TTO_$S_DATE.png", replace width(4000)
+
+
+** JAMAICA
+#delimit ;
+    graph twoway
+    (bar movement date if movement>0 & iso=="JAM", color(red%50)  barw(0.75))
+    (bar movement date if movement<=0 & iso=="JAM", color(green%50) barw(0.75) )
+    ,
+    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+    ysize(3) xsize(15)
+
+    ylab(-100(40)20
+    , labs(7) notick nogrid glc(gs16) angle(0))
+    yscale(fill noline) 
+    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+
+    xlab(
+            21964 "19 Feb" 
+            21974 "29 Feb" 
+            21984 "10 Mar" 
+            21994 "20 Mar" 
+            22004 "30 Mar" 
+            22015 "10 Apr"
+            22025 "20 Apr"
+            22035 "30 Apr"
+            ///$fdate "$fdatef"
+    , labs(7) nogrid glc(gs16) angle(45) format(%9.0f))
+    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+    xscale(noline) 
+
+    title("Jamaica: $S_DATE", pos(11) ring(1) size(9))
+
+    legend(off size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
+    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
+    sub("Movement" "Change (%)", size(2.75))
+                    )
+    name(bar_movement3) 
+    ;
+#delimit cr
+graph export "`outputpath'/04_TechDocs/movement_JAM_$S_DATE.png", replace width(4000)
