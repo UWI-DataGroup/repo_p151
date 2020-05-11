@@ -778,7 +778,7 @@ egen fdate1 = max(date)
 global fdate = fdate1 
 global fdatef : di %tdD_m date("$S_DATE", "DMY")
 
-/*
+
 #delimit ;
     heatplot movement_av3 i.corder date
     ,
@@ -840,7 +840,7 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 #delimit cr
 /// graph export "`outputpath'/04_TechDocs/heatmap_growthrate_$S_DATE.png", replace width(4000)
 
-*/
+
 
 ** BAR CHART 
 ** BARBADOS

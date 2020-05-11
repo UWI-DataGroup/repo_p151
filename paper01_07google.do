@@ -31,7 +31,7 @@
 
 
 cd "`datapath'\version02\1-input\"
-import delimited using "Global_Mobility_Report_20200506.csv", clear 
+import delimited using "Global_Mobility_Report_20200511.csv", clear 
 
 ** RESTRICT TO SELECTED COUNTRIES
 ** Keep UK, USA, Sth Korea, Singapore as comparators. Then keep all Caribbean nations

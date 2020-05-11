@@ -28,7 +28,9 @@
 
 local URL_xlsx = "https://www.acaps.org/sites/acaps/files/resources/files/"
 local URL_file = "acaps_covid19_goverment_measures_dataset.xlsx"
+local URL_file = "acaps_covid19_goverment_measures_dataset_0.xlsx"
 import excel using "`URL_xlsx'`URL_file'", first clear sheet("Database")
+
 drop ADMIN_LEVEL_NAME PCODE NON_COMPLIANCE SOURCE SOURCE_TYPE LINK ENTRY_DATE Alternativesource 
 cap drop S T U V W
 
@@ -46,6 +48,17 @@ label var country "Text: country name"
 ** We keep 6 UKOTS                  --> AIA BMU VGB CYM MSR TCA 
 ** + Cuba                           --> CUB
 ** + Dominican Republic             --> DOM
+** GOOD COMPARATOR COUNTRIES
+**      New Zealand
+**      Singapore
+**      Iceland
+**      Fiji
+**      South Korea 
+** NOT-SO-GOOD COMPARATOR COUNTRIES
+**      Italy
+**      United Kingdom
+**      Spain
+**      United States
 rename ISO iso 
 #delimit ; 
     keep if 
@@ -70,7 +83,17 @@ rename ISO iso
         iso=="VCT" |
         iso=="SUR" |
         iso=="TTO" |
-        iso=="TCA";
+        iso=="TCA" | 
+        iso=="NZL" |
+        iso=="SGP" |
+        iso=="ISL" |
+        iso=="FJI" |
+        iso=="VNM" |
+        iso=="KOR" |
+        iso=="ITA" |
+        iso=="GBR" |
+        iso=="ESP" |
+        iso=="USA" ;
 #delimit cr   
 label var iso "text: country 3-digit ISO code"
 
@@ -108,86 +131,99 @@ label define icat_  1 "governance"
 #delimit cr 
 label values icat icat_ 
 
-** Intervention measure
+** CODING THE INTERVENTION ONTOLOGY
 groups MEASURE, show(f p) 
 replace MEASURE = ustrtrim(strtrim(MEASURE)) 
 
 gen imeasure = . 
+** Movement Restrictions
 replace imeasure = 1 if MEASURE == "Additional health/documents requirements upon arrival"
-replace imeasure = 2 if MEASURE == "Amendments to funeral and burial regulations"
-replace imeasure = 3 if MEASURE == "Awareness campaigns"
-replace imeasure = 4 if MEASURE == "Border checks"
-replace imeasure = 5 if MEASURE == "Border closure"
+replace imeasure = 2 if MEASURE == "Border checks"
+replace imeasure = 3 if MEASURE == "Border closure"
+replace imeasure = 4 if MEASURE == "Complete border closure"
+replace imeasure = 5 if MEASURE == "Checkpoints within the country"
+replace imeasure = 6 if MEASURE == "International flights suspension"
+replace imeasure = 7 if MEASURE == "Domestic travel restrictions"
+replace imeasure = 8 if MEASURE == "Visa restrictions"
+replace imeasure = 9 if MEASURE == "Curfews"
+replace imeasure = 10 if MEASURE == "Surveillance and monitoring"
 
-replace imeasure = 6 if MEASURE == "Changes in prison-related policies"
-replace imeasure = 7 if MEASURE == "Checkpoints within the country"
-replace imeasure = 8 if MEASURE == "Curfews"
-replace imeasure = 9 if MEASURE == "Domestic travel restrictions"
-replace imeasure = 10 if MEASURE == "Economic measures"
-
-replace imeasure = 11 if MEASURE == "Emergency administrative structures activated or established"
-replace imeasure = 12 if MEASURE == "Full lockdown"
+** Public Health Measures
+replace imeasure = 11 if MEASURE == "Awareness campaigns"
+replace imeasure = 12 if MEASURE == "Isolation and quarantine policies"
 replace imeasure = 13 if MEASURE == "General recommendations"
 replace imeasure = 14 if MEASURE == "Health screenings in airports and border crossings"
-replace imeasure = 15 if MEASURE == "International flights suspension"
+replace imeasure = 15 if MEASURE == "Obligatory medical tests not related to COVID-19"
+replace imeasure = 16 if MEASURE == "Psychological assistance and medical social work"
+replace imeasure = 17 if MEASURE == "Mass population testing"
+replace imeasure = 18 if MEASURE == "Strengthening the public health system"
+replace imeasure = 19 if MEASURE == "Testing policy"
+replace imeasure = 20 if MEASURE == "Amendments to funeral and burial regulations"
+replace imeasure = 21 if MEASURE == "Requirement to wear protective gear in public"
+replace imeasure = 22 if MEASURE == "Other public health measures enforced"
 
-replace imeasure = 16 if MEASURE == "Isolation and quarantine policies"
-replace imeasure = 17 if MEASURE == "Limit product imports/exports"
-replace imeasure = 18 if MEASURE == "Limit public gatherings"
-replace imeasure = 19 if MEASURE == "Mass population testing"
-replace imeasure = 20 if MEASURE == "Military deployment"
+** Government and Socioeconomic Measures
+replace imeasure = 23 if MEASURE == "Economic measures"
+replace imeasure = 24 if MEASURE == "Emergency administrative structures activated or established"
+replace imeasure = 25 if MEASURE == "Limit product imports/exports"
+replace imeasure = 26 if MEASURE == "State of emergency declared"
+replace imeasure = 27 if MEASURE == "Military deployment"
 
-replace imeasure = 21 if MEASURE == "Other public health measures enforced"
-replace imeasure = 22 if MEASURE == "Partial lockdown"
-replace imeasure = 23 if MEASURE == "Psychological assistance and medical social work"
-replace imeasure = 24 if MEASURE == "Public services closure"
-replace imeasure = 25 if MEASURE == "Requirement to wear protective gear in public"
-
-replace imeasure = 26 if MEASURE == "Schools closure"
-replace imeasure = 27 if MEASURE == "State of emergency declared"
-replace imeasure = 28 if MEASURE == "Strengthening the public health system"
-replace imeasure = 29 if MEASURE == "Surveillance and monitoring"
-replace imeasure = 30 if MEASURE == "Testing policy"
-
-replace imeasure = 31 if MEASURE == "Visa restrictions"
+** Social Distancing
+replace imeasure = 28 if MEASURE == "Limit public gatherings" | MEASURE == "limit public gatherings"
+replace imeasure = 29 if MEASURE == "Public services closure"
+replace imeasure = 30 if MEASURE == "Changes in prison-related policies"
+replace imeasure = 31 if MEASURE == "Schools closure"
+replace imeasure = 32 if MEASURE == "Partial lockdown"
+replace imeasure = 33 if MEASURE == "Full lockdown"
+replace imeasure = 34 if MEASURE == "Lockdown of refugee/IDP camps or other minorities"
 label var imeasure "Intervention measure"
 order imeasure, after(icat)
+
+
 #delimit ; 
-label define imeasure_  1 "health docs on arrival"
-                        2 "funeral regs"
-                        3 "awareness campaigns"
-                        4 "border checks"
-                        5 "border closure"
-                        6 "prison policies"
-                        7 "country checkpoints"
-                        8 "curfew"
-                        9 "restrict local travel"
-                        10 "economic measures"
-                        11 "emerg admin structures"
-                        12 "full lockdown"
-                        13 "general recommendations"
-                        14 "airport health screening"
-                        15 "flight suspension"
-                        16 "isolation policies"
-                        17 "limit imports/exports"
-                        18 "limit public gatherings"
-                        19 "mass testing"
-                        20 "military"
-                        21 "other ph measures"
-                        22 "partial lockdown"
-                        23 "psychological assiatance"
-                        24 "public services closed"
-                        25 "protective gear in public"
-                        26 "school closure"
-                        27 "state of emergency"
-                        28 "ph system strengthening"
-                        29 "surv/monitoring"
-                        30 "testing policy"
-                        31 "visa restrictions";
+label define imeasure_  
+         1  "Additional health/documents requirements upon arrival"
+         2  "Border checks"
+         3  "Border closure"
+         4  "Complete border closure"
+         5  "Checkpoints within the country"
+         6  "International flights suspension"
+         7  "Domestic travel restrictions"
+         8  "Visa restrictions"
+         9  "Curfews"
+         10 "Surveillance and monitoring"
+
+         11 "Awareness campaigns"
+         12 "Isolation and quarantine policies"
+         13 "General recommendations"
+         14 "Health screenings in airports"
+         15 "Obligatory non-COVID medical tests"
+         16 "Psychological assistance"
+         17 "Mass population testing"
+         18 "Strengthening the PH system"
+         19 "Testing policy"
+         20 "Amendments to funeral regs"
+         21 "Protective gear in public"
+         22 "Other public health measures"
+
+         23 "Economic measures"
+         24 "Emergency admin structures"
+         25 "Limit product imports/exports"
+         26 "State of emergency declared"
+         27 "Military deployment"
+
+         28 "Limit public gatherings"
+         29 "Public services closure"
+         30 "Changes in prison policies"
+         31 "Schools closure"
+         32 "Partial lockdown"
+         33 "Full lockdown"
+         34 "Lockdown of refugee/IDP camps";
 #delimit cr 
 label values imeasure imeasure_
-drop CATEGORY MEASURE 
-
+/*drop CATEGORY MEASURE 
+/*
 ** Population group targeted
 replace TARGETED_POP_GROUP = ustrtrim(strtrim(TARGETED_POP_GROUP)) 
 gen tgroup = .
@@ -207,6 +243,11 @@ label var comment "Comment on exact nature of NPI"
 rename DATE_IMPLEMENTED donpi
 label var donpi "Date of NPI"
 order donpi, after(region)
+
+
+** NEW GROUPING WITH CARIBBEAN RELEVANCE
+
+
 
 ** Save out the dataset for next DO file
 save "`datapath'\version02\2-working\paper01_acaps", replace
