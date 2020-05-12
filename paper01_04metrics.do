@@ -28,7 +28,7 @@
 
 ** JH time series COVD-19 data 
 ** RUN covidprofiles_002_jhopkins.do BEFORE this algorithm
-use "`datapath'\version01\2-working\jh_time_series_restricted", clear
+use "`datapath'\version02\2-working\paper01_covid", clear
 
 
 ** ---------------------------------------------------
@@ -141,7 +141,7 @@ by iso: asrol dr_deaths , stat(mean) window(date 10) gen(m73)
 ** Create local macros for the various metrics
 ** These will be used to create graphics and post to PDF briefings
 local numz = "25 50 100 200 400 800 1600 3200 6400 12800"
-local clist "AIA ANT ATG BHS BLZ BMU BRB CUB CYM DMA DOM GBR GRD GUY HKG HTI ISL JAM KNA KOR LCA MSR NZL SGP SUR TCA TTO USA VCT VGB"
+local clist "AIA ATG BHS BLZ BMU BRB CUB CYM DMA DOM GRD GUY HTI JAM KNA LCA MSR SUR TCA TTO VCT VGB NZL SGP ISL FJI VNM KOR ITA GBR DEU SWE"
 foreach country of local clist {
 
     ** METRIC 01

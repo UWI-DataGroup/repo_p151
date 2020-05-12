@@ -28,10 +28,15 @@
 
 local URL_xlsx = "https://www.acaps.org/sites/acaps/files/resources/files/"
 local URL_file = "acaps_covid19_goverment_measures_dataset.xlsx"
-local URL_file = "acaps_covid19_goverment_measures_dataset_0.xlsx"
-import excel using "`URL_xlsx'`URL_file'", first clear sheet("Database")
+local URL_file = "acaps_covid19_government_measures_dataset.xlsx"
+local URL_file = "acaps_covid19_government_measures_dataset_20200512.xlsx"
+cap import excel using "`URL_xlsx'`URL_file'", first clear sheet("Database")
+import excel using "`datapath'\version02\1-input\\`URL_file'", first clear sheet("Database")
 
-drop ADMIN_LEVEL_NAME PCODE NON_COMPLIANCE SOURCE SOURCE_TYPE LINK ENTRY_DATE Alternativesource 
+
+
+
+drop ADMIN_LEVEL_NAME PCODE NON_COMPLIANCE SOURCE SOURCE_TYPE ENTRY_DATE Alternativesource 
 cap drop S T U V W
 
 ** Internal unique ACAPS ID 
@@ -62,6 +67,7 @@ label var country "Text: country name"
 rename ISO iso 
 #delimit ; 
     keep if 
+        /// Caribbean (N=22)
         iso=="AIA" |
         iso=="ATG" |
         iso=="BHS" |
@@ -84,6 +90,7 @@ rename ISO iso
         iso=="SUR" |
         iso=="TTO" |
         iso=="TCA" | 
+        /// Comparators (N=9)
         iso=="NZL" |
         iso=="SGP" |
         iso=="ISL" |
@@ -92,8 +99,8 @@ rename ISO iso
         iso=="KOR" |
         iso=="ITA" |
         iso=="GBR" |
-        iso=="ESP" |
-        iso=="USA" ;
+        iso=="DEU" |
+        iso=="SWE";
 #delimit cr   
 label var iso "text: country 3-digit ISO code"
 
@@ -222,8 +229,8 @@ label define imeasure_
          34 "Lockdown of refugee/IDP camps";
 #delimit cr 
 label values imeasure imeasure_
-/*drop CATEGORY MEASURE 
-/*
+drop CATEGORY MEASURE 
+
 ** Population group targeted
 replace TARGETED_POP_GROUP = ustrtrim(strtrim(TARGETED_POP_GROUP)) 
 gen tgroup = .
@@ -244,11 +251,174 @@ rename DATE_IMPLEMENTED donpi
 label var donpi "Date of NPI"
 order donpi, after(region)
 
+** -----------------------------------------------------
+** SIDS-specific categorisation of MEASURES
+** -----------------------------------------------------
 
-** NEW GROUPING WITH CARIBBEAN RELEVANCE
+** Group 1. Control movement into country
+** LO      1  "Additional health/documents requirements upon arrival"
+** LO      2  "Border checks"
+** HI      3  "Border closure"
+** HI      4  "Complete border closure"
+** LO      5  "Checkpoints within the country"
+** HI      6  "International flights suspension"
+** HI      8  "Visa restrictions"
+** LO      14 "Health screenings in airports"
+
+** Group 2. Control movement in country
+** LO      7  "Domestic travel restrictions"
+** LO      9  "Curfews"
+** LO      32 "Partial lockdown"
+** HI      33 "Full lockdown"
+
+** Group 3. Control of gatherings 
+**       28 "Limit public gatherings"
+**       29 "Public services closure"
+**       31 "Schools closure"
+
+** Group 4. Control of infection
+**       10 "Surveillance and monitoring"
+**       11 "Awareness campaigns"
+**       12 "Isolation and quarantine policies"
+**       17 "Mass population testing"
+gen sidcon = .
+replace sidcon = 1 if imeasure==1 | imeasure==2 | imeasure==3 | imeasure==4 | imeasure==5 | imeasure==6 | imeasure==8 | imeasure==14
+replace sidcon = 2 if imeasure==7 | imeasure==9 | imeasure==32 | imeasure==33 
+replace sidcon = 3 if imeasure==28 | imeasure==29 | imeasure==31
+replace sidcon = 4 if imeasure==10 | imeasure==11 | imeasure==12 | imeasure==17
+label var sidcon "Specific grouping of control measures in SIDS"
+label define sidcon_ 1 "control movement into" 2 "control movement in" 3 "control gatherings" 4 "control infection"
+label values sidcon sidcon_ 
+order sidcon, after(imeasure)
+
+** Complete DATE information 
+replace donpi = donpi[_n-1] if donpi==. & iso==iso[_n-1] 
+replace donpi = donpi[_n+1] if donpi==. & iso==iso[_n+1] 
 
 
+** Excel spreadsheets for each person
+** We want each person to fact-check the listed entries
+** NGREAVES
+**      ATG
+**      BRB
+**      BLZ
+**      TTO
+export excel using "`datapath'\version02\2-working\acaps_ngreaves" if iso=="ATG" | iso=="BRB" | iso=="BLZ" | iso=="TTO", replace first(var)
+
+** HHAREWOOD
+**      BHS
+**      CUB
+**      JAM
+**      BMU
+** CHOWITT
+**      DOM
+**      ESP
+**      FJI
+**      CYM 
+**      BRB     (check)
+**      JAM     (check)
+** NSOBERS
+**      GBR
+**      GRD
+**      GUY
+**      VGB
+** KROCKE
+**      HTI
+**      ISL
+**      ITA
+**      VNM 
+**      TCA 
+**      TTO     (check)
+**      CUB     (check)
+** KQUIMBY
+**      DMA
+**      KNA
+**      KOR
+**      TCA 
+** MMURPHY
+**      LCA
+**      NZL
+**      SGP
+**      HTI     (check)
+**      BHS     (check)
+** SJEYASEELAN
+**      SUR
+**      AIA
+**      VCT
+
+** Keep only those NPIs in our 4 SIDCON categories
+drop LINK tgroup
+keep if sidcon<.
+
+** First date of implementation in each SIDCON category
+sort iso sidcon donpi 
+by iso sidcon: egen mind = min(donpi)
+format mind %td
+order mind, after(donpi) 
+
+** Date of PARTIAL lockdown
+sort iso sidcon donpi 
+gen doplock1 = donpi if imeasure==32
+by iso : egen doplock = min(doplock1)
+format doplock %td
+gen plocki1 = 0
+replace plocki1 = 1 if imeasure==32
+by iso : egen plocki = max(plocki1)
+label define plocki_ 0 "no partial lockdown" 1 "partial lockdown"
+label values plocki plocki_ 
+drop doplock1 plocki1
+
+** Date of FULL lockdown
+sort iso sidcon donpi 
+gen doflock1 = donpi if imeasure==33
+by iso : egen doflock = min(doflock1)
+format doflock %td
+gen flocki1 = 0
+replace flocki1 = 1 if imeasure==33
+by iso : egen flocki = max(flocki1)
+label define flocki_ 0 "no full lockdown" 1 "full lockdown"
+label values flocki flocki_ 
+drop doflock1 flocki1
 
 ** Save out the dataset for next DO file
+order aid country iso region donpi mind doplock plocki doflock flocki sidcon imeasure comment icat logtype 
 save "`datapath'\version02\2-working\paper01_acaps", replace
 
+/*
+** -----------------------------------------------------
+** STRINGENCY CLASSIFICATION OF THE INCLUDED MEASURES
+** APPLYING THE STRINGENCY LEVELS TO THE -SIDCON- CATEGORIZATION 
+** Based on NZL classification
+** https://covid19.govt.nz/alert-system/covid-19-alert-system/
+** -----------------------------------------------------
+** NZL Level 1. Prepare
+** NZL Level 2. Reduce
+** NZL Level 3. Restrict
+** NZL Level 4. Lockdown
+
+** Group 1. Control movement into country
+**       1  "Additional health/documents requirements upon arrival"
+**       2  "Border checks"
+**       3  "Border closure"
+**       4  "Complete border closure"
+**       5  "Checkpoints within the country"
+**       6  "International flights suspension"
+**       8  "Visa restrictions"
+**       14 "Health screenings in airports"
+
+** Group 2. Control movement in country
+**       7  "Domestic travel restrictions"
+**       9  "Curfews"
+**       32 "Partial lockdown"
+**       33 "Full lockdown"
+
+** Group 3. Control of gatherings 
+**       28 "Limit public gatherings"
+**       29 "Public services closure"
+**       31 "Schools closure"
+
+** Group 4. Control of infection
+**       10 "Surveillance and monitoring"
+**       11 "Awareness campaigns"
+**       12 "Isolation and quarantine policies"
+**       17 "Mass population testing"

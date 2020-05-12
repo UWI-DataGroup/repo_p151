@@ -45,20 +45,26 @@
 ** import excel using "`URL_xlsx'`URL_file'", first clear 
 
 ** Download Daily CSV file from ECDC using PYTHON (-pandas- data analytics library) import and transfer
-python: import pandas as covid_csv
-python: covid_df = covid_csv.read_csv('https://opendata.ecdc.europa.eu/covid19/casedistribution/csv')
-cd "`datapath'\version01\1-input\"
-python: covid_df.to_stata('covid_ecdc.dta')
-use "`datapath'\version01\1-input\covid_ecdc", clear
+** python: import pandas as covid_csv
+** python: covid_df = covid_csv.read_csv('https://opendata.ecdc.europa.eu/covid19/casedistribution/csv')
+** cd "`datapath'\version01\1-input\"
+** python: covid_df.to_stata('covid_ecdc.dta')
+** use "`datapath'\version01\1-input\covid_ecdc", clear
 
-** Data Preparation of Imported file, in preparation for combining with Johns hopkins dataset 
-drop index day month year geoId continentExp 
+** Last resort local download if URL access is not available
+** This last happened on Monday 27-Apr-2020
+** import excel using "`datapath'/version01/1-input/temp_ecdc/COVID-19-geographic-disbtribution-worldwide.xlsx", first clear
+local URL_csv = "https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
+local URL_xlsx = "https://www.ecdc.europa.eu/sites/default/files/documents/"
+local URL_file = "COVID-19-geographic-disbtribution-worldwide.xlsx"
+import excel using "`URL_xlsx'`URL_file'", first clear 
+
+* Data Preparation of Imported file, in preparation for combining with Johns hopkins dataset 
+drop day month year geoId continentExp 
 
 ** DATE OF EVENTS
-** rename dateRep date 
-gen date = date(dateRep, "DMY", 2020)
+rename dateRep date 
 format date %tdNN/DD/CCYY
-drop dateRep 
 
 ** TEXT NAME FOR COUNTRY (STRING)
 rename countriesAndTerritories countryregion 

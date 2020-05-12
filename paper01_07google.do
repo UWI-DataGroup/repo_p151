@@ -53,6 +53,7 @@ import delimited using "Global_Mobility_Report_20200511.csv", clear
 **      Trinidad and Tobago
 #delimit ; 
 keep if 
+        /// Available Caribbean countries (N=8)
         country_region=="Antigua and Barbuda" |
         country_region=="The Bahamas" |
         country_region=="Barbados" |
@@ -61,13 +62,15 @@ keep if
         country_region=="Haiti" |
         country_region=="Jamaica" |
         country_region=="Trinidad and Tobago" |
-        country_region=="United Kingdom" |
-        country_region=="United States" |
-        country_region=="Italy" |
-        country_region=="Spain" |
+        /// Comparators (N=7)
         country_region=="New Zealand" |
         country_region=="Singapore" |
-        country_region=="Vietnam";
+        country_region=="Fiji" |
+        country_region=="United Kingdom" |
+        country_region=="Vietnam" |
+        country_region=="Italy" |
+        country_region=="Germany" |
+        country_region=="Sweden";
 #delimit cr    
 
 ** Add ISO for each country
@@ -81,13 +84,14 @@ gen iso3 = ""
     replace iso3="JAM" if country_region=="Jamaica"
     replace iso3="TTO" if country_region=="Trinidad and Tobago"
 
-    replace iso3="GRB" if country_region=="United Kingdom"
-    replace iso3="USA" if country_region=="United States"
-    replace iso3="ITA" if country_region=="Italy"
-    replace iso3="ESP" if country_region=="Spain"
     replace iso3="NZL" if country_region=="New Zealand"
     replace iso3="SGP" if country_region=="Singapore"
+    replace iso3="FJI" if country_region=="Fiji"
+    replace iso3="GRB" if country_region=="United Kingdom"
     replace iso3="VNM" if country_region=="Vietnam"
+    replace iso3="ITA" if country_region=="Italy"
+    replace iso3="DEU" if country_region=="Germany"
+    replace iso3="SWE" if country_region=="Sweden"
 order iso3, after(country_region_code)
 
 ** Renaming
