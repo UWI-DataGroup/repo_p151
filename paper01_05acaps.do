@@ -260,12 +260,12 @@ order donpi, after(region)
 ** LO      2  "Border checks"
 ** HI      3  "Border closure"
 ** HI      4  "Complete border closure"
-** LO      5  "Checkpoints within the country"
 ** HI      6  "International flights suspension"
 ** HI      8  "Visa restrictions"
 ** LO      14 "Health screenings in airports"
 
 ** Group 2. Control movement in country
+** LO      5  "Checkpoints within the country"
 ** LO      7  "Domestic travel restrictions"
 ** LO      9  "Curfews"
 ** LO      32 "Partial lockdown"
@@ -282,8 +282,8 @@ order donpi, after(region)
 **       12 "Isolation and quarantine policies"
 **       17 "Mass population testing"
 gen sidcon = .
-replace sidcon = 1 if imeasure==1 | imeasure==2 | imeasure==3 | imeasure==4 | imeasure==5 | imeasure==6 | imeasure==8 | imeasure==14
-replace sidcon = 2 if imeasure==7 | imeasure==9 | imeasure==32 | imeasure==33 
+replace sidcon = 1 if imeasure==1 | imeasure==2 | imeasure==3 | imeasure==4 | imeasure==6 | imeasure==8 | imeasure==14
+replace sidcon = 2 if imeasure==5 | imeasure==7 | imeasure==9 | imeasure==32 | imeasure==33 
 replace sidcon = 3 if imeasure==28 | imeasure==29 | imeasure==31
 replace sidcon = 4 if imeasure==10 | imeasure==11 | imeasure==12 | imeasure==17
 label var sidcon "Specific grouping of control measures in SIDS"
@@ -348,13 +348,25 @@ export excel using "`datapath'\version02\2-working\acaps_ngreaves" if iso=="ATG"
 
 ** Keep only those NPIs in our 4 SIDCON categories
 drop LINK tgroup
-keep if sidcon<.
+///keep if sidcon<.
 
 ** First date of implementation in each SIDCON category
 sort iso sidcon donpi 
 by iso sidcon: egen mind = min(donpi)
 format mind %td
 order mind, after(donpi) 
+
+** Date of Curfew
+sort iso sidcon donpi 
+gen docurf1 = donpi if imeasure==9
+by iso : egen docurf = min(docurf1)
+format docurf %td
+gen curfi1 = 0
+replace curfi1 = 1 if imeasure==9
+by iso : egen curfi = max(curfi1)
+label define curfi_ 0 "no curfew" 1 "curfew"
+label values curfi curfi_ 
+drop docurf1 curfi1
 
 ** Date of PARTIAL lockdown
 sort iso sidcon donpi 

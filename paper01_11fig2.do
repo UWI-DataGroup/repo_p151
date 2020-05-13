@@ -4,7 +4,7 @@
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            12-MAY-2020
-    //  algorithm task			        PAPER 01. Situation Analysis. Figure 1
+    //  algorithm task			        PAPER 01. Situation Analysis. Figure 2
 
     ** General algorithm set-up
     version 16
@@ -164,6 +164,9 @@ recode cgroup (1 2 3 = 1) (4=2)
 
 
 ** ORDER for plotting 
+** Drop FIJI 
+drop if iso_num==12
+
 ** New numeric running from 1 to xx
 gen corder = .
 replace corder = 1 if iso_num==1        /* Anguilla */
@@ -172,7 +175,7 @@ replace corder = 3 if iso_num==3        /* Bahamas */
 replace corder = 4 if iso_num==6        /* Barbados order */
 replace corder = 5 if iso_num==4        /* Belize order */
 replace corder = 6 if iso_num==5        /* Bermuda order */
-replace corder = 7 if iso_num==30       /* British Virgin islands */
+replace corder = 7 if iso_num==31       /* British Virgin islands */
 replace corder = 8 if iso_num==8        /* Cayman islands */
 replace corder = 9 if iso_num==7        /* Cuba */
 replace corder = 10 if iso_num==10       /* Dominica */
@@ -184,12 +187,12 @@ replace corder = 15 if iso_num==19      /* Jamaica */
 replace corder = 16 if iso_num==23      /* Montserrat */
 replace corder = 17 if iso_num==20      /* St Kitts */
 replace corder = 18 if iso_num==22      /* St Lucia */
-replace corder = 19 if iso_num==29      /* St Vincent switched order*/
+replace corder = 19 if iso_num==30      /* St Vincent switched order*/
 replace corder = 20 if iso_num==26      /* Suriname switched order*/
-replace corder = 21 if iso_num==28      /* Trinidad switched order*/ 
-replace corder = 22 if iso_num==27      /* Turks and Caicos Islands*/
+replace corder = 21 if iso_num==29      /* Trinidad switched order*/ 
+replace corder = 22 if iso_num==28      /* Turks and Caicos Islands*/
 ** Comparators
-replace corder = 23 if iso_num==12      /* Fiji*/
+///replace corder = 23 if iso_num==12      /* Fiji*/
 replace corder = 24 if iso_num==9       /* Germany*/
 replace corder = 25 if iso_num==17      /* Iceland*/
 replace corder = 26 if iso_num==18      /* Italy */
@@ -198,21 +201,25 @@ replace corder = 28 if iso_num==25      /* Singapore */
 replace corder = 29 if iso_num==21      /* South Korea */
 replace corder = 30 if iso_num==27      /* Sweden */
 replace corder = 31 if iso_num==13      /* United Kingdom*/
-replace corder = 32 if iso_num==31      /* Vietnam */
+replace corder = 32 if iso_num==32      /* Vietnam */
 
 sort cgroup iso_num mtype date 
-** Drop fiji 
-drop if corder==23
+
 
 
 ** -----------------------------------------
 ** HEATMAP -- CASES -- GROWTH RATE
+local caseloc = 22080
+local caseloc2 = `caseloc'+10
+local casecol = "gs6"
+local casesize = 2.5
+local casepos = "w"
 ** -----------------------------------------
 #delimit ;
-    heatplot gr7 i.corder date if mtype==1
+    heatplot gr7 corder date if mtype==1 & date>21940
     ,
-    color(spmap, blues)
-    cuts(1($bingrc)@max)
+    color(RdYlGn, reverse)
+    cuts(1 5 10 15 20 25 30)
     keylabels(all, range(1))
     p(lcolor(white) lalign(center) lw(0.05))
     discrete
@@ -220,7 +227,7 @@ drop if corder==23
 
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    ysize(9) xsize(15)
+    ysize(18) xsize(14)
 
     ylab(   1 "Anguilla"
             2 "Antigua and Barbuda" 
@@ -244,7 +251,6 @@ drop if corder==23
             20 "Suriname"
             21 "Trinidad and Tobago"
             22 "Turks and Caicos Islands"
-
             24 "Germany"
             25 "Iceland"
             26 "Italy"
@@ -255,27 +261,72 @@ drop if corder==23
             31 "United Kingdom"
             32 "Vietnam"
 
-    , labs(2.75) notick nogrid glc(gs16) angle(0))
-    yscale(reverse fill noline range(0(1)14)) 
+    , labs(2.25) notick nogrid glc(gs16) angle(0))
+    yscale(reverse fill noline range(-1(1)14)) 
     ///yscale(log reverse fill noline) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
-    xlab(   21984 "10 Mar" 
-            21994 "20 Mar" 
+    xlab(
+            21944 "30 Jan" 
+            21960 "15 Feb" 
+            21974 "29 Feb" 
+            21989 "15 Mar" 
             22004 "30 Mar" 
-            22015 "10 Apr"
-            22025 "20 Apr"
+            22020 "15 Apr"
             22035 "30 Apr"
             $fdate "$fdatef"
-    , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(2.25) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+    xscale(noextend) 
 
-    title("Growth rate by $S_DATE", pos(11) ring(1) size(3.5))
+    ///title("Growth rate by $S_DATE", pos(11) ring(1) size(3.5))
+    ///text(-1 `caseloc2' "CONFIRMED" "CASES"  , place(w) size(`casesize') color(`casecol'))
+    ///text(1 `caseloc' "$m01_AIA" , place(w) size(`casesize') color(`casecol'))
+    ///text(2 `caseloc' "$m01_ATG" , place(w) size(`casesize') color(`casecol'))
+    ///text(3 `caseloc' "$m01_BHS" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(4 `caseloc' "$m01_BRB" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(5 `caseloc' "$m01_BLZ" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(6 `caseloc' "$m01_BMU" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(7 `caseloc' "$m01_VGB" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(8 `caseloc' "$m01_CYM" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(9 `caseloc' "$m01_CUB" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(10 `caseloc' "$m01_DMA" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(11 `caseloc' "$m01_DOM" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(12 `caseloc' "$m01_GRD" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(13 `caseloc' "$m01_GUY" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(14 `caseloc' "$m01_HTI" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(15 `caseloc' "$m01_JAM" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(16 `caseloc' "$m01_MSR" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(17 `caseloc' "$m01_KNA" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(18 `caseloc' "$m01_LCA" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(19 `caseloc' "$m01_VCT" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(20 `caseloc' "$m01_SUR" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(21 `caseloc' "$m01_TTO" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(22 `caseloc' "$m01_TCA" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(24 `caseloc' "$m01_DEU" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(25 `caseloc' "$m01_ISL" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(26 `caseloc' "$m01_ITA" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(27 `caseloc' "$m01_NZL" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(28 `caseloc' "$m01_SGP" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(29 `caseloc' "$m01_KOR" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(30 `caseloc' "$m01_SWE" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(31 `caseloc' "$m01_GBR" , place(`casepos') size(`casesize') color(`casecol'))
+    ///text(32 `caseloc' "$m01_VNM" , place(`casepos') size(`casesize') color(`casecol'))
 
-    legend(size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
+    legend(size(2.25) position(2) ring(5) colf cols(1) lc(gs16)
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-    sub("Growth" "Rate (%)", size(2.75))
-                    )
+    sub("Growth" "Rate (%)", size(2.5)) order(8 7 6 5 4 3 2 1)
+    lab(1 "no growth") 
+    lab(2 "1-4")
+    lab(3 "5-9")
+    lab(4 "10-14")
+    lab(5 "15-19")
+    lab(6 "20-24")
+    lab(7 "25-29")
+    lab(8 "30+")
+
+    
+    )
     name(heatmap_growthrate) 
     ;
 #delimit cr
