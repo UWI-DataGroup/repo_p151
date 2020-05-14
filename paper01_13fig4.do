@@ -486,7 +486,7 @@ restore
 
 
 ** ---------------------------------------
-** Example graphic -- Control Movement IN country
+** Example graphic -- Control Gatherings
 ** ---------------------------------------
 preserve
     fillin iso sidcon 
@@ -599,7 +599,7 @@ preserve
 restore
 
 
-
+/*
 
 
 ** -----------------------------------------------------------

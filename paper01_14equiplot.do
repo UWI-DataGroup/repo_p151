@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					paper01_13fig4.do
+    //  algorithm name					paper01_14fig5.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            17-APR-2020
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\paper01_14fig4", replace
+    log using "`logpath'\paper01_14fig5", replace
 ** HEADER -----------------------------------------------------
 
 ** -----------------------------------------
@@ -34,7 +34,7 @@ qui do "`logpath'\paper01_04metrics"
 
 ** Close any open log file and open a new log file
 capture log close
-log using "`logpath'\paper01_14fig4", replace
+log using "`logpath'\paper01_14fig5", replace
 
 ** Attack Rate (per 1,000 --> not yet used)
 gen confirmed_rate = (confirmed / pop) * 10000
@@ -293,177 +293,135 @@ foreach country of local clist {
         }
 
 
-** -----------------------------------------------------------
-** GOOGLE MOVEMENT DATA
-** -----------------------------------------------------------
-** HEATMAP1 - Average DAILY drop in retail, grocery, workplace and transit mobility dimensions
-** HEATMAP2 - Average Daily increase in "stay at home" behaviour
-** BAR CHARTS - 2 per country - long and thin
-** -----------------------------------------------------------
-
-use "`datapath'\version02\2-working\paper01_google", clear
-egen movement = rowmean(orig_retail orig_grocery orig_transit orig_work)
-gen home = orig_residential 
-
-bysort iso: asrol movement , stat(mean) window(date 3) gen(movement_av3)
-bysort iso: asrol home , stat(mean) window(date 3) gen(home_av3)
+** 13-MAY-2020
+    ** New numeric running from 1 to 16 (CARICOM + CUB + DOM) 
+    ** IN the end, this will run from 1-22, with the inclusion of the 6 UKOTS
+    **
+    ** From 17-25 is the 9 additional comparator countries
+    gen corder = .
+    ** Caribbean
+    replace corder = 1 if iso=="ATG"
+    replace corder = 2 if iso=="BHS"       
+    replace corder = 3 if iso=="BRB"      
+    replace corder = 4 if iso=="BLZ"       
+    replace corder = 5 if iso=="CUB"       
+    replace corder = 6 if iso=="DMA"       
+    replace corder = 7 if iso=="DOM"       
+    replace corder = 8 if iso=="GRD"       
+    replace corder = 9 if iso=="GUY"      
+    replace corder = 10 if iso=="HTI"      
+    replace corder = 11 if iso=="JAM"      
+    replace corder = 12 if iso=="KNA"      
+    replace corder = 13 if iso=="LCA"      
+    replace corder = 14 if iso=="VCT"      
+    replace corder = 15 if iso=="SUR"     
+    replace corder = 16 if iso=="TTO"     
+    ** comparators
+    replace corder = 18 if iso=="DEU"      /* Germany*/
+    replace corder = 19 if iso=="ISL"      /* Iceland*/
+    replace corder = 20 if iso=="ITA"      /* Italy */
+    replace corder = 21 if iso=="NZL"      /* New Zealand */
+    replace corder = 22 if iso=="SGP"      /* Singapore */
+    replace corder = 23 if iso=="KOR"      /* South Korea */
+    replace corder = 24 if iso=="SWE"      /* Sweden */
+    replace corder = 25 if iso=="GBR"      /* United Kingdom*/
+    replace corder = 26 if iso=="VNM"      /* Vietnam */
 
 ** Automate final date on x-axis 
 ** Use latest date in dataset 
-egen fdate1 = max(date)
+egen fdate1 = max(donpi)
 global fdate = fdate1 
 global fdatef : di %tdD_m date("$S_DATE", "DMY")
 
-gen t = 30
+** EQUIPLOT 
+** CURFEW AND LOCKDOWN TIMINGS
+** colorpalette sfso, purple
+** colorpalette sfso, blue
+** colorpalette sfso, turquoise
 
-** -----------------------------------------
-** BAR CHART --> BARBADOS
-** COLORS:  NPIs                --> SFSO greens
-**          MOVEMENT            --> 
-**          CASES / DEATHS      -->
-local iso = "BRB"
-** -----------------------------------------
+** Min Date
+egen dmin = rowmin(docurf doplock doflock)
+egen dmax = rowmax(docurf doplock doflock)
+
 #delimit ;
-    graph twoway
-    (bar movement date if movement>0 & iso=="`iso'", color(red%50)  barw(0.75))
-    (bar movement date if movement<=0 & iso=="`iso'", color(green%50) barw(0.75))
-    ///(function y=30, range(${min_`iso'2} ${min_`iso'3}) lw(1) lc(gs0))
-    (scatteri 25 ${curfew_`iso'} , msize(4) mlc(gs0) mfcolor("236 242 209"))
-    (scatteri 25 ${plock_`iso'} ,msize(4) mlc(gs0) mfcolor("179 209 127"))
-    (scatteri 25 ${flock_`iso'} ,msize(4) mlc(gs0) mfcolor("104 162 57"))
-    ,   
-    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    ysize(5) xsize(15)
+	gr twoway
+		/// Line between min and max
+		(rspike dmin dmax corder , hor lc(gs12) lw(0.35))
+		/// Partial Lockdown
+		(sc corder doplock ,             msize(3.5) m(o) mlc(gs0) mfc("191 100 166") mlw(0.1))
+		/// Curfew
+		(sc corder docurf , 			    msize(3.5) m(o) mlc(gs0%25) mfc("132 151 207%25") mlw(0.1))
+		/// Full lockdown
+		(sc corder doflock  , 				msize(3.5) m(o) mlc(gs0%50) mfc("149 198 195%50") mlw(0.1))
+		,
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            ysize(8) xsize(6)
 
-    ylab(none
-    , labs(7) notick nogrid glc(gs16) angle(0))
-    yscale(off noline) 
-    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
-    xlab(none
-            21954 "09 Feb" 
-            21964 "19 Feb" 
+			xlab(
             21974 "29 Feb" 
-            21984 "10 Mar" 
-            21994 "20 Mar" 
+            21989 "15 Mar" 
             22004 "30 Mar" 
-            22015 "10 Apr"
-            22025 "20 Apr"
+            22020 "15 Apr"
             22035 "30 Apr"
-    , labs(7) nogrid glc(gs16) angle(45) format(%9.0f))
-    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-    xscale(off noline) 
+                , labs(3) tlc(gs0) labc(gs0) nogrid glc(gs16))
+			xscale(fill range(`range') lc(gs0))
+			xtitle("", size(3) color(gs0) margin(l=2 r=2 t=5 b=2))
+			///xmtick(0(5)50, tlc(gs0))
 
-    ///title("Barbados, pos(11) ring(1) size(2))
+			ylab(
+                1 "Antigua and Barbuda" 
+                2 "The Bahamas" 
+                3 "Barbados"
+                4 "Belize" 
+                5 "Cuba"
+                6 "Dominica"
+                7 "Dominican Republic"
+                8 "Grenada"
+                9 "Guyana"
+                10 "Haiti"
+                11 "Jamaica"
+                12 "St Kitts and Nevis"
+                13 "St Lucia"
+                14 "St Vincent"
+                15 "Suriname"
+                16 "Trinidad and Tobago"
+                18 "Germany"
+                19 "Iceland"
+                20 "Italy"
+                21 "New Zealand"
+                22 "Singapore"
+                23 "South Korea"
+                24 "Sweden"
+                25 "United Kingdom"
+                26 "Vietnam"
+			,
+			valuelabel labc(gs0) labs(3) tstyle(major_notick) nogrid glc(gs16) angle(0) format(%9.0f))
+			yscale(noline lw(vthin) reverse range(0(1)13))
+			ytitle("", size(3) margin(l=2 r=5 t=2 b=2))
 
-    legend(off size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
-    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-    sub("Movement" "Change (%)", size(2.75))
-    )
-    name(movement_`iso') 
-    ;
+			///text(7 0 "Men", place(e) color(gs0) size(3.5))
+			///text(0 0 "Women", place(e) color(gs0) size(3.5))
+			///subtitle("(A) Caribbean", pos(11) size(3.5))
+
+			legend(size(3) position(12) ring(1) bm(t=1 b=4 l=5 r=0) colf cols(1)
+			region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2))
+			order(2 3 4)
+			lab(3 "curfew")
+			lab(2 "partial lockdown")
+			lab(4 "full lockdown")
+            )
+            name(equiplot)
+            ;
 #delimit cr
-///graph export "`outputpath'/04_TechDocs/movement_BRB_$S_DATE.png", replace width(4000)
-
-/*
-** -----------------------------------------
-** BAR CHART --> TRINIDAD
-local iso = "TTO"
-** -----------------------------------------
-#delimit ;
-    graph twoway
-    (bar movement date if movement>0 & iso=="`iso'", color(red%50)  barw(0.75))
-    (bar movement date if movement<=0 & iso=="`iso'", color(green%50) barw(0.75))
-    (function y=30, range(${min_`iso'2} ${min_`iso'3}) lw(1) lc(gs0))
-    (scatteri 30 ${min_`iso'2} , msize(4) mlc(gs0) mfcolor("231 155 96"))
-    (scatteri 30 ${min_`iso'3} ,msize(4) mlc(gs0) mfcolor("244 217 124"))
-    ,   
-    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    ysize(3) xsize(15)
-
-    ylab(-100(40)100
-    , labs(7) notick nogrid glc(gs16) angle(0))
-    yscale(fill noline) 
-    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
-    xlab(
-            ///21924 "10 Jan" 
-            ///21934 "20 Jan" 
-            ///21944 "30 Jan" 
-            21954 "09 Feb" 
-            21964 "19 Feb" 
-            21974 "29 Feb" 
-            21984 "10 Mar" 
-            21994 "20 Mar" 
-            22004 "30 Mar" 
-            22015 "10 Apr"
-            22025 "20 Apr"
-            22035 "30 Apr"
-    , labs(7) nogrid glc(gs16) angle(45) format(%9.0f))
-    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-    xscale(noline) 
-
-    title("Trinidad and Tobago: $S_DATE", pos(11) ring(1) size(9))
-
-    legend(off size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
-    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-    sub("Movement" "Change (%)", size(2.75))
-    )
-    name(movement_`iso') 
-    ;
-#delimit cr
-///graph export "`outputpath'/04_TechDocs/movement_BRB_$S_DATE.png", replace width(4000)
 
 
 
-** -----------------------------------------
-** BAR CHART --> DOMINICAN REPUBLIC
-local iso = "DOM"
-** -----------------------------------------
-#delimit ;
-    graph twoway
-    (bar movement date if movement>0 & iso=="`iso'", color(red%50)  barw(0.75))
-    (bar movement date if movement<=0 & iso=="`iso'", color(green%50) barw(0.75))
-    (function y=30, range(${min_`iso'2} ${min_`iso'3}) lw(1) lc(gs0))
-    (scatteri 30 ${min_`iso'2} , msize(4) mlc(gs0) mfcolor("231 155 96"))
-    (scatteri 30 ${min_`iso'3} ,msize(4) mlc(gs0) mfcolor("244 217 124"))
-    ,   
-    plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    ysize(3) xsize(15)
 
-    ylab(-100(40)100
-    , labs(7) notick nogrid glc(gs16) angle(0))
-    yscale(fill noline) 
-    ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
-    xlab(
-            ///21924 "10 Jan" 
-            ///21934 "20 Jan" 
-            ///21944 "30 Jan" 
-            21954 "09 Feb" 
-            21964 "19 Feb" 
-            21974 "29 Feb" 
-            21984 "10 Mar" 
-            21994 "20 Mar" 
-            22004 "30 Mar" 
-            22015 "10 Apr"
-            22025 "20 Apr"
-            22035 "30 Apr"
-    , labs(7) nogrid glc(gs16) angle(45) format(%9.0f))
-    xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-    xscale(noline) 
 
-    title("Dominican Republic: $S_DATE", pos(11) ring(1) size(9))
 
-    legend(off size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
-    region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-    sub("Movement" "Change (%)", size(2.75))
-    )
-    name(movement_`iso') 
-    ;
-#delimit cr
-///graph export "`outputpath'/04_TechDocs/movement_BRB_$S_DATE.png", replace width(4000)
+
+
+
 

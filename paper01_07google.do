@@ -62,15 +62,15 @@ keep if
         country_region=="Haiti" |
         country_region=="Jamaica" |
         country_region=="Trinidad and Tobago" |
-        /// Comparators (N=7)
+        /// Comparators (N=8)
+        country_region=="Germany" |
+        country_region=="Italy" |
         country_region=="New Zealand" |
         country_region=="Singapore" |
-        country_region=="Fiji" |
+        country_region=="South Korea" |
+        country_region=="Sweden" |
         country_region=="United Kingdom" |
-        country_region=="Vietnam" |
-        country_region=="Italy" |
-        country_region=="Germany" |
-        country_region=="Sweden";
+        country_region=="Vietnam" ;
 #delimit cr    
 
 ** Add ISO for each country
@@ -84,14 +84,14 @@ gen iso3 = ""
     replace iso3="JAM" if country_region=="Jamaica"
     replace iso3="TTO" if country_region=="Trinidad and Tobago"
 
+    replace iso3="DEU" if country_region=="Germany"
+    replace iso3="ITA" if country_region=="Italy"
     replace iso3="NZL" if country_region=="New Zealand"
     replace iso3="SGP" if country_region=="Singapore"
-    replace iso3="FJI" if country_region=="Fiji"
-    replace iso3="GRB" if country_region=="United Kingdom"
-    replace iso3="VNM" if country_region=="Vietnam"
-    replace iso3="ITA" if country_region=="Italy"
-    replace iso3="DEU" if country_region=="Germany"
+    replace iso3="KOR" if country_region=="South Korea"
     replace iso3="SWE" if country_region=="Sweden"
+    replace iso3="GBR" if country_region=="United Kingdom"
+    replace iso3="VNM" if country_region=="Vietnam"
 order iso3, after(country_region_code)
 
 ** Renaming
@@ -117,10 +117,12 @@ drop temp1
 ** DROP REGIONAL DATA
 drop if iso3=="BRB" & region1!="" 
 drop if iso3=="ESP" & region1!="" 
-drop if iso3=="GRB" & region1!="" 
+drop if iso3=="GBR" & region1!="" 
 drop if iso3=="ITA" & region1!="" 
 drop if iso3=="NZL" & region1!="" 
 drop if iso3=="USA" & region1!=""
+drop if iso3=="DEU" & region1!=""
+drop if iso3=="SWE" & region1!=""
 drop region1 region2
 rename iso3 iso 
 
