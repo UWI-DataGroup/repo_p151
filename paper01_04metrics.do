@@ -149,7 +149,7 @@ foreach country of local clist {
     gen m01_`country'1 = m01 if iso=="`country'"
     egen m01_`country'2 = min(m01_`country'1)
     local m01_`country' = m01_`country'2
-    global m01_`country' : dis %7.0fc m01_`country'2
+    global m01_`country' = m01_`country'2
 
     ** METRIC 02
     ** CURRENT NUMBER OF DEATHS IN EACH COUNTRY

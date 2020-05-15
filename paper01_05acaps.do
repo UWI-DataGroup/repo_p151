@@ -396,29 +396,134 @@ drop doflock1 flocki1
 order aid country iso region donpi mind doplock plocki doflock flocki sidcon imeasure comment icat logtype 
 save "`datapath'\version02\2-working\paper01_acaps", replace
 
-/*
-** -----------------------------------------------------
-** STRINGENCY CLASSIFICATION OF THE INCLUDED MEASURES
-** APPLYING THE STRINGENCY LEVELS TO THE -SIDCON- CATEGORIZATION 
-** Based on NZL classification
-** https://covid19.govt.nz/alert-system/covid-19-alert-system/
-** -----------------------------------------------------
-** NZL Level 1. Prepare
-** NZL Level 2. Reduce
-** NZL Level 3. Restrict
-** NZL Level 4. Lockdown
+gen npi_group = .
+** additional health docs, border checks, visa restrictions, health screening
+replace npi_group = 1 if imeasure==1 | imeasure==2 | imeasure==8 | imeasure==14       
+replace npi_group = 2 if imeasure==3        /* border closure */
+replace npi_group = 3 if imeasure==6        /* int'l flight suspension */
+** Chckpoints and mobility restrictions
+replace npi_group = 4 if imeasure==5 | imeasure==7
+replace npi_group = 5 if imeasure==9        /* curfews */
+replace npi_group = 6 if imeasure==32       /* partial lockdown */
+replace npi_group = 7 if imeasure==33       /* full lockdown */
+
+replace npi_group = 8 if imeasure==28       /* limit public gatherings */
+replace npi_group = 9 if imeasure==29       /* public services closure */
+replace npi_group = 10 if imeasure==31       /* school closure */
+
+#delimit ; 
+label define npi_group_ 
+                1 "Border controls"
+                2 "Border closure"
+                3 "Flight suspension"
+                4 "Mobility restrictions"
+                5 "Curfews"
+                6 "Partial lockdown"
+                7 "Full lockdown"
+                8 "Limit public gatherings"
+                9 "Close public services"
+                10 "Close schools";
+#delimit cr 
+label values npi_group npi_group_
+
+** SAVE data check dataset for Maddy and Selvi 
+** Push to Excel dataset
+** Should contain the following:
+** Country name. N=16 Caribbean countries. N=9 comparators
+** ISO
+** 10 rows per country. 1 row per NPI grouping
+** DATE that represents the minimum date for that grouping
+** Include the THREE broad NPI categories
+** Two blank rows for checked (YES/NO)
+** INITIAL of CHECKER + SECOND CHECKER
+
+** Create our 10-groupings
+preserve
+    keep if sidcon<4
+    gen k=1 
+    collapse (count) k, by(iso npi_group)
+    fillin iso npi_group 
+
+    replace k = 0 if k==.
+    gen npi_exists = 0
+    bysort iso npi_exists: replace npi_exists = 1 if k>=1
+
+    ** 13-MAY-2020
+    ** New numeric running from 1 to 16 (CARICOM + CUB + DOM) 
+    ** IN the end, this will run from 1-22, with the inclusion of the 6 UKOTS
+    **
+    ** From 17-25 is the 9 additional comparator countries
+    gen iso_num = .
+    ** Caribbean
+    replace iso_num = 1 if iso=="ATG"
+    replace iso_num = 2 if iso=="BHS"       
+    replace iso_num = 3 if iso=="BRB"      
+    replace iso_num = 4 if iso=="BLZ"       
+    replace iso_num = 5 if iso=="CUB"       
+    replace iso_num = 6 if iso=="DMA"       
+    replace iso_num = 7 if iso=="DOM"       
+    replace iso_num = 8 if iso=="GRD"       
+    replace iso_num = 9 if iso=="GUY"      
+    replace iso_num = 10 if iso=="HTI"      
+    replace iso_num = 11 if iso=="JAM"      
+    replace iso_num = 12 if iso=="KNA"      
+    replace iso_num = 13 if iso=="LCA"      
+    replace iso_num = 14 if iso=="VCT"      
+    replace iso_num = 15 if iso=="SUR"     
+    replace iso_num = 16 if iso=="TTO"     
+    ** comparators
+    replace iso_num = 18 if iso=="DEU"      /* Germany*/
+    replace iso_num = 19 if iso=="ISL"      /* Iceland*/
+    replace iso_num = 20 if iso=="ITA"      /* Italy */
+    replace iso_num = 21 if iso=="NZL"      /* New Zealand */
+    replace iso_num = 22 if iso=="SGP"      /* Singapore */
+    replace iso_num = 23 if iso=="KOR"      /* South Korea */
+    replace iso_num = 24 if iso=="SWE"      /* Sweden */
+    replace iso_num = 25 if iso=="GBR"      /* United Kingdom*/
+    replace iso_num = 26 if iso=="VNM"      /* Vietnam */
+
+
+gen country = ""
+replace country="Antigua and Barbuda" if iso=="ATG"
+replace country="Bahamas" if iso=="BHS"
+replace country="Barbados" if iso=="BRB"
+replace country="Belize" if iso=="BLZ"
+replace country="Cuba" if iso=="CUB"
+replace country="Dominica" if iso=="DMA"
+replace country="Dominican Republic" if iso=="DOM"
+replace country="Grenada" if iso=="GRD"
+replace country="Guyana" if iso=="GUY"
+replace country="Haiti" if iso=="HTI"
+replace country="Jamaica" if iso=="JAM"
+replace country="Saint Kitts and Nevis" if iso=="KNA"
+replace country="Saint Lucia" if iso=="LCA"
+replace country="Saint Vincent and the Grenadines" if iso=="VCT"
+replace country="Suriname" if iso=="SUR"
+replace country="Trinidad and Tobago" if iso=="TTO"
+
+replace country="Germany" if iso=="DEU"
+replace country="Iceland" if iso=="ISL"
+replace country="Italy" if iso=="ITA"
+replace country="New Zealand" if iso=="NZL"
+replace country="Singapore" if iso=="SGP"
+replace country="South Korea" if iso=="KOR"
+replace country="Sweden" if iso=="SWE"
+replace country="UK" if iso=="GBR"
+replace country="Vietnam" if iso=="VNM"
+
+
 
 ** Group 1. Control movement into country
 **       1  "Additional health/documents requirements upon arrival"
 **       2  "Border checks"
 **       3  "Border closure"
 **       4  "Complete border closure"
-**       5  "Checkpoints within the country"
 **       6  "International flights suspension"
 **       8  "Visa restrictions"
 **       14 "Health screenings in airports"
 
 ** Group 2. Control movement in country
+**       5  "Checkpoints within the country"
 **       7  "Domestic travel restrictions"
 **       9  "Curfews"
 **       32 "Partial lockdown"
@@ -434,3 +539,158 @@ save "`datapath'\version02\2-working\paper01_acaps", replace
 **       11 "Awareness campaigns"
 **       12 "Isolation and quarantine policies"
 **       17 "Mass population testing"
+
+    drop if iso=="FJI"
+    sort iso_num
+    drop k _fillin
+    gen npi_ok = ""
+    gen revised_npi = ""    
+    order country iso iso_num npi_group npi_exists
+    ** Save the file for MM/SMJ
+    export excel using "`datapath'\version02\3-output\npi_check", replace first(var) sheet("npi_existance")
+restore
+
+
+
+
+
+
+
+
+
+
+
+
+** SAVE data check dataset for Maddy and Selvi 
+** Push to Excel dataset
+** Should contain the following:
+** Country name. N=16 Caribbean countries. N=9 comparators
+** ISO
+** 10 rows per country. 1 row per NPI grouping
+** DATE that represents the minimum date for that grouping
+** Include the THREE broad NPI categories
+** Two blank rows for checked (YES/NO)
+** INITIAL of CHECKER + SECOND CHECKER
+
+** Create our 10-groupings
+
+    keep if sidcon<4
+    gen k=1 
+    collapse (count) k, by(iso npi_group docurf doplock doflock)
+    fillin iso npi_group 
+
+    replace k = 0 if k==.
+    gen npi_exists = 0
+    bysort iso npi_exists: replace npi_exists = 1 if k>=1
+
+    ** Keep curfews and lockdowns
+    keep if npi_group==5 | npi_group==6 | npi_group==7
+    ** Single event date
+    gen date = .
+    replace date = docurf if npi_group==5 & npi_exists==1
+    replace date = doplock if npi_group==6 & npi_exists==1
+    replace date = doflock if npi_group==7 & npi_exists==1
+    format date %td
+
+    ** 13-MAY-2020
+    ** New numeric running from 1 to 16 (CARICOM + CUB + DOM) 
+    ** IN the end, this will run from 1-22, with the inclusion of the 6 UKOTS
+    **
+    ** From 17-25 is the 9 additional comparator countries
+    gen iso_num = .
+    ** Caribbean
+    replace iso_num = 1 if iso=="ATG"
+    replace iso_num = 2 if iso=="BHS"       
+    replace iso_num = 3 if iso=="BRB"      
+    replace iso_num = 4 if iso=="BLZ"       
+    replace iso_num = 5 if iso=="CUB"       
+    replace iso_num = 6 if iso=="DMA"       
+    replace iso_num = 7 if iso=="DOM"       
+    replace iso_num = 8 if iso=="GRD"       
+    replace iso_num = 9 if iso=="GUY"      
+    replace iso_num = 10 if iso=="HTI"      
+    replace iso_num = 11 if iso=="JAM"      
+    replace iso_num = 12 if iso=="KNA"      
+    replace iso_num = 13 if iso=="LCA"      
+    replace iso_num = 14 if iso=="VCT"      
+    replace iso_num = 15 if iso=="SUR"     
+    replace iso_num = 16 if iso=="TTO"     
+    ** comparators
+    replace iso_num = 18 if iso=="DEU"      /* Germany*/
+    replace iso_num = 19 if iso=="ISL"      /* Iceland*/
+    replace iso_num = 20 if iso=="ITA"      /* Italy */
+    replace iso_num = 21 if iso=="NZL"      /* New Zealand */
+    replace iso_num = 22 if iso=="SGP"      /* Singapore */
+    replace iso_num = 23 if iso=="KOR"      /* South Korea */
+    replace iso_num = 24 if iso=="SWE"      /* Sweden */
+    replace iso_num = 25 if iso=="GBR"      /* United Kingdom*/
+    replace iso_num = 26 if iso=="VNM"      /* Vietnam */
+
+
+gen country = ""
+replace country="Antigua and Barbuda" if iso=="ATG"
+replace country="Bahamas" if iso=="BHS"
+replace country="Barbados" if iso=="BRB"
+replace country="Belize" if iso=="BLZ"
+replace country="Cuba" if iso=="CUB"
+replace country="Dominica" if iso=="DMA"
+replace country="Dominican Republic" if iso=="DOM"
+replace country="Grenada" if iso=="GRD"
+replace country="Guyana" if iso=="GUY"
+replace country="Haiti" if iso=="HTI"
+replace country="Jamaica" if iso=="JAM"
+replace country="Saint Kitts and Nevis" if iso=="KNA"
+replace country="Saint Lucia" if iso=="LCA"
+replace country="Saint Vincent and the Grenadines" if iso=="VCT"
+replace country="Suriname" if iso=="SUR"
+replace country="Trinidad and Tobago" if iso=="TTO"
+
+replace country="Germany" if iso=="DEU"
+replace country="Iceland" if iso=="ISL"
+replace country="Italy" if iso=="ITA"
+replace country="New Zealand" if iso=="NZL"
+replace country="Singapore" if iso=="SGP"
+replace country="South Korea" if iso=="KOR"
+replace country="Sweden" if iso=="SWE"
+replace country="UK" if iso=="GBR"
+replace country="Vietnam" if iso=="VNM"
+
+
+
+** Group 1. Control movement into country
+**       1  "Additional health/documents requirements upon arrival"
+**       2  "Border checks"
+**       3  "Border closure"
+**       4  "Complete border closure"
+**       6  "International flights suspension"
+**       8  "Visa restrictions"
+**       14 "Health screenings in airports"
+
+** Group 2. Control movement in country
+**       5  "Checkpoints within the country"
+**       7  "Domestic travel restrictions"
+**       9  "Curfews"
+**       32 "Partial lockdown"
+**       33 "Full lockdown"
+
+** Group 3. Control of gatherings 
+**       28 "Limit public gatherings"
+**       29 "Public services closure"
+**       31 "Schools closure"
+
+** Group 4. Control of infection
+**       10 "Surveillance and monitoring"
+**       11 "Awareness campaigns"
+**       12 "Isolation and quarantine policies"
+**       17 "Mass population testing"
+
+drop if iso=="FJI"
+sort iso_num
+drop k _fillin docurf doplock doflock
+gen date_ok = ""
+gen revised_date = ""
+order country iso iso_num npi_group npi_exists date
+** Save the file for MM/SMJ
+export excel using "`datapath'\version02\3-output\npi_check", first(var) sheet("npi_date", replace)
+
+

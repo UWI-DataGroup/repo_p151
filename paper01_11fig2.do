@@ -331,3 +331,15 @@ local casepos = "w"
     ;
 #delimit cr
 ///graph export "`outputpath'/04_TechDocs/heatmap_growthrate_$S_DATE.png", replace width(4000)
+
+
+/*
+
+** METRICS for PAPER
+** Min, Max, Av growth rates by country
+** collapse (mean) ag=gr7 (min) ming=gr7 (max) maxg=gr7, by(iso_num)
+keep if mtype==1 
+keep if metric>0
+** table iso_num, c(mean gr7 min gr7 max gr7)
+collapse (mean) ag=gr7 (min) ming=gr7 (max) maxg=gr7, by(iso_num)
+

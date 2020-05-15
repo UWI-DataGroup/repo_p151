@@ -300,11 +300,64 @@ foreach country of local clist {
         drop d1 d2 d3 d4 d5 d6 d7 d8
         }
 
+** Generate dataset for curfew
+egen um1 = group(iso)
+bysort iso: gen um2 = _n
+keep if um2 ==1 
+keep iso 
+    ** Create internal numeric variable for countries 
+    gen iso_num = .
+    replace iso_num = 1 if iso=="ATG"
+    replace iso_num = 2 if iso=="BHS"
+    replace iso_num = 3 if iso=="BRB"
+    replace iso_num = 4 if iso=="BLZ"
+    replace iso_num = 5 if iso=="DOM"
+    replace iso_num = 6 if iso=="HTI"
+    replace iso_num = 7 if iso=="JAM"
+    replace iso_num = 8 if iso=="TTO"
+    ** comparators
+    replace iso_num = 10 if iso=="DEU"      /* Germany*/
+    replace iso_num = 11 if iso=="ITA"      /* Italy */
+    replace iso_num = 12 if iso=="NZL"      /* New Zealand */
+    replace iso_num = 13 if iso=="SGP"      /* Singapore */
+    replace iso_num = 14 if iso=="KOR"      /* South Korea */
+    replace iso_num = 15 if iso=="SWE"      /* Sweden */
+    replace iso_num = 16 if iso=="GBR"      /* United Kingdom*/
+    replace iso_num = 17 if iso=="VNM"      /* Vietnam */
+keep if iso_num<.
+sort iso_num
+
+** Add NPI variables
+generate curfewi = .
+generate cweek = .
+gen plocki = .
+gen pweek = .
+gen flocki = .
+gen fweek = .
+
+tempfile npi
+local clist = "ATG BHS BRB BLZ CUB DMA DOM GRD GUY HTI JAM KNA LCA VCT SUR TTO DEU ISL ITA NZL SGP KOR SWE GBR VNM" 
+foreach country of local clist {
+    replace curfewi = ${curfew_`country'} if iso=="`country'"
+    replace cweek = week(curfew)
+    replace plocki = ${plock_`country'} if iso=="`country'"
+    replace pweek = week(plock)
+    replace flocki = ${flock_`country'} if iso=="`country'"
+    replace fweek = week(flock)
+    }
+replace curfewi = 1 if curfew<. 
+replace curfewi = 0 if curfew == .
+replace plocki = 1 if plock<. 
+replace plocki = 0 if plock == .
+replace flocki = 1 if flock<. 
+replace flocki = 0 if flock == .
+save `npi', replace
 
 
 ** -----------------------------------------------------------
 ** GOOGLE MOVEMENT DATA
-** HORIZONTAL STACKED BAR CHART
+** HORIZONTAL BAR CHART
+** colorpalette spmap, greens
 ** -----------------------------------------------------------
 
 use "`datapath'\version02\2-working\paper01_google", clear
@@ -373,30 +426,37 @@ reshape wide avmov, i(iso_num) j(month)
 merge 1:1 iso_num using `movement2' 
 drop _merge
 
+** Merge with NPI information
+merge 1:1 iso_num using `npi'
+drop _merge
+
+gen curfew = 38
+gen plock = 24
+gen flock = 10
+
         #delimit ;
         gr twoway 
-            (bar minavmov iso_num , horiz lcol(gs16) fcol("52 153 75") barwidth(0.9))           
-            (bar avmov2 iso_num , horiz lcol(gs16) fcol("117 204 128") barwidth(0.9))           
-            (bar avmov1 iso_num , horiz lcol(gs16) fcol("180 242 184") barwidth(0.9))           
-            /// Antigua
-            (scatteri 1 32 , msize(4) mlc(gs8%50) mfcolor("66 146 198%50"))
-            (scatteri 1 21 , msize(4) mlc(gs8%50) mfcolor("241 105 19%0"))
-            (scatteri 1 10 , msize(4) mlc(gs8%50) mfcolor("128 125 186%50"))
-            /// Bahamas
-            (scatteri 2 32 , msize(4) mlc(gs8%50) mfcolor("66 146 198%0"))
-            (scatteri 2 21 , msize(4) mlc(gs8%50) mfcolor("241 105 19%0"))
-            (scatteri 2 10 , msize(4) mlc(gs8%50) mfcolor("128 125 186%50")
+            (bar minavmov iso_num , horiz lcol(gs16) fcol("82 179 99") barwidth(0.9))                    
+            /// Curfew 
+            (scatter iso_num curfew if curfewi==1, msize(4) mlc(gs8%50) mfcolor("66 146 198%50"))
+            (scatter iso_num curfew if curfewi==0, msize(4) mlc(gs8%50) mfcolor("66 146 198%0"))
+            /// Partial Lockdown 
+            (scatter iso_num plock if plocki==1, msize(4) mlc(gs8%50) mfcolor("241 105 19%50"))
+            (scatter iso_num plock if plocki==0, msize(4) mlc(gs8%50) mfcolor("241 105 19%0"))
+            /// Full Lockdown 
+            (scatter iso_num flock if flocki==1, msize(4) mlc(gs8%50) mfcolor("128 125 186%50"))
+            (scatter iso_num flock if flocki==0, msize(4) mlc(gs8%50) mfcolor("128 125 186%0")
             )
             ,
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
             bgcolor(white) 
-            ysize(10) xsize(12)
+            ysize(15) xsize(10)
 
 
             xlab(0(-20)-100   
-            , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
-            xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+            , labs(3.5) nogrid glc(gs16) angle(45) format(%9.0f))
+            xtitle("% reduction in movement", size(3.5) margin(l=0 r=0 t=0 b=0)) 
             xscale(noextend reverse) 
                 
             ylab(
@@ -416,19 +476,19 @@ drop _merge
                 15 "Sweden"
                 16 "United Kingdom"
                 17 "Vietnam"                
-            , labs(3) notick nogrid glc(gs16) angle(0))
+            , labs(3.5) notick nogrid glc(gs16) angle(0))
             yscale(reverse fill noline range(0(1)14)) 
             ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
             
             ///title("", pos(11) ring(1) size(4))
 
-            legend(off size(3) position(12) ring(1) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+            legend(size(3.5) position(12) ring(1) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(1 2 3 4) 
-                lab(1 "xxx")
-                lab(2 "xxx")
-                lab(3 "xxx")
-                lab(4 "xxx")
+                order(2 4 6 7) 
+                lab(2 "Curfew")
+                lab(4 "Partial lockdown")
+                lab(6 "Full lockdown")
+                lab(7 "Not implemented")
                 )
                 name(movement_bar) 
                 ;
@@ -439,3 +499,15 @@ drop _merge
 
 
 /*
+            /// Antigua
+            ///(scatteri 1 32 , msize(4) mlc(gs8%50) mfcolor("66 146 198%50"))
+            ///(scatteri 1 21 , msize(4) mlc(gs8%50) mfcolor("241 105 19%0"))
+            ///(scatteri 1 10 , msize(4) mlc(gs8%50) mfcolor("128 125 186%50"))
+            /// Bahamas
+            ///(scatteri 2 32 , msize(4) mlc(gs8%50) mfcolor("66 146 198%0"))
+            ///(scatteri 2 21 , msize(4) mlc(gs8%50) mfcolor("241 105 19%0"))
+            ///(scatteri 2 10 , msize(4) mlc(gs8%50) mfcolor("128 125 186%50"))
+            /// Barbados
+            ///(scatteri 3 32 , msize(4) mlc(gs8%50) mfcolor("66 146 198%50"))
+            ///(scatteri 3 21 , msize(4) mlc(gs8%50) mfcolor("241 105 19%50"))
+            ///(scatteri 3 10 , msize(4) mlc(gs8%50) mfcolor("128 125 186%50")

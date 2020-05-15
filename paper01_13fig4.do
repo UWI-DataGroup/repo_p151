@@ -365,6 +365,15 @@ preserve
                 ;
         #delimit cr
         ///graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(6000)
+
+** Average elapsed time by region
+gen ctype = .
+replace ctype=1 if region=="Americas" 
+replace ctype=2 if region!="Americas" 
+label define ctype_ 1 "caribbean" 2 "comparator" 
+label values ctype ctype_ 
+table ctype, c(mean edays p50 edays p25 edays p75 edays)
+
 restore
 
 
@@ -480,6 +489,15 @@ preserve
                 ;
         #delimit cr
         ///graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(6000)
+
+** Average elapsed time by region
+gen ctype = .
+replace ctype=1 if region=="Americas" 
+replace ctype=2 if region!="Americas" 
+label define ctype_ 1 "caribbean" 2 "comparator" 
+label values ctype ctype_ 
+table ctype, c(mean edays p50 edays p25 edays p75 edays)
+
 restore
 
 
@@ -596,6 +614,15 @@ preserve
                 ;
         #delimit cr
         ///graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(6000)
+
+** Average elapsed time by region
+gen ctype = .
+replace ctype=1 if region=="Americas" 
+replace ctype=2 if region!="Americas" 
+label define ctype_ 1 "caribbean" 2 "comparator" 
+label values ctype ctype_ 
+table ctype, c(mean edays p50 edays p25 edays p75 edays)     
+
 restore
 
 
