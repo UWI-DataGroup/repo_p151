@@ -27,13 +27,12 @@
 ** HEADER -----------------------------------------------------
 
 tempfile caricomplus ukots 
-import excel using "`datapath'\version02\1-input\\ukots_acaps_hambleton_17may2020.xlsx", first clear sheet("IRH_formatted")
+import excel using "`datapath'\version02\1-input\\ukots_acaps_hambleton_18may2020_MM.xlsx", first clear sheet("IRH_formatted")
 replace MEASURE = "Additional health/documents requirements upon arrival" if MEASURE==`"Additional health/documents requirements upon arrival""'
 replace MEASURE = "Curfews" if MEASURE=="curfews"
 
-
-rename DATE_IMPLEMENTED temp1
-drop MEASURE_ORIG
+rename DATE_IMPLEMENTED_TEXT temp1
+drop MEASURE_ORIG DATE_IMPLEMENTED_ORIG DATE_IMPLEMENTED
 gen DATE_IMPLEMENTED = date(temp1, "DMY")
 format DATE_IMPLEMENTED %td 
 save `ukots' 
@@ -262,7 +261,7 @@ rename DATE_IMPLEMENTED donpi
 label var donpi "Date of NPI"
 order donpi, after(region)
 
-/*
+
 ** -----------------------------------------------------
 ** SIDS-specific categorisation of MEASURES
 ** -----------------------------------------------------

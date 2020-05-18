@@ -437,7 +437,7 @@ preserve
     end
     save `ukots', replace 
 restore 
-append using `ukots' 
+** append using `ukots' 
 
 ** Finally - merge partial and full lockdown 
 gen npi_final = npi_order
@@ -505,7 +505,7 @@ gen dofc = date(dofc1, "DMY")
 format dofc %td
 drop dofc1 
 ** Will need to add UKOTS in time
-local clist = "ATG BHS BRB BLZ CUB DMA DOM GRD GUY HTI JAM KNA LCA VCT SUR TTO DEU ISL ITA NZL SGP KOR SWE GBR VNM" 
+local clist = "AIA ATG BHS BRB BMU VGB CYM BLZ CUB DMA DOM GRD GUY HTI JAM MSR KNA LCA VCT SUR TTO TCA DEU ISL ITA NZL SGP KOR SWE GBR VNM" 
 foreach country of local clist {
     replace dofc = dofc - ${m05_`country'} + 1 if iso=="`country'"
     }

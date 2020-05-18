@@ -325,6 +325,7 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
             22015 "10 Apr"
             22025 "20 Apr"
             22035 "30 Apr"
+            22045 "10 May"
             $fdate "$fdatef"
             , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
             xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -374,6 +375,7 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
             22015 "10 Apr"
             22025 "20 Apr"
             22035 "30 Apr" 
+            22045 "10 May"
             $fdate "$fdatef"
             , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
             xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 

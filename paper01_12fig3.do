@@ -438,7 +438,7 @@ preserve
     end
     save `ukots', replace 
 restore 
-append using `ukots' 
+** append using `ukots' 
 
 ** Finally - merge partial and full lockdown 
 gen npi_final = npi_order
@@ -503,7 +503,8 @@ label values npi_final npi_final_
     #delimit ;
         heatplot measure corder npi_final 
         ,
-        colors(#e0726c #83c983 #cccccc)
+        colors(#e0726c #83c983)
+        ///colors(#e0726c #83c983 #cccccc)
         ///cuts(@min(2)@max)
         cuts(0 1 3) 
         p(lcolor(gs16) lalign(center) lw(0.05))
@@ -576,10 +577,9 @@ label values npi_final npi_final_
         legend(size(2.5) position(2) ring(5) colf cols(1) lc(gs16)
         region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
         sub("NPI", size(2.75))
-        order(1 2 3)
+        order(1 2)
         lab(1 "No")
         lab(2 "Yes")
-        lab(3 "Not Avail")
         )
         name(heatmap_acaps1) 
         ;
