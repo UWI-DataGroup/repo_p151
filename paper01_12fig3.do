@@ -188,7 +188,6 @@ restore
 
 
 
-
 ** -----------------------------------------
 ** Use the FULL PAPER-01 dataset
 ** -----------------------------------------
@@ -206,39 +205,6 @@ use "`datapath'\version02\2-working\paper01_acaps", clear
     ** NPI Indicator (0 = No and 2=Yes)
     gen gm2 = gmeasure*2
 
-    ** 13-MAY-2020
-    ** New numeric running from 1 to 16 (CARICOM + CUB + DOM) 
-    ** IN the end, this will run from 1-22, with the inclusion of the 6 UKOTS
-    **
-    ** From 17-25 is the 9 additional comparator countries
-    gen corder = .
-    ** Caribbean
-    replace corder = 1 if iso=="ATG"
-    replace corder = 2 if iso=="BHS"       
-    replace corder = 3 if iso=="BRB"      
-    replace corder = 4 if iso=="BLZ"       
-    replace corder = 5 if iso=="CUB"       
-    replace corder = 6 if iso=="DMA"       
-    replace corder = 7 if iso=="DOM"       
-    replace corder = 8 if iso=="GRD"       
-    replace corder = 9 if iso=="GUY"      
-    replace corder = 10 if iso=="HTI"      
-    replace corder = 11 if iso=="JAM"      
-    replace corder = 12 if iso=="KNA"      
-    replace corder = 13 if iso=="LCA"      
-    replace corder = 14 if iso=="VCT"      
-    replace corder = 15 if iso=="SUR"     
-    replace corder = 16 if iso=="TTO"     
-    ** comparators
-    replace corder = 18 if iso=="DEU"      /* Germany*/
-    replace corder = 19 if iso=="ISL"      /* Iceland*/
-    replace corder = 20 if iso=="ITA"      /* Italy */
-    replace corder = 21 if iso=="NZL"      /* New Zealand */
-    replace corder = 22 if iso=="SGP"      /* Singapore */
-    replace corder = 23 if iso=="KOR"      /* South Korea */
-    replace corder = 24 if iso=="SWE"      /* Sweden */
-    replace corder = 25 if iso=="GBR"      /* United Kingdom*/
-    replace corder = 26 if iso=="VNM"      /* Vietnam */
 
 ** Group 1. Control movement into country
 **       1  "Additional health/documents requirements upon arrival"
@@ -288,46 +254,298 @@ replace npi_order = 15 if imeasure==11       /* awareness campaigns */
 replace npi_order = 16 if imeasure==12       /* isolation / quarantine */
 replace npi_order = 17 if imeasure==17       /* mass population testing */
 
+#delimit ;
+label define npi_order_
+                1 "Border controls"
+                2 "Border closure"
+                3 "Flight suspension"
+                5 "Mobility restrictions"
+                6 "Curfews"
+                7 "Partial lockdown"
+                8 "Full lockdown"
+                10 "Limit public gatherings"
+                11 "Close public services"
+                12 "Close schools";
+#delimit cr 
+label values npi_order npi_order_
+
+** 1 row per npi_order
+collapse (max) measure=gm2, by(iso npi_order)
+drop if npi_order>=14
+
+** --------------------------------------------------------
+** DATA UPDATE
+** 17 May 2020
+** --------------------------------------------------------
+** Manual Data Update
+** This includes: 
+**     (1)  Updating ACAPS errors
+**     (2)  Adding the 6 UKOTS
+**          Which means a structural change to the graphic
+**
+*! DATA FROM:
+*! PATH: X:\The University of the West Indies\DataGroup - repo_data\data_p151\version02\1-input
+*! FILE: uwi_covid_npi_dataentry.xlsx
+** --------------------------------------------------------
+    gen manual_change = 0
+    replace       measure = 2 if iso=="ATG" & npi_order==5 & measure==0       /* ATG. Mobility restrictions */
+    replace manual_change = 1 if iso=="ATG" & npi_order==5
+
+    replace       measure = 2 if iso=="BHS" & npi_order==5 & measure==0       /* BHS. Mobility restrictions */
+    replace manual_change = 1 if iso=="BHS" & npi_order==5
+
+    replace       measure = 2 if iso=="BRB" & npi_order==5 & measure==0       /* BRB. Mobility restrictions */
+    replace manual_change = 1 if iso=="BRB" & npi_order==5
+
+    replace       measure = 0 if iso=="BRB" & npi_order==2 & measure==0       /* BRB. Border NOT closed */
+    replace manual_change = 1 if iso=="BRB" & npi_order==2
+
+    replace       measure = 2 if iso=="BLZ" & npi_order==5 & measure==0       /* BLZ. Mobility restrictions */
+    replace manual_change = 1 if iso=="BLZ" & npi_order==5
+
+    replace       measure = 2 if iso=="CUB" & npi_order==11 & measure==0      /* CUB. Close public services */
+    replace manual_change = 1 if iso=="CUB" & npi_order==11
+
+    replace       measure = 2 if iso=="DMA" & npi_order==12 & measure==0      /* DMA. Close schools */
+    replace manual_change = 1 if iso=="DMA" & npi_order==12
+
+    replace       measure = 2 if iso=="DMA" & npi_order==1 & measure==0       /* DMA. Border controls */
+    replace manual_change = 1 if iso=="DMA" & npi_order==1
+
+    replace       measure = 2 if iso=="DOM" & npi_order==7 & measure==0       /* DOM. Partial lockdown */
+    replace manual_change = 1 if iso=="DOM" & npi_order==7
+
+    replace       measure = 2 if iso=="GRD" & npi_order==5 & measure==0       /* GRD. Mobility restrictions */
+    replace manual_change = 1 if iso=="GRD" & npi_order==5
+
+    replace       measure = 2 if iso=="GUY" & npi_order==8 & measure==0       /* GUY. Full lockdown */
+    replace manual_change = 1 if iso=="GUY" & npi_order==8
+
+    replace       measure = 2 if iso=="GUY" & npi_order==5 & measure==0       /* GUY. Mobility restrictions */
+    replace manual_change = 1 if iso=="GUY" & npi_order==5
+
+    replace       measure = 2 if iso=="HTI" & npi_order==3 & measure==0       /* HTI. Flight suspension */
+    replace manual_change = 1 if iso=="HTI" & npi_order==3
+
+    replace       measure = 2 if iso=="JAM" & npi_order==12 & measure==0       /* JAM. Schools closed */
+    replace manual_change = 1 if iso=="JAM" & npi_order==12
+
+    replace       measure = 2 if iso=="JAM" & npi_order==10 & measure==0       /* JAM. Limit public gatherings */
+    replace manual_change = 1 if iso=="JAM" & npi_order==10
+
+    replace       measure = 2 if iso=="JAM" & npi_order==3 & measure==0       /* JAM. Flight suspension */
+    replace manual_change = 1 if iso=="JAM" & npi_order==3
+
+    replace       measure = 2 if iso=="KNA" & npi_order==10 & measure==0       /* KNA. Limit public gatherings */
+    replace manual_change = 1 if iso=="KNA" & npi_order==10
+
+    replace       measure = 2 if iso=="LCA" & npi_order==5 & measure==0       /* LCA. Mobility restrictions */
+    replace manual_change = 1 if iso=="LCA" & npi_order==5
+
+    replace       measure = 2 if iso=="LCA" & npi_order==12 & measure==0       /* LCA. Close schools */
+    replace manual_change = 1 if iso=="LCA" & npi_order==12
+
+    replace       measure = 2 if iso=="VCT" & npi_order==3 & measure==0       /* VCT. Flight suspension */
+    replace manual_change = 1 if iso=="VCT" & npi_order==3
+
+    replace       measure = 2 if iso=="VCT" & npi_order==10 & measure==0       /* VCT. Limit public gatherings */
+    replace manual_change = 1 if iso=="VCT" & npi_order==10
+
+    replace       measure = 2 if iso=="VCT" & npi_order==1 & measure==0       /* VCT. Border controls */
+    replace manual_change = 1 if iso=="VCT" & npi_order==1
+
+    replace       measure = 2 if iso=="VCT" & npi_order==2 & measure==0       /* VCT. Border closure */
+    replace manual_change = 1 if iso=="VCT" & npi_order==2
+
+    replace       measure = 2 if iso=="TTO" & npi_order==10 & measure==0       /* TTO. Limit public gatherings */
+    replace manual_change = 1 if iso=="TTO" & npi_order==10
+
+    replace       measure = 2 if iso=="TTO" & npi_order==3 & measure==0       /* TTO. Flight suspension */
+    replace manual_change = 1 if iso=="TTO" & npi_order==3
+
+    replace       measure = 0 if iso=="NZL" & npi_order==7 & measure==2       /* NZL. NO partial lockdown. Only FULL lockdown */
+    replace manual_change = 1 if iso=="NZL" & npi_order==7
+
+    replace       measure = 2 if iso=="SWE" & npi_order==12 & measure==0       /* SWE. Close schools */
+    replace manual_change = 1 if iso=="SWE" & npi_order==12
+
+** Add Structural change
+** Include rows for the 6 UKOTS 
+preserve 
+    drop _all
+    tempfile ukots
+    input str3 iso npi_order measure manual_change
+    "AIA" 1 4 1            /* 1 "Border checks" */
+    "AIA" 2 4 1            /* 2 "Border closure" */
+    "AIA" 3 4 1            /* 3 "Flight suspension" */
+    "AIA" 5 4 1            /* 5 "Mobility restrictions" */
+    "AIA" 6 4 1            /* 6 "Curfews" */
+    "AIA" 7 4 1            /* 7 "Partial lockdown" */
+    "AIA" 8 4 1            /* 8 "Full lockdown" */
+    "AIA" 10 4 1           /* 10 "Limit public gatherings" */
+    "AIA" 11 4 1           /* 11 "Close public services" */
+    "AIA" 12 4 1           /* 12 "Close schools" */
+    "BMU" 1 4 1            /* 1 "Border checks" */
+    "BMU" 2 4 1            /* 2 "Border closure" */
+    "BMU" 3 4 1            /* 3 "Flight suspension" */
+    "BMU" 5 4 1            /* 5 "Mobility restrictions" */
+    "BMU" 6 4 1            /* 6 "Curfews" */
+    "BMU" 7 4 1            /* 7 "Partial lockdown" */
+    "BMU" 8 4 1            /* 8 "Full lockdown" */
+    "BMU" 10 4 1           /* 10 "Limit public gatherings" */
+    "BMU" 11 4 1           /* 11 "Close public services" */
+    "BMU" 12 4 1           /* 12 "Close schools" */
+    "VGB" 1 4 1            /* 1 "Border checks" */
+    "VGB" 2 4 1            /* 2 "Border closure" */
+    "VGB" 3 4 1            /* 3 "Flight suspension" */
+    "VGB" 5 4 1            /* 5 "Mobility restrictions" */
+    "VGB" 6 4 1            /* 6 "Curfews" */
+    "VGB" 7 4 1            /* 7 "Partial lockdown" */
+    "VGB" 8 4 1            /* 8 "Full lockdown" */
+    "VGB" 10 4 1           /* 10 "Limit public gatherings" */
+    "VGB" 11 4 1           /* 11 "Close public services" */
+    "VGB" 12 4 1           /* 12 "Close schools" */
+    "CYM" 1 4 1            /* 1 "Border checks" */
+    "CYM" 2 4 1            /* 2 "Border closure" */
+    "CYM" 3 4 1            /* 3 "Flight suspension" */
+    "CYM" 5 4 1            /* 5 "Mobility restrictions" */
+    "CYM" 6 4 1            /* 6 "Curfews" */
+    "CYM" 7 4 1            /* 7 "Partial lockdown" */
+    "CYM" 8 4 1            /* 8 "Full lockdown" */
+    "CYM" 10 4 1           /* 10 "Limit public gatherings" */
+    "CYM" 11 4 1           /* 11 "Close public services" */
+    "CYM" 12 4 1           /* 12 "Close schools" */    
+    "MSR" 1 4 1            /* 1 "Border checks" */
+    "MSR" 2 4 1            /* 2 "Border closure" */
+    "MSR" 3 4 1            /* 3 "Flight suspension" */
+    "MSR" 5 4 1            /* 5 "Mobility restrictions" */
+    "MSR" 6 4 1            /* 6 "Curfews" */
+    "MSR" 7 4 1            /* 7 "Partial lockdown" */
+    "MSR" 8 4 1            /* 8 "Full lockdown" */
+    "MSR" 10 4 1           /* 10 "Limit public gatherings" */
+    "MSR" 11 4 1           /* 11 "Close public services" */
+    "MSR" 12 4 1           /* 12 "Close schools" */    
+    "TCA" 1 4 1            /* 1 "Border checks" */
+    "TCA" 2 4 1            /* 2 "Border closure" */
+    "TCA" 3 4 1            /* 3 "Flight suspension" */
+    "TCA" 5 4 1            /* 5 "Mobility restrictions" */
+    "TCA" 6 4 1            /* 6 "Curfews" */
+    "TCA" 7 4 1            /* 7 "Partial lockdown" */
+    "TCA" 8 4 1            /* 8 "Full lockdown" */
+    "TCA" 10 4 1           /* 10 "Limit public gatherings" */
+    "TCA" 11 4 1           /* 11 "Close public services" */
+    "TCA" 12 4 1           /* 12 "Close schools" */        
+    end
+    save `ukots', replace 
+restore 
+append using `ukots' 
+
+** Finally - merge partial and full lockdown 
+gen npi_final = npi_order
+replace npi_final = 7 if npi_order==7 | npi_order==8
+collapse (max) measure_ld=measure, by(iso npi_final manual_change)
+recode npi_final 10=9 11=10 12=11
+
+#delimit ;
+label define npi_final_
+                1 "Border controls"
+                2 "Border closure"
+                3 "Flight suspension"
+                5 "Mobility restrictions"
+                6 "Curfew"
+                7 "Lockdown"
+                9 "Limit public gatherings"
+                10 "Close public services"
+                11 "Close schools";
+#delimit cr 
+label values npi_final npi_final_
+
+    ** 17-MAY-2020
+    ** New numeric running from 1 to 16 (CARICOM + CUB + DOM) 
+    ** IN the end, this will run from 1-22, with the inclusion of the 6 UKOTS
+    **
+    ** From 17-25 is the 9 additional comparator countries
+    gen corder = .
+    ** Caribbean
+    replace corder = 1 if iso=="AIA" 
+    replace corder = 2 if iso=="ATG"
+    replace corder = 3 if iso=="BHS"       
+    replace corder = 4 if iso=="BRB"      
+    replace corder = 5 if iso=="BLZ"       
+    replace corder = 6 if iso=="BMU"       
+    replace corder = 7 if iso=="VGB"       
+    replace corder = 8 if iso=="CYM"       
+    replace corder = 9 if iso=="CUB"       
+    replace corder = 10 if iso=="DMA"       
+    replace corder = 11 if iso=="DOM"       
+    replace corder = 12 if iso=="GRD"       
+    replace corder = 13 if iso=="GUY"      
+    replace corder = 14 if iso=="HTI"      
+    replace corder = 15 if iso=="JAM"      
+    replace corder = 16 if iso=="MSR"      
+    replace corder = 17 if iso=="KNA"      
+    replace corder = 18 if iso=="LCA"      
+    replace corder = 19 if iso=="VCT"      
+    replace corder = 20 if iso=="SUR"     
+    replace corder = 21 if iso=="TTO"     
+    replace corder = 22 if iso=="TCA"     
+    ** comparators
+    replace corder = 24 if iso=="DEU"      /* Germany*/
+    replace corder = 25 if iso=="ISL"      /* Iceland*/
+    replace corder = 26 if iso=="ITA"      /* Italy */
+    replace corder = 27 if iso=="NZL"      /* New Zealand */
+    replace corder = 28 if iso=="SGP"      /* Singapore */
+    replace corder = 29 if iso=="KOR"      /* South Korea */
+    replace corder = 30 if iso=="SWE"      /* Sweden */
+    replace corder = 31 if iso=="GBR"      /* United Kingdom*/
+    replace corder = 32 if iso=="VNM"      /* Vietnam */
 
     #delimit ;
-        heatplot gm2 corder npi_order if npi_order<13
+        heatplot measure corder npi_final 
         ,
-        colors(#e0726c #83c983)
-        cuts(@min(1)@max)
+        colors(#e0726c #83c983 #cccccc)
+        ///cuts(@min(2)@max)
+        cuts(0 1 3) 
         p(lcolor(gs16) lalign(center) lw(0.05))
         discrete
         statistic(asis)
 
         plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
         graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-        ysize(14) xsize(12)
+        ysize(17) xsize(11)
 
         ylab(   
-                1 "Antigua and Barbuda" 
-                2 "The Bahamas" 
-                3 "Barbados"
-                4 "Belize" 
-                5 "Cuba"
-                6 "Dominica"
-                7 "Dominican Republic"
-                8 "Grenada"
-                9 "Guyana"
-                10 "Haiti"
-                11 "Jamaica"
-                12 "St Kitts and Nevis"
-                13 "St Lucia"
-                14 "St Vincent"
-                15 "Suriname"
-                16 "Trinidad and Tobago"
-                18 "Germany"
-                19 "Iceland"
-                20 "Italy"
-                21 "New Zealand"
-                22 "Singapore"
-                23 "South Korea"
-                24 "Sweden"
-                25 "United Kingdom"
-                26 "Vietnam"
+                1 "Anguilla" 
+                2 "Antigua and Barbuda" 
+                3 "The Bahamas" 
+                4 "Barbados"
+                5 "Belize" 
+                6 "Bermuda"
+                7 "British Virgin Islands"
+                8 "Cayman Islands" 
+                9 "Cuba"
+                10 "Dominica"
+                11 "Dominican Republic"
+                12 "Grenada"
+                13 "Guyana"
+                14 "Haiti"
+                15 "Jamaica"
+                16 "Montserrat"
+                17 "St Kitts and Nevis"
+                18 "St Lucia"
+                19 "St Vincent"
+                20 "Suriname"
+                21 "Trinidad and Tobago"
+                22 "Turks and Caicos Islands"
+                24 "Germany"
+                25 "Iceland"
+                26 "Italy"
+                27 "New Zealand"
+                28 "Singapore"
+                29 "South Korea"
+                30 "Sweden"
+                31 "United Kingdom"
+                32 "Vietnam"
         , labs(2.5) notick nogrid glc(gs16) angle(0))
         yscale(reverse fill noline range(-5(1)26)) 
         ///yscale(log reverse fill noline) 
@@ -338,12 +556,11 @@ replace npi_order = 17 if imeasure==17       /* mass population testing */
                 2 "Border closure"
                 3 "Flight suspension"
                 5 "Mobility restrictions"
-                6 "Curfews"
-                7 "Partial lockdown"
-                8 "Full lockdown"
-                10 "Limit public gatherings"
-                11 "Close public services"
-                12 "Close schools"
+                6 "Curfew"
+                7 "Lockdown"
+                9 "Limit public gatherings"
+                10 "Close public services"
+                11 "Close schools"
                 ///14 "Surveillance / monitoring"
                 ///15 "Awareness campaigns"
                 ///16 "Isolation / quarantine"
@@ -353,15 +570,16 @@ replace npi_order = 17 if imeasure==17       /* mass population testing */
 
         ///title("NPIs implemented by $S_DATE", pos(11) ring(1) size(3.5))
         text(-1.5 2 "Control" "movement" "into country" , place(c) size(2.5) )
-        text(-1.5 6.5 "Control" "movement" "in country" , place(c) size(2.5) )
-        text(-1.5 11 "Control" "gatherings" , place(c) size(2.5) )
+        text(-1.5 6 "Control" "movement" "in country" , place(c) size(2.5) )
+        text(-1.5 10 "Control" "gatherings" , place(c) size(2.5) )
 
         legend(size(2.5) position(2) ring(5) colf cols(1) lc(gs16)
         region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
         sub("NPI", size(2.75))
-        order(1 2)
+        order(1 2 3)
         lab(1 "No")
         lab(2 "Yes")
+        lab(3 "Not Avail")
         )
         name(heatmap_acaps1) 
         ;

@@ -311,7 +311,8 @@ replace deaths = deaths1 if deaths==. & deaths1<. &
 
 ** Barbados need to impute backwards
 replace confirmed = confirmed[_n+1] if confirmed==. & confirmed[_n+1]<. & iso=="BRB"
-
+replace deaths = deaths[_n+1] if deaths==. & deaths[_n+1]<. & iso=="BRB"
+    
 sort iso date 
 ** gen confirmed = confirmed1
 ** replace confirmed = confirmed2 if confirmed1==. & (iso==iso[_n-1]) & (confirmed2>confirmed1[_n-1])

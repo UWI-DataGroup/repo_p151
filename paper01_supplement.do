@@ -270,10 +270,38 @@ foreach country of local clist {
         }
     }
 
-** CURFEW / PARTIAL LOCKDOWN / FULL LOCKDOWN DATES
-replace doplock = doplock+1 if doplock == docurf
-replace doflock = doflock+1 if doflock == docurf
-replace doflock = doflock+1 if doflock == doplock
+
+
+
+** Alter curfewi, plocki, flocki
+** Combine plocki and flocki to locki
+    gen manual_change = 0
+
+    replace       plocki = 1 if iso=="DOM" & plocki==0       /* DOM. Partial lockdown */
+    replace doplock = d(19mar2020) if iso=="DOM" & doplock==.      
+    replace manual_change = 1 if iso=="DOM" 
+
+    replace       flocki = 1 if iso=="GUY" & flocki==0       /* GUY. Full lockdown */
+    replace doflock = d(9apr2020) if iso=="GUY" & doflock==.      
+    replace manual_change = 1 if iso=="GUY" 
+
+    replace       plocki = 0 if iso=="NZL" & plocki==1       /* NZL. NO partial lockdown. Only FULL lockdown */
+    replace doplock = . if iso=="NZL" & doplock<.      
+    replace manual_change = 1 if iso=="NZL" 
+
+** Date corrections
+    replace docurf = d(28mar2020) if iso=="BRB" & curfi==1 & docurf==d(3apr2020)
+    replace doplock = d(3apr2020) if iso=="BRB" & plocki==1 & doplock==d(26mar2020)
+    replace docurf = d(2apr2020) if iso=="BLZ" & curfi==1 & docurf==d(7apr2020)
+    replace docurf = d(25mar2020) if iso=="GUY" & curfi==1 & docurf==d(11apr2020)
+    replace doflock = d(25mar2020) if iso=="NZL" & flocki==1 & doflock==d(20apr2020)
+
+** Finally - merge partial and full lockdown 
+egen locki = rowmax(plocki flocki) 
+egen dolock = rowmin(doplock doflock)
+
+** CURFEW / LOCKDOWN DATES
+replace dolock = dolock+1 if dolock == docurf
 
 local clist = "ATG BHS BRB BLZ CUB DMA DOM GRD GUY HTI JAM KNA LCA VCT SUR TTO DEU ISL ITA NZL SGP KOR SWE GBR VNM" 
 foreach country of local clist {
@@ -289,12 +317,9 @@ foreach country of local clist {
         egen d6 = min(d5)
         global flock_`country' = d6
 
-        /// Minimum of the three
-        egen d7 = rowmin(d2 d4 d6)
-        global minnpi_`country' = d7
-        /// Maximum of the three
-        egen d8 = rowmax(d2 d4 d6)
-        global maxnpi_`country' = d8
+        gen d7 = dolock if iso=="`country'"
+        egen d8 = min(d7)
+        global lock_`country' = d8
 
         drop d1 d2 d3 d4 d5 d6 d7 d8
         }
@@ -318,6 +343,8 @@ bysort iso: asrol home , stat(mean) window(date 3) gen(home_av3)
 egen fdate1 = max(date)
 global fdate = fdate1 
 global fdatef : di %tdD_m date("$S_DATE", "DMY")
+
+
 
 
 ** -----------------------------------------
@@ -350,9 +377,8 @@ restore
     /// Curfew 
     (scatteri 30 ${curfew_`iso'} , msize(12) mlc(gs0%50) mfcolor("66 146 198%50"))
     /// Partial lockdown
-    (scatteri 30 ${plock_`iso'} ,msize(12) mlc(gs0%50) mfcolor("241 105 19%50"))
-    /// Full lockdown
-    (scatteri 30 ${flock_`iso'} ,msize(12) mlc(gs0%50) mfcolor("128 125 186%50"))
+    (scatteri 30 ${lock_`iso'} ,msize(12) mlc(gs0%50) mfcolor("241 105 19%50"))
+
     ,   
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -382,8 +408,7 @@ restore
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
     sub("", size(2.75)) order(3 4 5)
     lab(3 "Curfew")
-    lab(4 "Partial lockdown")
-    lab(5 "Full lockdown")
+    lab(4 "Lockdown / Stay-at-home order")
     )
     name(movement_`iso') 
     ;

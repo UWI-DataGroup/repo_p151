@@ -278,6 +278,7 @@ replace corder = 20 if iso_num==26      /* Turks and Caicos Islands*/
             22015 "10 Apr"
             22025 "20 Apr"
             22035 "30 Apr"
+            22045 "10 May"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -344,6 +345,7 @@ graph export "`outputpath'/04_TechDocs/heatmap_newcases_$S_DATE.png", replace wi
             22015 "10 Apr"
             22025 "20 Apr"
             22035 "30 Apr"
+            22045 "10 May"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -408,6 +410,7 @@ graph export "`outputpath'/04_TechDocs/heatmap_growthrate_$S_DATE.png", replace 
             22015 "10 Apr"
             22025 "20 Apr"
             22035 "30 Apr"
+            22045 "10 May"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -472,6 +475,7 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
             22015 "10 Apr"
             22025 "20 Apr"
             22035 "30 Apr"
+            22045 "10 May"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -537,6 +541,7 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
             22015 "10 Apr"
             22025 "20 Apr"
             22035 "30 Apr"
+            22045 "10 May"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 

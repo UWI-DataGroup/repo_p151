@@ -26,18 +26,29 @@
     log using "`logpath'\paper01_05acaps", replace
 ** HEADER -----------------------------------------------------
 
+tempfile caricomplus ukots 
+import excel using "`datapath'\version02\1-input\\ukots_acaps_hambleton_17may2020.xlsx", first clear sheet("IRH_formatted")
+replace MEASURE = "Additional health/documents requirements upon arrival" if MEASURE==`"Additional health/documents requirements upon arrival""'
+replace MEASURE = "Curfews" if MEASURE=="curfews"
+
+
+rename DATE_IMPLEMENTED temp1
+drop MEASURE_ORIG
+gen DATE_IMPLEMENTED = date(temp1, "DMY")
+format DATE_IMPLEMENTED %td 
+save `ukots' 
+
 local URL_xlsx = "https://www.acaps.org/sites/acaps/files/resources/files/"
 local URL_file = "acaps_covid19_goverment_measures_dataset.xlsx"
 local URL_file = "acaps_covid19_government_measures_dataset.xlsx"
 local URL_file = "acaps_covid19_government_measures_dataset_20200512.xlsx"
 cap import excel using "`URL_xlsx'`URL_file'", first clear sheet("Database")
 import excel using "`datapath'\version02\1-input\\`URL_file'", first clear sheet("Database")
-
-
-
-
 drop ADMIN_LEVEL_NAME PCODE NON_COMPLIANCE SOURCE SOURCE_TYPE ENTRY_DATE Alternativesource 
+drop if ID==.
 cap drop S T U V W
+save `caricomplus', replace
+append using `ukots' , force
 
 ** Internal unique ACAPS ID 
 rename ID aid 
@@ -251,6 +262,7 @@ rename DATE_IMPLEMENTED donpi
 label var donpi "Date of NPI"
 order donpi, after(region)
 
+/*
 ** -----------------------------------------------------
 ** SIDS-specific categorisation of MEASURES
 ** -----------------------------------------------------

@@ -185,10 +185,24 @@ preserve
 restore
 
 
+
 ** -----------------------------------------
-** Use the FULL PAPER01 dataset
+** Use the FULL PAPER-01 dataset
 ** -----------------------------------------
 use "`datapath'\version02\2-working\paper01_acaps", clear
+
+** Basic heatmap of xx NPI measures 
+** Initial data preparation
+    keep if sidcon<4
+    gen k=1 
+    collapse (count) k (min) min1_donpi=donpi, by(iso imeasure region)
+    fillin iso imeasure 
+    replace k = 0 if k==.
+    gen gmeasure = 0
+    bysort iso imeasure: replace gmeasure = 1 if k>=1
+    ** NPI Indicator (0 = No and 2=Yes)
+    gen gm2 = gmeasure*2
+
 
 ** Group 1. Control movement into country
 **       1  "Additional health/documents requirements upon arrival"
@@ -238,6 +252,252 @@ replace npi_order = 15 if imeasure==11       /* awareness campaigns */
 replace npi_order = 16 if imeasure==12       /* isolation / quarantine */
 replace npi_order = 17 if imeasure==17       /* mass population testing */
 
+#delimit ;
+label define npi_order_
+                1 "Border controls"
+                2 "Border closure"
+                3 "Flight suspension"
+                5 "Mobility restrictions"
+                6 "Curfews"
+                7 "Partial lockdown"
+                8 "Full lockdown"
+                10 "Limit public gatherings"
+                11 "Close public services"
+                12 "Close schools";
+#delimit cr 
+label values npi_order npi_order_
+
+** 1 row per npi_order
+collapse (max) measure=gm2 (min) min2_donpi=min1_donpi, by(iso npi_order region)
+drop if npi_order>=14
+
+** --------------------------------------------------------
+** DATA UPDATE
+** 17 May 2020
+** --------------------------------------------------------
+** Manual Data Update
+** This includes: 
+**     (1)  Updating ACAPS errors
+**     (2)  Adding the 6 UKOTS
+**          Which means a structural change to the graphic
+**
+*! DATA FROM:
+*! PATH: X:\The University of the West Indies\DataGroup - repo_data\data_p151\version02\1-input
+*! FILE: uwi_covid_npi_dataentry.xlsx
+** --------------------------------------------------------
+    gen manual_change = 0
+    replace       measure = 2 if iso=="ATG" & npi_order==5 & measure==0       /* ATG. Mobility restrictions */
+    replace manual_change = 1 if iso=="ATG" & npi_order==5
+    replace min2_donpi = d(29mar2020) if iso=="ATG" & npi_order==5 & min2_donpi==.       /* ATG. Mobility restrictions */
+
+    replace       measure = 2 if iso=="BHS" & npi_order==5 & measure==0       /* BHS. Mobility restrictions */
+    replace manual_change = 1 if iso=="BHS" & npi_order==5
+
+    replace       measure = 2 if iso=="BRB" & npi_order==5 & measure==0       /* BRB. Mobility restrictions */
+    replace manual_change = 1 if iso=="BRB" & npi_order==5
+
+    replace       measure = 0 if iso=="BRB" & npi_order==2 & measure==0       /* BRB. Border NOT closed */
+    replace manual_change = 1 if iso=="BRB" & npi_order==2
+
+    replace       measure = 2 if iso=="BLZ" & npi_order==5 & measure==0       /* BLZ. Mobility restrictions */
+    replace manual_change = 1 if iso=="BLZ" & npi_order==5
+
+    replace       measure = 2 if iso=="CUB" & npi_order==11 & measure==0      /* CUB. Close public services */
+    replace manual_change = 1 if iso=="CUB" & npi_order==11
+
+    replace       measure = 2 if iso=="DMA" & npi_order==12 & measure==0      /* DMA. Close schools */
+    replace manual_change = 1 if iso=="DMA" & npi_order==12
+
+    replace       measure = 2 if iso=="DMA" & npi_order==1 & measure==0       /* DMA. Border controls */
+    replace manual_change = 1 if iso=="DMA" & npi_order==1
+
+    replace       measure = 2 if iso=="DOM" & npi_order==7 & measure==0       /* DOM. Partial lockdown */
+    replace manual_change = 1 if iso=="DOM" & npi_order==7
+
+    replace       measure = 2 if iso=="GRD" & npi_order==5 & measure==0       /* GRD. Mobility restrictions */
+    replace manual_change = 1 if iso=="GRD" & npi_order==5
+
+    replace       measure = 2 if iso=="GUY" & npi_order==8 & measure==0       /* GUY. Full lockdown */
+    replace manual_change = 1 if iso=="GUY" & npi_order==8
+
+    replace       measure = 2 if iso=="GUY" & npi_order==5 & measure==0       /* GUY. Mobility restrictions */
+    replace manual_change = 1 if iso=="GUY" & npi_order==5
+
+    replace       measure = 2 if iso=="HTI" & npi_order==3 & measure==0       /* HTI. Flight suspension */
+    replace manual_change = 1 if iso=="HTI" & npi_order==3
+
+    replace       measure = 2 if iso=="JAM" & npi_order==12 & measure==0       /* JAM. Schools closed */
+    replace manual_change = 1 if iso=="JAM" & npi_order==12
+
+    replace       measure = 2 if iso=="JAM" & npi_order==10 & measure==0       /* JAM. Limit public gatherings */
+    replace manual_change = 1 if iso=="JAM" & npi_order==10
+
+    replace       measure = 2 if iso=="JAM" & npi_order==3 & measure==0       /* JAM. Flight suspension */
+    replace manual_change = 1 if iso=="JAM" & npi_order==3
+
+    replace       measure = 2 if iso=="KNA" & npi_order==10 & measure==0       /* KNA. Limit public gatherings */
+    replace manual_change = 1 if iso=="KNA" & npi_order==10
+
+    replace       measure = 2 if iso=="LCA" & npi_order==5 & measure==0       /* LCA. Mobility restrictions */
+    replace manual_change = 1 if iso=="LCA" & npi_order==5
+
+    replace       measure = 2 if iso=="LCA" & npi_order==12 & measure==0       /* LCA. Close schools */
+    replace manual_change = 1 if iso=="LCA" & npi_order==12
+
+    replace       measure = 2 if iso=="VCT" & npi_order==3 & measure==0       /* VCT. Flight suspension */
+    replace manual_change = 1 if iso=="VCT" & npi_order==3
+
+    replace       measure = 2 if iso=="VCT" & npi_order==10 & measure==0       /* VCT. Limit public gatherings */
+    replace manual_change = 1 if iso=="VCT" & npi_order==10
+
+    replace       measure = 2 if iso=="VCT" & npi_order==1 & measure==0       /* VCT. Border controls */
+    replace manual_change = 1 if iso=="VCT" & npi_order==1
+
+    replace       measure = 2 if iso=="VCT" & npi_order==2 & measure==0       /* VCT. Border closure */
+    replace manual_change = 1 if iso=="VCT" & npi_order==2
+
+    replace       measure = 2 if iso=="TTO" & npi_order==10 & measure==0       /* TTO. Limit public gatherings */
+    replace manual_change = 1 if iso=="TTO" & npi_order==10
+
+    replace       measure = 2 if iso=="TTO" & npi_order==3 & measure==0       /* TTO. Flight suspension */
+    replace manual_change = 1 if iso=="TTO" & npi_order==3
+
+    replace       measure = 0 if iso=="NZL" & npi_order==7 & measure==2       /* NZL. NO partial lockdown. Only FULL lockdown */
+    replace manual_change = 1 if iso=="NZL" & npi_order==7
+
+    replace       measure = 2 if iso=="SWE" & npi_order==12 & measure==0       /* SWE. Close schools */
+    replace manual_change = 1 if iso=="SWE" & npi_order==12
+
+** Add Structural change
+** Include rows for the 6 UKOTS 
+preserve 
+    drop _all
+    tempfile ukots
+    input str3 iso npi_order measure manual_change
+    "AIA" 1 4 1            /* 1 "Border checks" */
+    "AIA" 2 4 1            /* 2 "Border closure" */
+    "AIA" 3 4 1            /* 3 "Flight suspension" */
+    "AIA" 5 4 1            /* 5 "Mobility restrictions" */
+    "AIA" 6 4 1            /* 6 "Curfews" */
+    "AIA" 7 4 1            /* 7 "Partial lockdown" */
+    "AIA" 8 4 1            /* 8 "Full lockdown" */
+    "AIA" 10 4 1           /* 10 "Limit public gatherings" */
+    "AIA" 11 4 1           /* 11 "Close public services" */
+    "AIA" 12 4 1           /* 12 "Close schools" */
+    "BMU" 1 4 1            /* 1 "Border checks" */
+    "BMU" 2 4 1            /* 2 "Border closure" */
+    "BMU" 3 4 1            /* 3 "Flight suspension" */
+    "BMU" 5 4 1            /* 5 "Mobility restrictions" */
+    "BMU" 6 4 1            /* 6 "Curfews" */
+    "BMU" 7 4 1            /* 7 "Partial lockdown" */
+    "BMU" 8 4 1            /* 8 "Full lockdown" */
+    "BMU" 10 4 1           /* 10 "Limit public gatherings" */
+    "BMU" 11 4 1           /* 11 "Close public services" */
+    "BMU" 12 4 1           /* 12 "Close schools" */
+    "VGB" 1 4 1            /* 1 "Border checks" */
+    "VGB" 2 4 1            /* 2 "Border closure" */
+    "VGB" 3 4 1            /* 3 "Flight suspension" */
+    "VGB" 5 4 1            /* 5 "Mobility restrictions" */
+    "VGB" 6 4 1            /* 6 "Curfews" */
+    "VGB" 7 4 1            /* 7 "Partial lockdown" */
+    "VGB" 8 4 1            /* 8 "Full lockdown" */
+    "VGB" 10 4 1           /* 10 "Limit public gatherings" */
+    "VGB" 11 4 1           /* 11 "Close public services" */
+    "VGB" 12 4 1           /* 12 "Close schools" */
+    "CYM" 1 4 1            /* 1 "Border checks" */
+    "CYM" 2 4 1            /* 2 "Border closure" */
+    "CYM" 3 4 1            /* 3 "Flight suspension" */
+    "CYM" 5 4 1            /* 5 "Mobility restrictions" */
+    "CYM" 6 4 1            /* 6 "Curfews" */
+    "CYM" 7 4 1            /* 7 "Partial lockdown" */
+    "CYM" 8 4 1            /* 8 "Full lockdown" */
+    "CYM" 10 4 1           /* 10 "Limit public gatherings" */
+    "CYM" 11 4 1           /* 11 "Close public services" */
+    "CYM" 12 4 1           /* 12 "Close schools" */    
+    "MSR" 1 4 1            /* 1 "Border checks" */
+    "MSR" 2 4 1            /* 2 "Border closure" */
+    "MSR" 3 4 1            /* 3 "Flight suspension" */
+    "MSR" 5 4 1            /* 5 "Mobility restrictions" */
+    "MSR" 6 4 1            /* 6 "Curfews" */
+    "MSR" 7 4 1            /* 7 "Partial lockdown" */
+    "MSR" 8 4 1            /* 8 "Full lockdown" */
+    "MSR" 10 4 1           /* 10 "Limit public gatherings" */
+    "MSR" 11 4 1           /* 11 "Close public services" */
+    "MSR" 12 4 1           /* 12 "Close schools" */    
+    "TCA" 1 4 1            /* 1 "Border checks" */
+    "TCA" 2 4 1            /* 2 "Border closure" */
+    "TCA" 3 4 1            /* 3 "Flight suspension" */
+    "TCA" 5 4 1            /* 5 "Mobility restrictions" */
+    "TCA" 6 4 1            /* 6 "Curfews" */
+    "TCA" 7 4 1            /* 7 "Partial lockdown" */
+    "TCA" 8 4 1            /* 8 "Full lockdown" */
+    "TCA" 10 4 1           /* 10 "Limit public gatherings" */
+    "TCA" 11 4 1           /* 11 "Close public services" */
+    "TCA" 12 4 1           /* 12 "Close schools" */        
+    end
+    save `ukots', replace 
+restore 
+append using `ukots' 
+
+** Finally - merge partial and full lockdown 
+gen npi_final = npi_order
+replace npi_final = 7 if npi_order==7 | npi_order==8
+collapse (max) measure_ld=measure (min) min3_donpi=min2_donpi, by(iso npi_final manual_change region)
+recode npi_final 10=9 11=10 12=11
+
+#delimit ;
+label define npi_final_
+                1 "Border controls"
+                2 "Border closure"
+                3 "Flight suspension"
+                5 "Mobility restrictions"
+                6 "Curfew"
+                7 "Lockdown"
+                9 "Limit public gatherings"
+                10 "Close public services"
+                11 "Close schools";
+#delimit cr 
+label values npi_final npi_final_
+
+    ** 17-MAY-2020
+    ** New numeric running from 1 to 16 (CARICOM + CUB + DOM) 
+    ** IN the end, this will run from 1-22, with the inclusion of the 6 UKOTS
+    **
+    ** From 17-25 is the 9 additional comparator countries
+    gen corder = .
+    ** Caribbean
+    replace corder = 1 if iso=="AIA" 
+    replace corder = 2 if iso=="ATG"
+    replace corder = 3 if iso=="BHS"       
+    replace corder = 4 if iso=="BRB"      
+    replace corder = 5 if iso=="BLZ"       
+    replace corder = 6 if iso=="BMU"       
+    replace corder = 7 if iso=="VGB"       
+    replace corder = 8 if iso=="CYM"       
+    replace corder = 9 if iso=="CUB"       
+    replace corder = 10 if iso=="DMA"       
+    replace corder = 11 if iso=="DOM"       
+    replace corder = 12 if iso=="GRD"       
+    replace corder = 13 if iso=="GUY"      
+    replace corder = 14 if iso=="HTI"      
+    replace corder = 15 if iso=="JAM"      
+    replace corder = 16 if iso=="MSR"      
+    replace corder = 17 if iso=="KNA"      
+    replace corder = 18 if iso=="LCA"      
+    replace corder = 19 if iso=="VCT"      
+    replace corder = 20 if iso=="SUR"     
+    replace corder = 21 if iso=="TTO"     
+    replace corder = 22 if iso=="TCA"     
+    ** comparators
+    replace corder = 24 if iso=="DEU"      /* Germany*/
+    replace corder = 25 if iso=="ISL"      /* Iceland*/
+    replace corder = 26 if iso=="ITA"      /* Italy */
+    replace corder = 27 if iso=="NZL"      /* New Zealand */
+    replace corder = 28 if iso=="SGP"      /* Singapore */
+    replace corder = 29 if iso=="KOR"      /* South Korea */
+    replace corder = 30 if iso=="SWE"      /* Sweden */
+    replace corder = 31 if iso=="GBR"      /* United Kingdom*/
+    replace corder = 32 if iso=="VNM"      /* Vietnam */
 
 ** DATE OF FIRST CASE 
 gen dofc1 = c(current_date)
@@ -250,57 +510,55 @@ foreach country of local clist {
     replace dofc = dofc - ${m05_`country'} + 1 if iso=="`country'"
     }
 
-** DATE OF FIRST NPI, by COUNTRY and by NPI group
-bysort iso sidcon : egen fnpi = min(donpi)
-format fnpi %td
+
 
 ** ---------------------------------------
 ** Example graphic -- Control Movement INTO country
 ** ---------------------------------------
 preserve
-    fillin iso sidcon 
-    keep if sidcon==1
-
-    bysort iso: gen touse = _n 
-    keep if touse==1 
-    replace country = "Antigua and Barbuda" if iso=="ATG"
-    replace country = "St Vincent and the Grenadines" if iso=="VCT"
-    drop touse _fillin aid 
+    keep if npi_final==1 | npi_final==2 | npi_final==3
+    collapse (min) min4_donpi=min3_donpi , by(iso dofc region)
 
     ** Elapsed days
     ** NEGATIVE = implementation before first case
-    gen edays = fnpi - dofc
+    gen edays = min4_donpi - dofc
     gen zero = dofc - dofc 
-    replace zero = 0 if zero==.
 
     ** Create internal numeric variable for countries 
     gen iso_num = .
-    replace iso_num = 1 if iso=="ATG"
-    replace iso_num = 2 if iso=="BHS"
-    replace iso_num = 3 if iso=="BRB"
-    replace iso_num = 4 if iso=="BLZ"
-    replace iso_num = 5 if iso=="CUB"
-    replace iso_num = 6 if iso=="DMA"
-    replace iso_num = 7 if iso=="DOM"
-    replace iso_num = 8 if iso=="GRD"
-    replace iso_num = 9 if iso=="GUY"
-    replace iso_num = 10 if iso=="HTI"
-    replace iso_num = 11 if iso=="JAM"
-    replace iso_num = 12 if iso=="KNA"
-    replace iso_num = 13 if iso=="LCA"
-    replace iso_num = 14 if iso=="VCT"
-    replace iso_num = 15 if iso=="SUR"
-    replace iso_num = 16 if iso=="TTO"
+    replace iso_num = 1 if iso=="AIA" 
+    replace iso_num = 2 if iso=="ATG"
+    replace iso_num = 3 if iso=="BHS"       
+    replace iso_num = 4 if iso=="BRB"      
+    replace iso_num = 5 if iso=="BLZ"       
+    replace iso_num = 6 if iso=="BMU"       
+    replace iso_num = 7 if iso=="VGB"       
+    replace iso_num = 8 if iso=="CYM"       
+    replace iso_num = 9 if iso=="CUB"       
+    replace iso_num = 10 if iso=="DMA"       
+    replace iso_num = 11 if iso=="DOM"       
+    replace iso_num = 12 if iso=="GRD"       
+    replace iso_num = 13 if iso=="GUY"      
+    replace iso_num = 14 if iso=="HTI"      
+    replace iso_num = 15 if iso=="JAM"      
+    replace iso_num = 16 if iso=="MSR"      
+    replace iso_num = 17 if iso=="KNA"      
+    replace iso_num = 18 if iso=="LCA"      
+    replace iso_num = 19 if iso=="VCT"      
+    replace iso_num = 20 if iso=="SUR"     
+    replace iso_num = 21 if iso=="TTO"     
+    replace iso_num = 22 if iso=="TCA"     
     ** comparators
-    replace iso_num = 18 if iso=="DEU"      /* Germany*/
-    replace iso_num = 19 if iso=="ISL"      /* Iceland*/
-    replace iso_num = 20 if iso=="ITA"      /* Italy */
-    replace iso_num = 21 if iso=="NZL"      /* New Zealand */
-    replace iso_num = 22 if iso=="SGP"      /* Singapore */
-    replace iso_num = 23 if iso=="KOR"      /* South Korea */
-    replace iso_num = 24 if iso=="SWE"      /* Sweden */
-    replace iso_num = 25 if iso=="GBR"      /* United Kingdom*/
-    replace iso_num = 26 if iso=="VNM"      /* Vietnam */
+    replace iso_num = 24 if iso=="DEU"      /* Germany*/
+    replace iso_num = 25 if iso=="ISL"      /* Iceland*/
+    replace iso_num = 26 if iso=="ITA"      /* Italy */
+    replace iso_num = 27 if iso=="NZL"      /* New Zealand */
+    replace iso_num = 28 if iso=="SGP"      /* Singapore */
+    replace iso_num = 29 if iso=="KOR"      /* South Korea */
+    replace iso_num = 30 if iso=="SWE"      /* Sweden */
+    replace iso_num = 31 if iso=="GBR"      /* United Kingdom*/
+    replace iso_num = 32 if iso=="VNM"      /* Vietnam */
+
 
 
     #delimit ;
@@ -317,41 +575,47 @@ preserve
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
             bgcolor(white) 
-            ysize(12) xsize(9)
+            ysize(14) xsize(9)
             
             xlab(-80(20)80
             , labs(3) nogrid glc(gs16) angle(0) format(%9.0f))
             xtitle(" ", size(6) margin(l=2 r=2 t=2 b=2)) 
 
-            text(29 -40 "Days before" "1st case" , place(c) size(3) )
-            text(29 40 "Days after" "1st case" , place(c) size(3) )
+            text(35 -40 "Days before" "1st case" , place(c) size(3) )
+            text(35 40 "Days after" "1st case" , place(c) size(3) )
 
             ylab(    
-            1 "Antigua and Barbuda" 
-            2 "The Bahamas" 
-            3 "Barbados"
-            4 "Belize" 
-            5 "Cuba"
-            6 "Dominica"
-            7 "Dominican Republic" 
-            8 "Grenada"
-            9 "Guyana"
-            10 "Haiti"
-            11 "Jamaica"
-            12 "St Kitts and Nevis"
-            13 "St Lucia"
-            14 "St Vincent"
-            15 "Suriname"
-            16 "Trinidad and Tobago"
-            18 "Germany"
-            19 "Iceland"
-            20 "Italy"
-            21 "New Zealand"
-            22 "Singapore"
-            23 "South Korea"
-            24 "Sweden"
-            25 "United Kingdom"
-            26 "Vietnam"            
+                1 "Anguilla" 
+                2 "Antigua and Barbuda" 
+                3 "The Bahamas" 
+                4 "Barbados"
+                5 "Belize" 
+                6 "Bermuda"
+                7 "British Virgin Islands"
+                8 "Cayman Islands" 
+                9 "Cuba"
+                10 "Dominica"
+                11 "Dominican Republic"
+                12 "Grenada"
+                13 "Guyana"
+                14 "Haiti"
+                15 "Jamaica"
+                16 "Montserrat"
+                17 "St Kitts and Nevis"
+                18 "St Lucia"
+                19 "St Vincent"
+                20 "Suriname"
+                21 "Trinidad and Tobago"
+                22 "Turks and Caicos Islands"
+                24 "Germany"
+                25 "Iceland"
+                26 "Italy"
+                27 "New Zealand"
+                28 "Singapore"
+                29 "South Korea"
+                30 "Sweden"
+                31 "United Kingdom"
+                32 "Vietnam"     
             , labs(3) notick nogrid glc(gs16) angle(0))
             yscale( fill noline reverse) 
             ytitle(" ", size(3) margin(l=2 r=2 t=2 b=2)) 
@@ -382,49 +646,48 @@ restore
 ** Example graphic -- Control Movement IN country
 ** ---------------------------------------
 preserve
-    fillin iso sidcon 
-    keep if sidcon==2
-
-    bysort iso: gen touse = _n 
-    keep if touse==1 
-    replace country = "Antigua and Barbuda" if iso=="ATG"
-    replace country = "St Vincent and the Grenadines" if iso=="VCT"
-    drop touse _fillin aid 
+    keep if npi_final==5 | npi_final==6 | npi_final==7
+    collapse (min) min4_donpi=min3_donpi , by(iso dofc region)
 
     ** Elapsed days
     ** NEGATIVE = implementation before first case
-    gen edays = fnpi - dofc
+    gen edays = min4_donpi - dofc
     gen zero = dofc - dofc 
-    replace zero = 0 if zero==.
 
     ** Create internal numeric variable for countries 
     gen iso_num = .
-    replace iso_num = 1 if iso=="ATG"
-    replace iso_num = 2 if iso=="BHS"
-    replace iso_num = 3 if iso=="BRB"
-    replace iso_num = 4 if iso=="BLZ"
-    replace iso_num = 5 if iso=="CUB"
-    replace iso_num = 6 if iso=="DMA"
-    replace iso_num = 7 if iso=="DOM"
-    replace iso_num = 8 if iso=="GRD"
-    replace iso_num = 9 if iso=="GUY"
-    replace iso_num = 10 if iso=="HTI"
-    replace iso_num = 11 if iso=="JAM"
-    replace iso_num = 12 if iso=="KNA"
-    replace iso_num = 13 if iso=="LCA"
-    replace iso_num = 14 if iso=="VCT"
-    replace iso_num = 15 if iso=="SUR"
-    replace iso_num = 16 if iso=="TTO"
+    replace iso_num = 1 if iso=="AIA" 
+    replace iso_num = 2 if iso=="ATG"
+    replace iso_num = 3 if iso=="BHS"       
+    replace iso_num = 4 if iso=="BRB"      
+    replace iso_num = 5 if iso=="BLZ"       
+    replace iso_num = 6 if iso=="BMU"       
+    replace iso_num = 7 if iso=="VGB"       
+    replace iso_num = 8 if iso=="CYM"       
+    replace iso_num = 9 if iso=="CUB"       
+    replace iso_num = 10 if iso=="DMA"       
+    replace iso_num = 11 if iso=="DOM"       
+    replace iso_num = 12 if iso=="GRD"       
+    replace iso_num = 13 if iso=="GUY"      
+    replace iso_num = 14 if iso=="HTI"      
+    replace iso_num = 15 if iso=="JAM"      
+    replace iso_num = 16 if iso=="MSR"      
+    replace iso_num = 17 if iso=="KNA"      
+    replace iso_num = 18 if iso=="LCA"      
+    replace iso_num = 19 if iso=="VCT"      
+    replace iso_num = 20 if iso=="SUR"     
+    replace iso_num = 21 if iso=="TTO"     
+    replace iso_num = 22 if iso=="TCA"     
     ** comparators
-    replace iso_num = 18 if iso=="DEU"      /* Germany*/
-    replace iso_num = 19 if iso=="ISL"      /* Iceland*/
-    replace iso_num = 20 if iso=="ITA"      /* Italy */
-    replace iso_num = 21 if iso=="NZL"      /* New Zealand */
-    replace iso_num = 22 if iso=="SGP"      /* Singapore */
-    replace iso_num = 23 if iso=="KOR"      /* South Korea */
-    replace iso_num = 24 if iso=="SWE"      /* Sweden */
-    replace iso_num = 25 if iso=="GBR"      /* United Kingdom*/
-    replace iso_num = 26 if iso=="VNM"      /* Vietnam */
+    replace iso_num = 24 if iso=="DEU"      /* Germany*/
+    replace iso_num = 25 if iso=="ISL"      /* Iceland*/
+    replace iso_num = 26 if iso=="ITA"      /* Italy */
+    replace iso_num = 27 if iso=="NZL"      /* New Zealand */
+    replace iso_num = 28 if iso=="SGP"      /* Singapore */
+    replace iso_num = 29 if iso=="KOR"      /* South Korea */
+    replace iso_num = 30 if iso=="SWE"      /* Sweden */
+    replace iso_num = 31 if iso=="GBR"      /* United Kingdom*/
+    replace iso_num = 32 if iso=="VNM"      /* Vietnam */
 
 
     #delimit ;
@@ -441,41 +704,47 @@ preserve
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
             bgcolor(white) 
-            ysize(12) xsize(9)
+            ysize(14) xsize(9)
             
             xlab(-80(20)80
             , labs(3) nogrid glc(gs16) angle(0) format(%9.0f))
             xtitle(" ", size(6) margin(l=2 r=2 t=2 b=2)) 
 
-            text(29 -40 "Days before" "1st case" , place(c) size(3) )
-            text(29 40 "Days after" "1st case" , place(c) size(3) )
+            text(35 -40 "Days before" "1st case" , place(c) size(3) )
+            text(35 40 "Days after" "1st case" , place(c) size(3) )
 
             ylab(    
-            1 "Antigua and Barbuda" 
-            2 "The Bahamas" 
-            3 "Barbados"
-            4 "Belize" 
-            5 "Cuba"
-            6 "Dominica"
-            7 "Dominican Republic" 
-            8 "Grenada"
-            9 "Guyana"
-            10 "Haiti"
-            11 "Jamaica"
-            12 "St Kitts and Nevis"
-            13 "St Lucia"
-            14 "St Vincent"
-            15 "Suriname"
-            16 "Trinidad and Tobago"
-            18 "Germany"
-            19 "Iceland"
-            20 "Italy"
-            21 "New Zealand"
-            22 "Singapore"
-            23 "South Korea"
-            24 "Sweden"
-            25 "United Kingdom"
-            26 "Vietnam"            
+                1 "Anguilla" 
+                2 "Antigua and Barbuda" 
+                3 "The Bahamas" 
+                4 "Barbados"
+                5 "Belize" 
+                6 "Bermuda"
+                7 "British Virgin Islands"
+                8 "Cayman Islands" 
+                9 "Cuba"
+                10 "Dominica"
+                11 "Dominican Republic"
+                12 "Grenada"
+                13 "Guyana"
+                14 "Haiti"
+                15 "Jamaica"
+                16 "Montserrat"
+                17 "St Kitts and Nevis"
+                18 "St Lucia"
+                19 "St Vincent"
+                20 "Suriname"
+                21 "Trinidad and Tobago"
+                22 "Turks and Caicos Islands"
+                24 "Germany"
+                25 "Iceland"
+                26 "Italy"
+                27 "New Zealand"
+                28 "Singapore"
+                29 "South Korea"
+                30 "Sweden"
+                31 "United Kingdom"
+                32 "Vietnam"            
             , labs(3) notick nogrid glc(gs16) angle(0))
             yscale( fill noline reverse) 
             ytitle(" ", size(3) margin(l=2 r=2 t=2 b=2)) 
@@ -507,49 +776,48 @@ restore
 ** Example graphic -- Control Gatherings
 ** ---------------------------------------
 preserve
-    fillin iso sidcon 
-    keep if sidcon==3
-
-    bysort iso: gen touse = _n 
-    keep if touse==1 
-    replace country = "Antigua and Barbuda" if iso=="ATG"
-    replace country = "St Vincent and the Grenadines" if iso=="VCT"
-    drop touse _fillin aid 
+    keep if npi_final==9 | npi_final==10 | npi_final==11
+    collapse (min) min4_donpi=min3_donpi , by(iso dofc region)
 
     ** Elapsed days
     ** NEGATIVE = implementation before first case
-    gen edays = fnpi - dofc
+    gen edays = min4_donpi - dofc
     gen zero = dofc - dofc 
-    replace zero = 0 if zero==.
 
     ** Create internal numeric variable for countries 
     gen iso_num = .
-    replace iso_num = 1 if iso=="ATG"
-    replace iso_num = 2 if iso=="BHS"
-    replace iso_num = 3 if iso=="BRB"
-    replace iso_num = 4 if iso=="BLZ"
-    replace iso_num = 5 if iso=="CUB"
-    replace iso_num = 6 if iso=="DMA"
-    replace iso_num = 7 if iso=="DOM"
-    replace iso_num = 8 if iso=="GRD"
-    replace iso_num = 9 if iso=="GUY"
-    replace iso_num = 10 if iso=="HTI"
-    replace iso_num = 11 if iso=="JAM"
-    replace iso_num = 12 if iso=="KNA"
-    replace iso_num = 13 if iso=="LCA"
-    replace iso_num = 14 if iso=="VCT"
-    replace iso_num = 15 if iso=="SUR"
-    replace iso_num = 16 if iso=="TTO"
+    replace iso_num = 1 if iso=="AIA" 
+    replace iso_num = 2 if iso=="ATG"
+    replace iso_num = 3 if iso=="BHS"       
+    replace iso_num = 4 if iso=="BRB"      
+    replace iso_num = 5 if iso=="BLZ"       
+    replace iso_num = 6 if iso=="BMU"       
+    replace iso_num = 7 if iso=="VGB"       
+    replace iso_num = 8 if iso=="CYM"       
+    replace iso_num = 9 if iso=="CUB"       
+    replace iso_num = 10 if iso=="DMA"       
+    replace iso_num = 11 if iso=="DOM"       
+    replace iso_num = 12 if iso=="GRD"       
+    replace iso_num = 13 if iso=="GUY"      
+    replace iso_num = 14 if iso=="HTI"      
+    replace iso_num = 15 if iso=="JAM"      
+    replace iso_num = 16 if iso=="MSR"      
+    replace iso_num = 17 if iso=="KNA"      
+    replace iso_num = 18 if iso=="LCA"      
+    replace iso_num = 19 if iso=="VCT"      
+    replace iso_num = 20 if iso=="SUR"     
+    replace iso_num = 21 if iso=="TTO"     
+    replace iso_num = 22 if iso=="TCA"     
     ** comparators
-    replace iso_num = 18 if iso=="DEU"      /* Germany*/
-    replace iso_num = 19 if iso=="ISL"      /* Iceland*/
-    replace iso_num = 20 if iso=="ITA"      /* Italy */
-    replace iso_num = 21 if iso=="NZL"      /* New Zealand */
-    replace iso_num = 22 if iso=="SGP"      /* Singapore */
-    replace iso_num = 23 if iso=="KOR"      /* South Korea */
-    replace iso_num = 24 if iso=="SWE"      /* Sweden */
-    replace iso_num = 25 if iso=="GBR"      /* United Kingdom*/
-    replace iso_num = 26 if iso=="VNM"      /* Vietnam */
+    replace iso_num = 24 if iso=="DEU"      /* Germany*/
+    replace iso_num = 25 if iso=="ISL"      /* Iceland*/
+    replace iso_num = 26 if iso=="ITA"      /* Italy */
+    replace iso_num = 27 if iso=="NZL"      /* New Zealand */
+    replace iso_num = 28 if iso=="SGP"      /* Singapore */
+    replace iso_num = 29 if iso=="KOR"      /* South Korea */
+    replace iso_num = 30 if iso=="SWE"      /* Sweden */
+    replace iso_num = 31 if iso=="GBR"      /* United Kingdom*/
+    replace iso_num = 32 if iso=="VNM"      /* Vietnam */
 
 
     #delimit ;
@@ -566,41 +834,47 @@ preserve
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
             bgcolor(white) 
-            ysize(12) xsize(9)
+            ysize(14) xsize(9)
             
             xlab(-80(20)80
             , labs(3) nogrid glc(gs16) angle(0) format(%9.0f))
             xtitle(" ", size(6) margin(l=2 r=2 t=2 b=2)) 
 
-            text(29 -40 "Days before" "1st case" , place(c) size(3) )
-            text(29 40 "Days after" "1st case" , place(c) size(3) )
+            text(35 -40 "Days before" "1st case" , place(c) size(3) )
+            text(35 40 "Days after" "1st case" , place(c) size(3) )
 
             ylab(    
-            1 "Antigua and Barbuda" 
-            2 "The Bahamas" 
-            3 "Barbados"
-            4 "Belize" 
-            5 "Cuba"
-            6 "Dominica"
-            7 "Dominican Republic" 
-            8 "Grenada"
-            9 "Guyana"
-            10 "Haiti"
-            11 "Jamaica"
-            12 "St Kitts and Nevis"
-            13 "St Lucia"
-            14 "St Vincent"
-            15 "Suriname"
-            16 "Trinidad and Tobago"
-            18 "Germany"
-            19 "Iceland"
-            20 "Italy"
-            21 "New Zealand"
-            22 "Singapore"
-            23 "South Korea"
-            24 "Sweden"
-            25 "United Kingdom"
-            26 "Vietnam"            
+                1 "Anguilla" 
+                2 "Antigua and Barbuda" 
+                3 "The Bahamas" 
+                4 "Barbados"
+                5 "Belize" 
+                6 "Bermuda"
+                7 "British Virgin Islands"
+                8 "Cayman Islands" 
+                9 "Cuba"
+                10 "Dominica"
+                11 "Dominican Republic"
+                12 "Grenada"
+                13 "Guyana"
+                14 "Haiti"
+                15 "Jamaica"
+                16 "Montserrat"
+                17 "St Kitts and Nevis"
+                18 "St Lucia"
+                19 "St Vincent"
+                20 "Suriname"
+                21 "Trinidad and Tobago"
+                22 "Turks and Caicos Islands"
+                24 "Germany"
+                25 "Iceland"
+                26 "Italy"
+                27 "New Zealand"
+                28 "Singapore"
+                29 "South Korea"
+                30 "Sweden"
+                31 "United Kingdom"
+                32 "Vietnam"          
             , labs(3) notick nogrid glc(gs16) angle(0))
             yscale( fill noline reverse) 
             ytitle(" ", size(3) margin(l=2 r=2 t=2 b=2)) 

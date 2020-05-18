@@ -29,6 +29,7 @@
 ** Load data
 do "`logpath'\covidprofiles_002_ecdc_v3_csv"
 ** do "`logpath'\covidprofiles_002_ecdc_v3_excel"
+** do "`logpath'\covidprofiles_002_ecdc_v3_excel_16may2020"
 do "`logpath'\covidprofiles_002_jhopkins_v3"
 ** Prepare data
 do "`logpath'\covidprofiles_003_initialprep_v3"

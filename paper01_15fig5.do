@@ -430,9 +430,24 @@ drop _merge
 merge 1:1 iso_num using `npi'
 drop _merge
 
-gen curfew = 38
-gen plock = 24
-gen flock = 10
+gen curfew = 24
+gen lock = 10
+
+** Alter curfewi, plocki, flocki
+** Combine plocki and flocki to locki
+    gen manual_change = 0
+
+    replace       plocki = 1 if iso=="DOM" & plocki==0       /* DOM. Partial lockdown */
+    replace manual_change = 1 if iso=="DOM" 
+
+    replace       flocki = 1 if iso=="GUY" & flocki==0       /* GUY. Full lockdown */
+    replace manual_change = 1 if iso=="GUY" 
+
+    replace       plocki = 0 if iso=="NZL" & plocki==1       /* NZL. NO partial lockdown. Only FULL lockdown */
+    replace manual_change = 1 if iso=="NZL" 
+
+** Finally - merge partial and full lockdown 
+egen locki = rowmax(plocki flocki) 
 
         #delimit ;
         gr twoway 
@@ -441,11 +456,14 @@ gen flock = 10
             (scatter iso_num curfew if curfewi==1, msize(4) mlc(gs8%50) mfcolor("66 146 198%50"))
             (scatter iso_num curfew if curfewi==0, msize(4) mlc(gs8%50) mfcolor("66 146 198%0"))
             /// Partial Lockdown 
-            (scatter iso_num plock if plocki==1, msize(4) mlc(gs8%50) mfcolor("241 105 19%50"))
-            (scatter iso_num plock if plocki==0, msize(4) mlc(gs8%50) mfcolor("241 105 19%0"))
+            ///(scatter iso_num plock if plocki==1, msize(4) mlc(gs8%50) mfcolor("241 105 19%50"))
+            ///(scatter iso_num plock if plocki==0, msize(4) mlc(gs8%50) mfcolor("241 105 19%0"))
             /// Full Lockdown 
-            (scatter iso_num flock if flocki==1, msize(4) mlc(gs8%50) mfcolor("128 125 186%50"))
-            (scatter iso_num flock if flocki==0, msize(4) mlc(gs8%50) mfcolor("128 125 186%0")
+            ///(scatter iso_num flock if flocki==1, msize(4) mlc(gs8%50) mfcolor("128 125 186%50"))
+            ///(scatter iso_num flock if flocki==0, msize(4) mlc(gs8%50) mfcolor("128 125 186%0")
+            /// Any Lockdown 
+            (scatter iso_num lock if locki==1, msize(4) mlc(gs8%50) mfcolor("241 105 19%50"))
+            (scatter iso_num lock if locki==0, msize(4) mlc(gs8%50) mfcolor("241 105 19%0")
             )
             ,
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -484,11 +502,10 @@ gen flock = 10
 
             legend(size(3.5) position(12) ring(1) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(2 4 6 7) 
+                order(2 4 5) 
                 lab(2 "Curfew")
-                lab(4 "Partial lockdown")
-                lab(6 "Full lockdown")
-                lab(7 "Not implemented")
+                lab(4 "Lockdown / Stay-at-home order")
+                lab(5 "Not implemented")
                 )
                 name(movement_bar) 
                 ;
