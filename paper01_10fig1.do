@@ -55,7 +55,7 @@ label values mtype mtype_
 keep if mtype==1 | mtype==3
 sort iso mtype date 
 
-** CARICOM
+** CARICOM (N=14)
 ** METRIC 60
 ** Cases in past 1-day across region 
 global m60car =  $m60_ATG + $m60_BHS + $m60_BRB + $m60_BLZ + $m60_DMA + $m60_GRD + $m60_GUY ///
@@ -85,6 +85,48 @@ global m02car =  $m02_ATG + $m02_BHS + $m02_BRB + $m02_BLZ + $m02_DMA + $m02_GRD
             + $m02_HTI + $m02_JAM + $m02_KNA + $m02_LCA + $m02_VCT + $m02_SUR + $m02_TTO
 
 
+
+
+** CARICOM (N=14)
+** METRIC 60
+** Cases in past 1-day across region 
+global m60caricom =  $m60_ATG + $m60_BHS + $m60_BRB + $m60_BLZ + $m60_DMA + $m60_GRD + $m60_GUY ///
+            + $m60_HTI + $m60_JAM + $m60_KNA + $m60_LCA + $m60_VCT + $m60_SUR + $m60_TTO        ///
+            + $m60_AIA + $m60_BMU + $m60_VGB + $m60_CYM + $m60_MSR + $m60_TCA
+
+** METRIC 62
+** Cases in past 7-days across region 
+global m62caricom =  $m62_ATG + $m62_BHS + $m62_BRB + $m62_BLZ + $m62_DMA + $m62_GRD + $m62_GUY ///
+            + $m62_HTI + $m62_JAM + $m62_KNA + $m62_LCA + $m62_VCT + $m62_SUR + $m62_TTO        ///
+            + $m62_AIA + $m62_BMU + $m62_VGB + $m62_CYM + $m62_MSR + $m62_TCA
+
+** METRIC 61
+** Deaths in past 1-day across region 
+global m61caricom =  $m61_ATG + $m61_BHS + $m61_BRB + $m61_BLZ + $m61_DMA + $m61_GRD + $m61_GUY ///
+            + $m61_HTI + $m61_JAM + $m61_KNA + $m61_LCA + $m61_VCT + $m61_SUR + $m61_TTO        ///
+            + $m61_AIA + $m61_BMU + $m61_VGB + $m61_CYM + $m61_MSR + $m61_TCA
+
+** METRIC 63
+** Deaths in past 7-days across region 
+global m63caricom =  $m63_ATG + $m63_BHS + $m63_BRB + $m63_BLZ + $m63_DMA + $m63_GRD + $m63_GUY ///
+            + $m63_HTI + $m63_JAM + $m63_KNA + $m63_LCA + $m63_VCT + $m63_SUR + $m63_TTO        ///
+            + $m63_AIA + $m63_BMU + $m63_VGB + $m63_CYM + $m63_MSR + $m63_TCA
+
+** METRIC 01 
+** CURRENT CONFIRMED CASES across region
+global m01caricom =  $m01_ATG + $m01_BHS + $m01_BRB + $m01_BLZ + $m01_DMA + $m01_GRD + $m01_GUY ///
+            + $m01_HTI + $m01_JAM + $m01_KNA + $m01_LCA + $m01_VCT + $m01_SUR + $m01_TTO        ///
+            + $m01_AIA + $m01_BMU + $m01_VGB + $m01_CYM + $m01_MSR + $m01_TCA
+
+** METRIC 02
+** CURRENT CONFIRMED DEATHS across region
+global m02caricom =  $m02_ATG + $m02_BHS + $m02_BRB + $m02_BLZ + $m02_DMA + $m02_GRD + $m02_GUY ///
+            + $m02_HTI + $m02_JAM + $m02_KNA + $m02_LCA + $m02_VCT + $m02_SUR + $m02_TTO        ///
+            + $m02_AIA + $m02_BMU + $m02_VGB + $m02_CYM + $m02_MSR + $m02_TCA
+
+
+
+
 ** UKOTS
 ** METRIC 60
 ** Cases in past 1-day across region 
@@ -107,6 +149,32 @@ global m01ukot =  $m01_AIA + $m01_BMU + $m01_VGB + $m01_CYM + $m01_MSR + $m01_TC
 ** METRIC 02
 ** CURRENT CONFIRMED DEATHS across region
 global m02ukot = $m02_AIA + $m02_BMU + $m02_VGB + $m02_CYM + $m02_MSR + $m02_TCA  
+
+
+
+** DOM REP + CUBA
+** METRIC 60
+** Cases in past 1-day across region 
+global m60other =  $m60_CUB + $m60_DOM
+** METRIC 62
+** Cases in past 7-days across region 
+global m62other =  $m62_CUB + $m62_DOM 
+
+** METRIC 61
+** Deaths in past 1-day across region 
+global m61other =  $m61_CUB + $m61_DOM 
+
+** METRIC 63
+** Deaths in past 7-days across region 
+global m63other =  $m63_CUB + $m63_DOM 
+
+** METRIC 01 
+** CURRENT CONFIRMED CASES across region
+global m01other =  $m01_CUB + $m01_DOM
+
+** METRIC 02
+** CURRENT CONFIRMED DEATHS across region
+global m02other = $m02_CUB + $m02_DOM
 
 
 
@@ -268,19 +336,38 @@ keep if
 ** 2. Total count of deaths across the Caribbean / CARICOM
 keep if mtype==1 | mtype==3
 
+** COUNTRY GROUPINGS 
+
+** CARICOM versus OTHER
+gen ctype1 = 1
+replace ctype1 = 2 if iso=="DOM" | iso=="CUB"
+
+** CARICOM vs CUBA vs DOM REP
+gen ctype2 = 1
+replace ctype2 = 2 if iso=="CUB" 
+replace ctype2 = 3 if iso=="DOM" 
+
+** ALL vs DOM REP
 gen ctype = 1
 replace ctype = 2 if iso=="DOM"
-collapse (sum) metric pop, by(date mtype ctype) 
+
+collapse (sum) metric pop, by(date mtype ctype2) 
+rename ctype2 ctype 
+drop pop
+reshape wide metric , i(date mtype) j(ctype)
+
 
 ** New daily cases and deaths
-sort ctype mtype date 
-gen daily = metric - metric[_n-1] if ctype==ctype[_n-1] & mtype==mtype[_n-1]
-
-** NUMBER OF CASES and NUMBER OF DEATHS
 sort mtype date 
-egen tc1 = max(metric) if mtype==1 
+gen daily1 = metric1 - metric1[_n-1] if mtype==mtype[_n-1]
+gen daily2 = metric2 - metric2[_n-1] if mtype==mtype[_n-1]
+gen daily3 = metric3 - metric3[_n-1] if mtype==mtype[_n-1]
+
+** NUMBER OF CARICOM CASES and NUMBER OF DEATHS
+sort mtype date 
+egen tc1 = max(metric1) if mtype==1 
 egen tc2 = min(tc1)
-egen td1 = max(metric) if mtype==3 
+egen td1 = max(metric1) if mtype==3 
 egen td2 = min(td1)
 local ncases = tc2
 local ndeaths = td2 
@@ -289,6 +376,17 @@ drop tc1 tc2 td1 td2
 dis "Cases are: " `ncases'
 dis "Deaths are: " `ndeaths'
 
+
+** Creating 0 totals
+foreach var in metric1 metric2 metric2 daily1 daily2 daily3 {
+    replace `var' = 0 if `var' == .
+}
+
+** Stacking Cuba onto CARICOM and Dom Rep onto Cuba 
+replace metric2 = metric1 + metric2 
+replace metric3 = metric2 + metric3 
+replace daily2 = daily1 + daily2 
+replace daily3 = daily2 + daily3 
 
 ** Automate final date on x-axis 
 ** Use latest date in dataset 
@@ -304,18 +402,19 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 ** 1. BAR CHART    --> CUMULATIVE CASES
         #delimit ;
         gr twoway 
-            (bar metric date if mtype==1 & ctype==2, col("71 129 179"))
-            (bar metric date if mtype==1 & ctype==1, col("160 199 233"))
-            (bar metric date if mtype==3 & ctype==2, col("255 127 102"))
-            (bar metric date if mtype==3 & ctype==1, col("255 198 175")
-            
+            (bar metric3 date if mtype==1 , col("33 93 146"))
+            (bar metric2 date if mtype==1 , col("103 155 200"))
+            (bar metric1 date if mtype==1 , col("204 231 255"))            
+            (bar metric3 date if mtype==3 , col("189 5 43"))
+            (bar metric2 date if mtype==3 , col("255 158 131"))
+            (bar metric1 date if mtype==3 , col("255 221 204")          
             )
             ,
 
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
             bgcolor(white) 
-            ysize(10) xsize(10)
+            ysize(16) xsize(10)
             
    xlab(  
             21974 "29 Feb" 
@@ -327,23 +426,25 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
             22035 "30 Apr"
             22045 "10 May"
             $fdate "$fdatef"
-            , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
+            , labs(3.5) nogrid glc(gs16) angle(45) format(%9.0f))
             xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
                 
-            ylab(0 2000 "2,000" 4000 "4,000" 6000 "6,000" 8000 "8,000" 10000 "10,000" 12000 "12,000"
-            , labs(3) notick nogrid glc(gs16) angle(0))
+            ylab(0 2000 "2,000" 4000 "4,000" 6000 "6,000" 8000 "8,000" 10000 "10,000" 12000 "12,000" 14000 "14,000" 16000 "16,000"
+            , labs(3.5) notick nogrid glc(gs16) angle(0))
             yscale(fill noline range(0(1)14)) 
             ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
             
             title("(A) Cumulative cases in 22 Caribbean SIDS", pos(11) ring(1) size(4))
 
-            legend(size(3) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
+            legend(size(3.5) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-                order(1 2 3 4) 
+                order(1 2 3 4 5 6) 
                 lab(1 "Cases: Dom Rep")
-                lab(2 "Cases: Rest of Caribbean")
-                lab(3 "Deaths: Dom Rep")
-                lab(4 "Deaths: Rest of Caribbean")
+                lab(2 "Cases: Cuba")
+                lab(3 "Cases: CARICOM")
+                lab(4 "Deaths: Dom Rep")
+                lab(5 "Deaths: Cuba")
+                lab(6 "Deaths: CARICOM")
                 )
                 name(cases_bar_01) 
                 ;
@@ -354,10 +455,12 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 ** 2. BAR CHART    --> NEW DAILY CASES.
         #delimit ;
         gr twoway 
-            (bar daily date if mtype==1 & ctype==2, col("71 129 179"))
-            (bar daily date if mtype==1 & ctype==1, col("160 199 233"))
-            (bar daily date if mtype==3 & ctype==2, col("255 127 102"))
-            (bar daily date if mtype==3 & ctype==1, col("255 198 175")
+            (bar daily3 date if mtype==1 , col("33 93 146"))
+            (bar daily2 date if mtype==1 , col("103 155 200"))
+            (bar daily1 date if mtype==1 , col("204 231 255"))            
+            (bar daily3 date if mtype==3 , col("189 5 43"))
+            (bar daily2 date if mtype==3 , col("255 158 131"))
+            (bar daily1 date if mtype==3 , col("255 221 204")     
             
             )
             ,
@@ -365,7 +468,7 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
             bgcolor(white) 
-            ysize(10) xsize(10)
+            ysize(16) xsize(10)
             
    xlab(
             21974 "29 Feb" 
@@ -377,11 +480,11 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
             22035 "30 Apr" 
             22045 "10 May"
             $fdate "$fdatef"
-            , labs(3) nogrid glc(gs16) angle(45) format(%9.0f))
+            , labs(3.5) nogrid glc(gs16) angle(45) format(%9.0f))
             xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
                 
             ylab(
-            , labs(3) notick nogrid glc(gs16) angle(0))
+            , labs(3.5) notick nogrid glc(gs16) angle(0))
             yscale(fill noline range(0(1)14)) 
             ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
             
