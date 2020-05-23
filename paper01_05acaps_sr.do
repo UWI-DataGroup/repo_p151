@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					paper01_05acaps.do
+    //  algorithm name					paper01_05acaps_sr.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            17-APR-2020
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\paper01_05acaps", replace
+    log using "`logpath'\paper01_05acaps_sr", replace
 ** HEADER -----------------------------------------------------
 
 tempfile caricomplus ukots 
@@ -355,7 +355,12 @@ drop doflock1 flocki1
 ** Save out the dataset for next DO file
 order aid country iso region donpi mind doplock plocki doflock flocki sidcon imeasure comment icat logtype 
 save "`datapath'\version02\2-working\paper01_acaps", replace
-/*
+
+
+** 23-MAY-2020 FROM HERE
+** RE-VAMP TO ACCOMODATE A NEW DATASET STRUCTURE
+** GIVEN THE INTERNAL SYSTEMATIC REVIEW OF NPI MEASURES (SR)
+
 ** Drop information on international flights
 drop if imeasure == 6
 
@@ -441,7 +446,6 @@ gen donpi_new = ""
 ** NPI description 
 gen npi_description = "" 
 
-
 ** Region 
 gen country_type = 1
 replace country_type = 2 if iso=="DEU" | iso=="ISL" | iso=="ITA" | iso=="NZL" | iso=="SGP" | iso=="KOR" | iso=="SWE" | iso=="GBR" | iso=="VNM"
@@ -458,7 +462,8 @@ export excel using "`datapath'\version02\3-output\npi_check_23may2020", first(va
 
 
 **----------------------------------------------------------
-** DATASET FOR FIGURES 3, 4, 5, and Supplement
+** LOAD RESULTING COMPLETED DATASET 
+** FOR FIGURES 3, 4, 5, and Supplement
 **----------------------------------------------------------
 *! We will re-import the completed dataset here 
 **----------------------------------------------------------
@@ -592,13 +597,13 @@ drop npi_yesno
 *! We need to UPDATE THIS VARIABLE USING
 *!      -donpi_correct-
 *!      -donpi_new-
-local tot = 22035-21975+1
-local tota = 21975
-generate ui = floor(`tot'*runiform() + `tota')
+** local tot = 22035-21975+1
+** local tota = 21975
+** generate ui = floor(`tot'*runiform() + `tota')
 gen donpi = min_donpi 
-/*replace donpi = ui if donpi==. 
+** replace donpi = ui if donpi==. 
 format donpi %td 
-drop ui 
+** drop ui 
 
 label var country "Country name" 
 label var ctype "Caribbean or comparator country"

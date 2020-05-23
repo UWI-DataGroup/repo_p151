@@ -37,7 +37,7 @@ use "`datapath'\version02\2-working\paper01_covid_metrics", clear
 
 
 ** THE ACAPS NPI dataset 
-use "`datapath'\version02\2-working\paper01_acaps", clear
+use "`datapath'\version02\2-working\paper01_acaps_sr", clear
 
 
 ** Save out the dataset for next DO file
