@@ -288,16 +288,25 @@ drop if npi_order>=14
 *! FILE: uwi_covid_npi_dataentry.xlsx
 ** --------------------------------------------------------
     gen manual_change = 0
+
     replace       measure = 2 if iso=="ATG" & npi_order==5 & measure==0       /* ATG. Mobility restrictions */
     replace manual_change = 1 if iso=="ATG" & npi_order==5
+
+    replace       measure = 2 if iso=="ATG" & npi_order==2 & measure==0       /* ATG. Border closure */
+    replace manual_change = 1 if iso=="ATG" & npi_order==2
+
+** ATG airport closed - should we assume flight suspecnsion. Should we therefore assume it for all closed borders???
 
     replace       measure = 2 if iso=="BHS" & npi_order==5 & measure==0       /* BHS. Mobility restrictions */
     replace manual_change = 1 if iso=="BHS" & npi_order==5
 
+    ** replace       measure = 2 if iso=="BHS" & npi_order==6 & measure==0       /* BHS. Curfew */
+    ** replace manual_change = 1 if iso=="BHS" & npi_order==6
+
     replace       measure = 2 if iso=="BRB" & npi_order==5 & measure==0       /* BRB. Mobility restrictions */
     replace manual_change = 1 if iso=="BRB" & npi_order==5
 
-    replace       measure = 0 if iso=="BRB" & npi_order==2 & measure==0       /* BRB. Border NOT closed */
+    replace       measure = 0 if iso=="BRB" & npi_order==2 & measure==2       /* BRB. Border NOT closed */
     replace manual_change = 1 if iso=="BRB" & npi_order==2
 
     replace       measure = 2 if iso=="BLZ" & npi_order==5 & measure==0       /* BLZ. Mobility restrictions */
@@ -318,6 +327,9 @@ drop if npi_order>=14
     replace       measure = 2 if iso=="GRD" & npi_order==5 & measure==0       /* GRD. Mobility restrictions */
     replace manual_change = 1 if iso=="GRD" & npi_order==5
 
+    replace       measure = 2 if iso=="GRD" & npi_order==3 & measure==0       /* GRD. Flight suspension */
+    replace manual_change = 1 if iso=="GRD" & npi_order==3
+
     replace       measure = 2 if iso=="GUY" & npi_order==8 & measure==0       /* GUY. Full lockdown */
     replace manual_change = 1 if iso=="GUY" & npi_order==8
 
@@ -326,6 +338,9 @@ drop if npi_order>=14
 
     replace       measure = 2 if iso=="HTI" & npi_order==3 & measure==0       /* HTI. Flight suspension */
     replace manual_change = 1 if iso=="HTI" & npi_order==3
+
+    replace       measure = 2 if iso=="HTI" & npi_order==5 & measure==0       /* HTI. Mobility restrictions */
+    replace manual_change = 1 if iso=="HTI" & npi_order==5
 
     replace       measure = 2 if iso=="JAM" & npi_order==12 & measure==0       /* JAM. Schools closed */
     replace manual_change = 1 if iso=="JAM" & npi_order==12
@@ -338,6 +353,9 @@ drop if npi_order>=14
 
     replace       measure = 2 if iso=="KNA" & npi_order==10 & measure==0       /* KNA. Limit public gatherings */
     replace manual_change = 1 if iso=="KNA" & npi_order==10
+
+    replace       measure = 2 if iso=="KNA" & npi_order==3 & measure==0       /* KNA. Flight suspensions */
+    replace manual_change = 1 if iso=="KNA" & npi_order==3
 
     replace       measure = 2 if iso=="LCA" & npi_order==5 & measure==0       /* LCA. Mobility restrictions */
     replace manual_change = 1 if iso=="LCA" & npi_order==5
@@ -357,17 +375,38 @@ drop if npi_order>=14
     replace       measure = 2 if iso=="VCT" & npi_order==2 & measure==0       /* VCT. Border closure */
     replace manual_change = 1 if iso=="VCT" & npi_order==2
 
+    replace       measure = 0 if iso=="VCT" & npi_order==11 & measure==2       /* VCT.Public services NOT closed */
+    replace manual_change = 1 if iso=="VCT" & npi_order==11
+
     replace       measure = 2 if iso=="TTO" & npi_order==10 & measure==0       /* TTO. Limit public gatherings */
     replace manual_change = 1 if iso=="TTO" & npi_order==10
 
     replace       measure = 2 if iso=="TTO" & npi_order==3 & measure==0       /* TTO. Flight suspension */
     replace manual_change = 1 if iso=="TTO" & npi_order==3
 
+    replace       measure = 2 if iso=="TTO" & npi_order==5 & measure==0       /* TTO. Mobility restrictions */
+    replace manual_change = 1 if iso=="TTO" & npi_order==5
+
+    replace       measure = 2 if iso=="GBR" & npi_order==5 & measure==0       /* GBR. Mobility restrictions */
+    replace manual_change = 1 if iso=="GBR" & npi_order==5
+
     replace       measure = 0 if iso=="NZL" & npi_order==7 & measure==2       /* NZL. NO partial lockdown. Only FULL lockdown */
     replace manual_change = 1 if iso=="NZL" & npi_order==7
 
     replace       measure = 2 if iso=="SWE" & npi_order==12 & measure==0       /* SWE. Close schools */
     replace manual_change = 1 if iso=="SWE" & npi_order==12
+
+    replace       measure = 2 if iso=="VNM" & npi_order==2 & measure==0       /* VNM. Border closure */
+    replace manual_change = 1 if iso=="VNM" & npi_order==2
+
+    replace       measure = 2 if iso=="AIA" & npi_order==2 & measure==0       /* AIA. Border closure */
+    replace manual_change = 1 if iso=="AIA" & npi_order==2
+
+    replace       measure = 2 if iso=="CYM" & npi_order==1 & measure==0       /* CYM. Border control */
+    replace manual_change = 1 if iso=="CYM" & npi_order==1
+
+    replace       measure = 2 if iso=="CYM" & npi_order==5 & measure==0       /* CYM. Mobility restrictions */
+    replace manual_change = 1 if iso=="CYM" & npi_order==5
 
 ** Add Structural change
 ** Include rows for the 6 UKOTS 

@@ -219,7 +219,9 @@ local casepos = "w"
     heatplot gr7 corder date if mtype==1 & date>21940
     ,
     color(RdYlGn, reverse)
-    cuts(1 5 10 15 20 25 30)
+    ///cuts(1 5 10 15 20 25 30)
+    ///cuts(1 4 8 12 16 20)
+    cuts(1 2 4 6 8 10 12 14 16 18 20)
     keylabels(all, range(1))
     p(lcolor(white) lalign(center) lw(0.05))
     discrete
@@ -227,7 +229,7 @@ local casepos = "w"
 
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-    ysize(18) xsize(14)
+    ysize(14) xsize(18)
 
     ylab(   1 "Anguilla"
             2 "Antigua and Barbuda" 
@@ -261,7 +263,7 @@ local casepos = "w"
             31 "United Kingdom"
             32 "Vietnam"
 
-    , labs(2.25) notick nogrid glc(gs16) angle(0))
+    , labs(1.75) notick nogrid glc(gs16) angle(0))
     yscale(reverse fill noline range(-1(1)14)) 
     ///yscale(log reverse fill noline) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -275,7 +277,7 @@ local casepos = "w"
             22020 "15 Apr"
             22035 "30 Apr"
             $fdate "$fdatef"
-    , labs(2.25) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
     xscale(noextend) 
 
@@ -313,18 +315,21 @@ local casepos = "w"
     ///text(31 `caseloc' "$m01_GBR" , place(`casepos') size(`casesize') color(`casecol'))
     ///text(32 `caseloc' "$m01_VNM" , place(`casepos') size(`casesize') color(`casecol'))
 
-    legend(size(2.25) position(2) ring(5) colf cols(1) lc(gs16)
+    legend(size(1.9) position(2) ring(5) colf cols(1) lc(gs16)
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
-    sub("Growth" "Rate (%)", size(2.5)) order(8 7 6 5 4 3 2 1)
+    sub("Growth" "Rate (%)", size(2.0)) order(12 11 10 9 8 7 6 5 4 3 2 1)
     lab(1 "no growth") 
-    lab(2 "1-4")
-    lab(3 "5-9")
-    lab(4 "10-14")
-    lab(5 "15-19")
-    lab(6 "20-24")
-    lab(7 "25-29")
-    lab(8 "30+")
-
+    lab(2 "1-2")
+    lab(3 "3-4")
+    lab(4 "5-6")
+    lab(5 "7-8")
+    lab(6 "9-10")
+    lab(7 "11-12")
+    lab(8 "13-14")
+    lab(9 "15-16")
+    lab(10 "17-18")
+    lab(11 "19-20")
+    lab(12 "over 20")
     
     )
     name(heatmap_growthrate) 
@@ -333,7 +338,6 @@ local casepos = "w"
 ///graph export "`outputpath'/04_TechDocs/heatmap_growthrate_$S_DATE.png", replace width(4000)
 
 
-/*
 
 ** METRICS for PAPER
 ** Min, Max, Av growth rates by country
