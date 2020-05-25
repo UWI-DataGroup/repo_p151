@@ -13,6 +13,10 @@
     set more 1
     set linesize 80
 
+    ** Create folder with today's date as name 
+    local c_date = c(current_date)
+    local today = lower(subinstr("`c_date'", " ", "_", .))
+
     ** Set working directories: this is for DATASET and LOGFILE import and export
     ** DATASETS to encrypted SharePoint folder
     local datapath "X:\The University of the West Indies\DataGroup - repo_data\data_p151"
@@ -20,6 +24,9 @@
     local logpath "X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151"
     ** Reports and Other outputs
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
+    local parent "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\01 country_summaries"
+    cap mkdir "`parent'\\`today'
+    local syncpath "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\01 country_summaries\\`today'"
 
 ** HEADER -----------------------------------------------------
 
@@ -303,6 +310,7 @@ foreach country of local clist {
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_version3_`date_string'", replace
+    ** putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_version3_`date_string'_test", replace
+    putpdf save "`syncpath'/covid19_trajectory_`country'_version3_`date_string'", replace
 
 }

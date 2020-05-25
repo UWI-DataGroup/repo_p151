@@ -27,9 +27,9 @@
 ** HEADER -----------------------------------------------------
 
 ** Load data
-do "`logpath'\covidprofiles_002_ecdc_v3_csv"
 ** do "`logpath'\covidprofiles_002_ecdc_v3_excel"
 ** do "`logpath'\covidprofiles_002_ecdc_v3_excel_16may2020"
+do "`logpath'\covidprofiles_002_ecdc_v3_csv"
 do "`logpath'\covidprofiles_002_jhopkins_v3"
 ** Prepare data
 do "`logpath'\covidprofiles_003_initialprep_v3"
@@ -41,7 +41,3 @@ do "`logpath'\covidprofiles_006_region1_v3"
 do "`logpath'\covidprofiles_007_region2_v3"
 ** Slide Deck
 do "`logpath'\covidprofiles_009_slides"
-
-
-
-

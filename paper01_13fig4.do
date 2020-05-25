@@ -286,6 +286,7 @@ drop if npi_order>=14
 *! FILE: uwi_covid_npi_dataentry.xlsx
 ** --------------------------------------------------------
     gen manual_change = 0
+    
     replace       measure = 2 if iso=="ATG" & npi_order==5 & measure==0       /* ATG. Mobility restrictions */
     replace manual_change = 1 if iso=="ATG" & npi_order==5
     replace min2_donpi = d(29mar2020) if iso=="ATG" & npi_order==5 & min2_donpi==.       /* ATG. Mobility restrictions */
