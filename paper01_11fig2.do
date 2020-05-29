@@ -214,13 +214,12 @@ local caseloc2 = `caseloc'+10
 local casecol = "gs6"
 local casesize = 2.5
 local casepos = "w"
+local dagger = uchar(8224)
 ** -----------------------------------------
 #delimit ;
     heatplot gr7 corder date if mtype==1 & date>21940
     ,
-    color(RdYlGn, reverse)
-    ///cuts(1 5 10 15 20 25 30)
-    ///cuts(1 4 8 12 16 20)
+    color(RdYlBu , reverse intensify(0.75 ))
     cuts(1 2 4 6 8 10 12 14 16 18 20)
     keylabels(all, range(1))
     p(lcolor(white) lalign(center) lw(0.05))
@@ -251,7 +250,7 @@ local casepos = "w"
             18 "St Lucia"
             19 "St Vincent"
             20 "Suriname"
-            21 "Trinidad and Tobago"
+            21 "Trinidad and Tobago `dagger'"
             22 "Turks and Caicos Islands"
             24 "Germany"
             25 "Iceland"
@@ -267,6 +266,7 @@ local casepos = "w"
     yscale(reverse fill noline range(-1(1)14)) 
     ///yscale(log reverse fill noline) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
+    note("`dagger' Initial high growth rate in Trinidad and Tobago due to 49 nationals testing positive for COVID-19 on March 18th" "after returning from a Caribbean cruise.", size(1.75))
 
     xlab(
             21944 "30 Jan" 
@@ -335,7 +335,7 @@ local casepos = "w"
     name(heatmap_growthrate) 
     ;
 #delimit cr
-///graph export "`outputpath'/04_TechDocs/heatmap_growthrate_$S_DATE.png", replace width(4000)
+graph export "`outputpath'/04_TechDocs/figure2_$S_DATE.png", replace width(8000)
 
 
 
@@ -345,5 +345,24 @@ local casepos = "w"
 keep if mtype==1 
 keep if metric>0
 ** table iso_num, c(mean gr7 min gr7 max gr7)
-collapse (mean) ag=gr7 (min) ming=gr7 (max) maxg=gr7, by(iso_num)
+collapse (mean) ag=gr7  (p50) p50ag=gr7 (p25) p25ag=gr7 (p75) p75ag=gr7 (p90) p90ag=gr7 (min) ming=gr7 (max) maxg=gr7, by(iso_num)
+
+
+
+
+** Save to PDF file
+    putpdf begin, pagesize(letter) landscape font("Calibri", 10) margin(top,1cm) margin(bottom,0.5cm) margin(left,1cm) margin(right,1cm)
+
+    ** Figure 2 Title 
+    putpdf paragraph ,  font("Calibri Light", 12)
+    putpdf text ("Figure 2. ") , bold
+    putpdf text ("COVID-19 confirmed case growth rates in 22 Caribbean countries and territories and 9 international locations up to 27-May-2020")
+
+    putpdf table fig1 = (1,1), width(90%) halign(left)    
+    putpdf table fig1(.,.), border(all, nil) valign(center)
+    putpdf table fig1(1,1) = image("`outputpath'/04_TechDocs/figure2_$S_DATE.png")
+** Save the PDF
+    local c_date = c(current_date)
+    local date_string = subinstr("`c_date'", " ", "", .)
+    putpdf save "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151\05_Outputs_Papers\01_NPIs_progressreport\Figure2_`date_string'", replace
 

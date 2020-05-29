@@ -20,6 +20,7 @@
     local logpath "X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151"
     ** Reports and Other outputs
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
+    local syncpath "C:\Users\Ian Hambleton\Sync"
 
     ** Close any open log file and open a new log file
     capture log close

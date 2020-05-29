@@ -276,10 +276,10 @@ preserve
     #delimit ;
         gr twoway 
             (line iso_num zero, lw(0.25) lp("l") lc(gs13)) 
-            (rbar zero edays iso_num if edays<0, horiz barwidth(0.25) col(green%50) lw(none))
-            (rbar zero edays iso_num if edays>0, horiz barwidth(0.25) col(red%50) lw(none))
-            (scat iso_num edays if edays<0, msize(2.5) mc(green%75) m(o))
-            (scat iso_num edays if edays>0, msize(2.5) mc(red%75) m(o))
+            (rbar zero edays iso_num if edays<0, horiz barwidth(0.25) col("151 194 221") lw(none))
+            (rbar zero edays iso_num if edays>0, horiz barwidth(0.25) col("247 146 114") lw(none))
+            (scat iso_num edays if edays<0, msize(2.5) mc("151 194 221") m(o))
+            (scat iso_num edays if edays>0, msize(2.5) mc("247 146 114") m(o))
             (scat iso_num edays if edays==0, msize(2.5) mc(gs6%75) m(o)
             )
             ,
@@ -332,7 +332,7 @@ preserve
             yscale( fill noline reverse) 
             ytitle(" ", size(3) margin(l=2 r=2 t=2 b=2)) 
             
-            title("(A) Control movement into country", pos(11) ring(1) size(4))
+            title("(A) Control movement into country", pos(11) ring(1) size(4) color(gs0))
 
             legend(off size(3) position(5) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -340,7 +340,7 @@ preserve
                 name(acaps_movement_into) 
                 ;
         #delimit cr
-        ///graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(6000)
+        graph export "`outputpath'/04_TechDocs/figure4A_$S_DATE.png", replace width(4000)
 
     ** Average elapsed time by region
     table ctype, c(mean edays p50 edays p25 edays p75 edays)
@@ -362,10 +362,10 @@ preserve
     #delimit ;
         gr twoway 
             (line iso_num zero, lw(0.25) lp("l") lc(gs13)) 
-            (rbar zero edays iso_num if edays<0, horiz barwidth(0.25) col(green%50) lw(none))
-            (rbar zero edays iso_num if edays>0, horiz barwidth(0.25) col(red%50) lw(none))
-            (scat iso_num edays if edays<0, msize(2.5) mc(green%75) m(o))
-            (scat iso_num edays if edays>0, msize(2.5) mc(red%75) m(o))
+            (rbar zero edays iso_num if edays<0, horiz barwidth(0.25) col("151 194 221") lw(none))
+            (rbar zero edays iso_num if edays>0, horiz barwidth(0.25) col("247 146 114") lw(none))
+            (scat iso_num edays if edays<0, msize(2.5) mc("151 194 221") m(o))
+            (scat iso_num edays if edays>0, msize(2.5) mc("247 146 114") m(o))
             (scat iso_num edays if edays==0, msize(2.5) mc(gs6%75) m(o)
             )
             ,
@@ -418,7 +418,7 @@ preserve
             yscale( fill noline reverse) 
             ytitle(" ", size(3) margin(l=2 r=2 t=2 b=2)) 
             
-            title("(B) Control movement in country", pos(11) ring(1) size(4))
+            title("(B) Control movement in country", pos(11) ring(1) size(4) color(gs0))
 
             legend(off size(3) position(5) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -426,7 +426,7 @@ preserve
                 name(acaps_movement_in) 
                 ;
         #delimit cr
-        ///graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(6000)
+        graph export "`outputpath'/04_TechDocs/figure4B_$S_DATE.png", replace width(4000)
 
     ** Average elapsed time by region
     table ctype, c(mean edays p50 edays p25 edays p75 edays)
@@ -450,10 +450,10 @@ preserve
     #delimit ;
         gr twoway 
             (line iso_num zero, lw(0.25) lp("l") lc(gs13)) 
-            (rbar zero edays iso_num if edays<0, horiz barwidth(0.25) col(green%50) lw(none))
-            (rbar zero edays iso_num if edays>0, horiz barwidth(0.25) col(red%50) lw(none))
-            (scat iso_num edays if edays<0, msize(2.5) mc(green%75) m(o))
-            (scat iso_num edays if edays>0, msize(2.5) mc(red%75) m(o))
+            (rbar zero edays iso_num if edays<0, horiz barwidth(0.25) col("151 194 221") lw(none))
+            (rbar zero edays iso_num if edays>0, horiz barwidth(0.25) col("247 146 114") lw(none))
+            (scat iso_num edays if edays<0, msize(2.5) mc("151 194 221") m(o))
+            (scat iso_num edays if edays>0, msize(2.5) mc("247 146 114") m(o))
             (scat iso_num edays if edays==0, msize(2.5) mc(gs6%75) m(o)
             )
             ,
@@ -506,7 +506,7 @@ preserve
             yscale( fill noline reverse) 
             ytitle(" ", size(3) margin(l=2 r=2 t=2 b=2)) 
             
-            title("(C) Control gatherings", pos(11) ring(1) size(4))
+            title("(C) Control gatherings", pos(11) ring(1) size(4) color(gs0))
 
             legend(off size(3) position(5) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -514,9 +514,28 @@ preserve
                 name(acaps_gatherings) 
                 ;
         #delimit cr
-        ///graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(6000)
+        graph export "`outputpath'/04_TechDocs/figure4C_$S_DATE.png", replace width(4000)
 
     ** Average elapsed time by region
     table ctype, c(mean edays p50 edays p25 edays p75 edays)     
 restore
+
+
+** Save to PDF file
+    putpdf begin, pagesize(letter) landscape font("Calibri", 10) margin(top,1cm) margin(bottom,0.5cm) margin(left,1cm) margin(right,1cm)
+
+    ** Figure 1 Title 
+    putpdf paragraph ,  font("Calibri Light", 12)
+    putpdf text ("Figure 4. ") , bold
+    putpdf text ("The number of days between the date of first confirmed case of COVID-19 and the date of introducing the first non-pharmaceutical intervention (NPI), stratified by country and by NPI type")
+
+    putpdf table fig1 = (1,3), width(90%) halign(left)    
+    putpdf table fig1(.,.), border(all, nil) valign(center)
+    putpdf table fig1(1,1) = image("`outputpath'/04_TechDocs/figure4A_$S_DATE.png")
+    putpdf table fig1(1,2) = image("`outputpath'/04_TechDocs/figure4B_$S_DATE.png")
+    putpdf table fig1(1,3) = image("`outputpath'/04_TechDocs/figure4C_$S_DATE.png")
+** Save the PDF
+    local c_date = c(current_date)
+    local date_string = subinstr("`c_date'", " ", "", .)
+    putpdf save "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151\05_Outputs_Papers\01_NPIs_progressreport\Figure4_`date_string'", replace
 

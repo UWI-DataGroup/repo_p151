@@ -261,26 +261,26 @@ drop doflock1 flocki1
 
 *! Alter curfewi, plocki, flocki
 *! Combine plocki and flocki to locki
-    gen manual_change = 0
+    ** gen manual_change = 0
 
-    replace       plocki = 1 if iso=="DOM" & plocki==0       /* DOM. Partial lockdown */
-    replace doplock = d(19mar2020) if iso=="DOM" & doplock==.      
-    replace manual_change = 1 if iso=="DOM" 
+    ** replace       plocki = 1 if iso=="DOM" & plocki==0       /* DOM. Partial lockdown */
+    ** replace doplock = d(19mar2020) if iso=="DOM" & doplock==.      
+    ** replace manual_change = 1 if iso=="DOM" 
 
-    replace       flocki = 1 if iso=="GUY" & flocki==0       /* GUY. Full lockdown */
-    replace doflock = d(9apr2020) if iso=="GUY" & doflock==.      
-    replace manual_change = 1 if iso=="GUY" 
+    ** replace       flocki = 1 if iso=="GUY" & flocki==0       /* GUY. Full lockdown */
+    ** replace doflock = d(9apr2020) if iso=="GUY" & doflock==.      
+    ** replace manual_change = 1 if iso=="GUY" 
 
-    replace       plocki = 0 if iso=="NZL" & plocki==1       /* NZL. NO partial lockdown. Only FULL lockdown */
-    replace doplock = . if iso=="NZL" & doplock<.      
-    replace manual_change = 1 if iso=="NZL" 
+    ** replace       plocki = 0 if iso=="NZL" & plocki==1       /* NZL. NO partial lockdown. Only FULL lockdown */
+    ** replace doplock = . if iso=="NZL" & doplock<.      
+    ** replace manual_change = 1 if iso=="NZL" 
 
 *! Date corrections
-    replace docurf = d(28mar2020) if iso=="BRB" & curfi==1 & docurf==d(3apr2020)
-    replace doplock = d(3apr2020) if iso=="BRB" & plocki==1 & doplock==d(26mar2020)
-    replace docurf = d(2apr2020) if iso=="BLZ" & curfi==1 & docurf==d(7apr2020)
-    replace docurf = d(25mar2020) if iso=="GUY" & curfi==1 & docurf==d(11apr2020)
-    replace doflock = d(25mar2020) if iso=="NZL" & flocki==1 & doflock==d(20apr2020)
+    ** replace docurf = d(28mar2020) if iso=="BRB" & curfi==1 & docurf==d(3apr2020)
+    ** replace doplock = d(3apr2020) if iso=="BRB" & plocki==1 & doplock==d(26mar2020)
+    ** replace docurf = d(2apr2020) if iso=="BLZ" & curfi==1 & docurf==d(7apr2020)
+    ** replace docurf = d(25mar2020) if iso=="GUY" & curfi==1 & docurf==d(11apr2020)
+    ** replace doflock = d(25mar2020) if iso=="NZL" & flocki==1 & doflock==d(20apr2020)
 
 ** Finally - merge partial and full lockdown 
 egen locki = rowmax(plocki flocki) 
@@ -358,10 +358,10 @@ restore
 
 #delimit ;
     graph twoway
-    (bar movement date if movement>0 & iso=="`iso'", color(red%50)  barw(0.75))
-    (bar movement date if movement<=0 & iso=="`iso'", color(green%50) barw(0.75))
+    (bar movement date if movement>0 & iso=="`iso'", color("247 146 114")  barw(0.75))
+    (bar movement date if movement<=0 & iso=="`iso'", color("151 194 221") barw(0.75))
     /// Curfew 
-    (scatteri 30 ${curfew_`iso'} , msize(12) mlc(gs0%50) mfcolor("66 146 198%50"))
+    (scatteri 30 ${curfew_`iso'} , msize(12) mlc(gs0%50) mfcolor("254 232 172"))
     /// Full lockdown
     (scatteri 30 ${flock_`iso'} ,msize(12) mlc(gs0%50) mfcolor("128 125 186%50"))
     /// Partial lockdown
@@ -413,9 +413,7 @@ graph export "`outputpath'/04_TechDocs/movement_`iso'_paper1.png", replace width
 ** ------------------------------------------------------
     putpdf begin, pagesize(letter) landscape font("Calibri Light", 10) margin(top,0.5cm) margin(bottom,0.25cm) margin(left,0.5cm) margin(right,0.25cm)
 
-
-** BARBADOS
-** TITLE, ATTRIBUTION, DATE of CREATION
+** PAGE 1. TITLE, ATTRIBUTION, DATE of CREATION
     putpdf table intro2 = (1,20), width(100%) halign(left)    
     putpdf table intro2(.,.), border(all, nil) valign(center)
     putpdf table intro2(1,.), font("Calibri Light", 24, 000000)  
@@ -423,16 +421,26 @@ graph export "`outputpath'/04_TechDocs/movement_`iso'_paper1.png", replace width
     putpdf table intro2(1,2), colspan(14)
     putpdf table intro2(1,16), colspan(5)
     putpdf table intro2(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
-    putpdf table intro2(1,2)=("MOVEMENT DATA"), halign(left) linebreak
-    putpdf table intro2(1,2)=("(Updated on: $S_DATE)"), halign(left) append  font("Calibri Light", 18, 000000)
-    putpdf table intro2(1,16)=("Page 1 of 6"), halign(right)  font("Calibri Light", 16, 8c8c8c) linebreak
+    putpdf table intro2(1,2)=("Supplement 1. "), bold font("Calibri Light", 13, 000000)
+    putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
+    ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
+    putpdf table intro2(1,16)=("Page 1 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
+    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
+
 ** FIGURES - ANTIGUA, BAHAMAS, BARBADOS 
-    putpdf table f2 = (3,1), width(100%) border(all,nil) halign(center)
+    putpdf table f2 = (6,1), width(85%) border(all,nil) halign(center)
     putpdf table f2(1,1)=image("`outputpath'/04_TechDocs/movement_ATG_paper1.png")
-    putpdf table f2(2,1)=image("`outputpath'/04_TechDocs/movement_BHS_paper1.png")
-    putpdf table f2(3,1)=image("`outputpath'/04_TechDocs/movement_BRB_paper1.png")
+    putpdf table f2(2,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f2(2,1)=("Antigua and Barbuda saw its largest 1-day reduction in movement on 2-Apr-2020, on the first day of a full national lockdown."), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f2(3,1)=image("`outputpath'/04_TechDocs/movement_BHS_paper1.png")
+    putpdf table f2(4,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f2(4,1)=("Bahamas saw larger movement reductions over the Easter weekend (10-13th Apr), and coinciding with weekends generally."), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f2(5,1)=image("`outputpath'/04_TechDocs/movement_BRB_paper1.png")
+    putpdf table f2(6,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f2(6,1)=("Barbados saw two major reductions in movement. The first on 29-Mar-2020 coinciding with a national curfew and the second on 4-Apr-2020 coinciding with a full national lockdown."), append font("Calibri Light", 10, 8c8c8c)
 
-** FIGURES - BELIZE, DOMINICAN REPUBLIC, HAITI
+
+** PAGE 2. FIGURES - BELIZE, DOMINICAN REPUBLIC, HAITI
 putpdf pagebreak
     putpdf table intro2 = (1,20), width(100%) halign(left)    
     putpdf table intro2(.,.), border(all, nil) valign(center)
@@ -441,16 +449,24 @@ putpdf pagebreak
     putpdf table intro2(1,2), colspan(14)
     putpdf table intro2(1,16), colspan(5)
     putpdf table intro2(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
-    putpdf table intro2(1,2)=("MOVEMENT DATA"), halign(left) linebreak
-    putpdf table intro2(1,2)=("(Updated on: $S_DATE)"), halign(left) append  font("Calibri Light", 18, 000000)
-    putpdf table intro2(1,16)=("Page 2 of 6"), halign(right)  font("Calibri Light", 16, 8c8c8c) linebreak
+    putpdf table intro2(1,2)=("Supplement 1. "), bold font("Calibri Light", 13, 000000)
+    putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
+    ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
+    putpdf table intro2(1,16)=("Page 2 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
+    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
-    putpdf table f3 = (3,1), width(100%) border(all,nil) halign(center)
+    putpdf table f3 = (6,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_BLZ_paper1.png")
-    putpdf table f3(2,1)=image("`outputpath'/04_TechDocs/movement_DOM_paper1.png")
-    putpdf table f3(3,1)=image("`outputpath'/04_TechDocs/movement_HTI_paper1.png")
+    putpdf table f3(2,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(2,1)=("Belize saw gentle reductions over 6-days following a partial lockdown on 23-Mar-2020, and a small additional drop in mobility on 2-Apr following a national curfew order."), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(3,1)=image("`outputpath'/04_TechDocs/movement_DOM_paper1.png")
+    putpdf table f3(4,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(4,1)=("The Dominican Republic initiated a national curfew on 20-Mar-2020, which contributed to an initialy sharp, then more gentle reduction in mobility between 19th and 27th March."), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(5,1)=image("`outputpath'/04_TechDocs/movement_HTI_paper1.png")
+    putpdf table f3(6,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(6,1)=("Haiti initiated a national curfew and lockdown on 20-Mar-2020 and saw only modest reductions in movement."), append font("Calibri Light", 10, 8c8c8c)
 
-** FIGURES - JAMAICA, TRINIDAD, GERMANY
+** PAGE 3. FIGURES - JAMAICA, TRINIDAD, GERMANY
 putpdf pagebreak
     putpdf table intro2 = (1,20), width(100%) halign(left)    
     putpdf table intro2(.,.), border(all, nil) valign(center)
@@ -459,16 +475,27 @@ putpdf pagebreak
     putpdf table intro2(1,2), colspan(14)
     putpdf table intro2(1,16), colspan(5)
     putpdf table intro2(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
-    putpdf table intro2(1,2)=("MOVEMENT DATA"), halign(left) linebreak
-    putpdf table intro2(1,2)=("(Updated on: $S_DATE)"), halign(left) append  font("Calibri Light", 18, 000000)
-    putpdf table intro2(1,16)=("Page 3 of 6"), halign(right)  font("Calibri Light", 16, 8c8c8c) linebreak
+    putpdf table intro2(1,2)=("Supplement 1. "), bold font("Calibri Light", 13, 000000)
+    putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
+    ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
+    putpdf table intro2(1,16)=("Page 3 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
+    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
-    putpdf table f3 = (3,1), width(100%) border(all,nil) halign(center)
+    putpdf table f3 = (6,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_JAM_paper1.png")
-    putpdf table f3(2,1)=image("`outputpath'/04_TechDocs/movement_TTO_paper1.png")
-    putpdf table f3(3,1)=image("`outputpath'/04_TechDocs/movement_DEU_paper1.png")
+    putpdf table f3(2,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(2,1)=("Jamaica implemented a curfew on 1-Apr-2020, and a regional lockdown (St Catherine parish) on 15-Apr. National-level movements were not materially affected by these interventions."), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(3,1)=image("`outputpath'/04_TechDocs/movement_TTO_paper1.png")
+    putpdf table f3(4,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(4,1)=("Trinidad and Tobago initiated a full national "), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(4,1)=("stay-at-home "), italic append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(4,1)=("order on 29-Mar-2020 and this coincided with a sharp and sustained drop in movement. "), linebreak append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(4,1)=("Particularly large movement reductions on 30-Mar, 10-Apr and 13-Apr were associated with national holidays."), append font("Calibri Light", 10, 8c8c8c) 
+    putpdf table f3(5,1)=image("`outputpath'/04_TechDocs/movement_DEU_paper1.png")
+    putpdf table f3(6,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(6,1)=("On the 16th and 21st March 2020 Germany initiated regional measures to restrict movement (Bavaria). These coincided with a gentle reduction in national movement between 17th and 22nd March."), append font("Calibri Light", 10, 8c8c8c)
 
-** FIGURES - ITALY, NEW ZEALAND, SINGAPORE
+** PAGE 4. FIGURES - ITALY, NEW ZEALAND, SINGAPORE
 putpdf pagebreak
     putpdf table intro2 = (1,20), width(100%) halign(left)    
     putpdf table intro2(.,.), border(all, nil) valign(center)
@@ -477,16 +504,26 @@ putpdf pagebreak
     putpdf table intro2(1,2), colspan(14)
     putpdf table intro2(1,16), colspan(5)
     putpdf table intro2(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
-    putpdf table intro2(1,2)=("MOVEMENT DATA"), halign(left) linebreak
-    putpdf table intro2(1,2)=("(Updated on: $S_DATE)"), halign(left) append  font("Calibri Light", 18, 000000)
-    putpdf table intro2(1,16)=("Page 4 of 6"), halign(right)  font("Calibri Light", 16, 8c8c8c) linebreak
+    putpdf table intro2(1,2)=("Supplement 1. "), bold font("Calibri Light", 13, 000000)
+    putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
+    ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
+    putpdf table intro2(1,16)=("Page 4 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
+    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
-    putpdf table f3 = (3,1), width(100%) border(all,nil) halign(center)
+    putpdf table f3 = (6,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_ITA_paper1.png")
-    putpdf table f3(2,1)=image("`outputpath'/04_TechDocs/movement_NZL_paper1.png")
-    putpdf table f3(3,1)=image("`outputpath'/04_TechDocs/movement_SGP_paper1.png")
+    putpdf table f3(2,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(2,1)=("Italy initiated a regional lockdown on 22-Feb-2020 (Lombardy, Veneto) and a national lockdown on 9-Mar. After the national lockdown there was a gentle fall in movement between 10th and 16th March."), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(3,1)=image("`outputpath'/04_TechDocs/movement_NZL_paper1.png")
+    putpdf table f3(4,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(4,1)=("New Zealand initiated a full national lockdown on 25-Mar-2020, and saw a sharp and sustained fall in national movement."), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(5,1)=image("`outputpath'/04_TechDocs/movement_SGP_paper1.png")
+    putpdf table f3(6,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(6,1)=("Singapore announced in early April a stringent set of preventive measures collectively called a "), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(6,1)=("circuit breaker"), italic append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(6,1)=(". Movement fell on the day these measures were introduced."), append font("Calibri Light", 10, 8c8c8c)
     
-** FIGURES - SOUTH KOREA, SWEDEN, UNITED KINGDOM
+** PAGE 5. FIGURES - SOUTH KOREA, SWEDEN, UNITED KINGDOM
 putpdf pagebreak
     putpdf table intro2 = (1,20), width(100%) halign(left)    
     putpdf table intro2(.,.), border(all, nil) valign(center)
@@ -495,16 +532,28 @@ putpdf pagebreak
     putpdf table intro2(1,2), colspan(14)
     putpdf table intro2(1,16), colspan(5)
     putpdf table intro2(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
-    putpdf table intro2(1,2)=("MOVEMENT DATA"), halign(left) linebreak
-    putpdf table intro2(1,2)=("(Updated on: $S_DATE)"), halign(left) append  font("Calibri Light", 18, 000000)
-    putpdf table intro2(1,16)=("Page 5 of 6"), halign(right)  font("Calibri Light", 16, 8c8c8c) linebreak
+    putpdf table intro2(1,2)=("Supplement 1. "), bold font("Calibri Light", 13, 000000)
+    putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
+    ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
+    putpdf table intro2(1,16)=("Page 5 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
+    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
-    putpdf table f3 = (3,1), width(100%) border(all,nil) halign(center)
+    putpdf table f3 = (6,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_KOR_paper1.png")
-    putpdf table f3(2,1)=image("`outputpath'/04_TechDocs/movement_SWE_paper1.png")
-    putpdf table f3(3,1)=image("`outputpath'/04_TechDocs/movement_GBR_paper1.png")
+    putpdf table f3(2,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(2,1)=("South Korea implemented a partial lockdown on 22-Mar-2020 with the closure of some public facilities. Movement reductions were minimal. "), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(2,1)=("The early onset of the outbreak in South Korea may mean that national movement was already reduced during the comparator period (Jan and Feb 2020). "), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(3,1)=image("`outputpath'/04_TechDocs/movement_SWE_paper1.png")
+    putpdf table f3(4,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(4,1)=("Sweden has introduced very few national controls on movement. National movement reductions have been minimal."), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(5,1)=image("`outputpath'/04_TechDocs/movement_GBR_paper1.png")
+    putpdf table f3(6,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(6,1)=("The UK initiated a partial lockdown on 16-Mar-2020, and a more formal " ), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(6,1)=("stay-at-home"), italic append font("Calibri Light", 10, 8c8c8c) 
+    putpdf table f3(6,1)=(" order on 23-Mar. National movement fell gently between 17th and 29th March."), append font("Calibri Light", 10, 8c8c8c)
+    
 
-** FIGURES - VIETNAM
+** PAGE 6. FIGURES - VIETNAM
 putpdf pagebreak
     putpdf table intro2 = (1,20), width(100%) halign(left)    
     putpdf table intro2(.,.), border(all, nil) valign(center)
@@ -513,15 +562,21 @@ putpdf pagebreak
     putpdf table intro2(1,2), colspan(14)
     putpdf table intro2(1,16), colspan(5)
     putpdf table intro2(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
-    putpdf table intro2(1,2)=("MOVEMENT DATA"), halign(left) linebreak
-    putpdf table intro2(1,2)=("(Updated on: $S_DATE)"), halign(left) append  font("Calibri Light", 18, 000000)
-    putpdf table intro2(1,16)=("Page 6 of 6"), halign(right)  font("Calibri Light", 16, 8c8c8c) linebreak
+    putpdf table intro2(1,2)=("Supplement 1. "), bold font("Calibri Light", 13, 000000)
+    putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
+    ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
+    putpdf table intro2(1,16)=("Page 6 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
+    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
-    putpdf table f3 = (1,1), width(100%) border(all,nil) halign(center)
+    putpdf table f3 = (12,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_VNM_paper1.png")
+    putpdf table f3(2,1)=("Country Note: "), bold font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(2,1)=("Vietnam introduced a partial lockdown on 13-Feb-2020 and a national lockdown on 1-Apr."), append font("Calibri Light", 10, 8c8c8c)
+    putpdf table f3(2,1)=("The early onset of the outbreak in Vietnam may mean that national movement was already reduced during the comparator period (Jan and Feb 2020). "), append font("Calibri Light", 10, 8c8c8c)
 
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs_Papers/01_NPIs_progressreport/covid19_movement_supplement1", replace
+    putpdf save "`outputpath'/05_Outputs_Papers/01_NPIs_progressreport/supplement1_covid19_movement_`date_string'", replace
+    
 

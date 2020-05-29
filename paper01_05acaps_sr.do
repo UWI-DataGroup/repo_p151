@@ -468,6 +468,7 @@ export excel using "`datapath'\version02\3-output\npi_check_23may2020", first(va
 *! We will re-import the completed dataset here 
 **----------------------------------------------------------
 import excel using "`datapath'\version02\3-output\npi_check_23may2020", first sheet("npi_check") clear
+import excel using "`datapath'\version02\3-output\npi_check_23may2020_clean(CHv2)", first sheet("npi_check") clear
 
 ** ISO codes (as numerics) 
 gen iso_num = . 
@@ -582,28 +583,65 @@ label define snpi_
 label values snpi snpi_
 drop npi_group 
 
-** 23-MAY-2020. TEMPORARY
-*! We need to UPDATE THIS VARIABLE USING
-*!      -npi_correct-
+
+** ----------------------------------------------
+** YES/NO FOR EACH NPI GROUP 
+** ----------------------------------------------
+
+** The original YES/NO from ACAPS
 gen yn_npi = .
 replace yn_npi = 0 if npi_yesno=="no" 
 replace yn_npi = 1 if npi_yesno=="yes" 
 label define yn_npi_ 0 "no" 1 "yes" 
 label values yn_npi yn_npi_ 
-drop npi_yesno 
 
-** Generate random date between 01-mar-2020 and 30-apr-2020
-** Between 21975 and 22035
-*! We need to UPDATE THIS VARIABLE USING
-*!      -donpi_correct-
-*!      -donpi_new-
-** local tot = 22035-21975+1
-** local tota = 21975
-** generate ui = floor(`tot'*runiform() + `tota')
+** Variable highlighting if original ACAPS (yes/no) is correct
+rename npi_correct temp1
+gen npi_correct = .
+replace npi_correct = 0 if temp=="no" 
+replace npi_correct = 1 if temp=="yes" 
+label define npi_correct_ 0 "no" 1 "yes" 
+label values npi_correct npi_correct_ 
+drop temp 
+
+** If ACAPS incorrect --> correct the erroneous values
+** --> convert incorrect-yes to no 
+replace yn_npi = 0 if npi_yes=="yes" & npi_correct==0
+** --> convert incorrect-no to yes 
+replace yn_npi = 1 if npi_yes=="no" & npi_correct==0
+
+** Keep only the correct Y/N variable
+**drop npi_yesno npi_correct 
+
+
+
+** ----------------------------------------------
+** DATE OF NPI
+** ----------------------------------------------
+** We update the date if our SR has highlighted an ACAPS error
+** The original date loaded into new variable
 gen donpi = min_donpi 
-** replace donpi = ui if donpi==. 
+** corrected date converted to date format 
+gen correct_date = daily(donpi_new, "DMY", 2020) 
+order correct_date, after(donpi_new)
+format correct_date %td 
 format donpi %td 
-** drop ui 
+
+** Replace original date with corrected date if in error
+
+** Original NO in error --> Changed to YES
+replace donpi = correct_date if npi_yesno=="no" & npi_correct==0
+
+** Original NO is OK --> No Change (all dates are OK)
+
+** Original YES in error --> Changed to NO (must remove dates)
+replace donpi = . if npi_yesno=="yes" & npi_correct==0
+
+** Original YES is OK --> No Change (update dates if necessary)
+replace donpi = correct_date if npi_yesno=="yes" & npi_correct==1 & correct_date<. & correct_date!=min_donpi 
+
+** order npi_yesno npi_correct yn_npi min_donpi correct_date donpi 
+** sort npi_yesno npi_correct 
 
 label var country "Country name" 
 label var ctype "Caribbean or comparator country"
@@ -619,6 +657,10 @@ cap drop donpi_correct
 cap drop donpi_new 
 cap drop npi_description 
 cap drop min_donpi 
+cap drop correct_date 
+cap drop npi_yesno
+cap drop Source 
+cap drop M 
 order country iso iso_num ctype mnpi snpi yn_npi donpi 
 
 save "`datapath'\version02\2-working\paper01_acaps_sr", replace

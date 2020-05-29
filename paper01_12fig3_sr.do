@@ -255,11 +255,10 @@ local dagger = uchar(8224)
     #delimit ;
         heatplot measure corder snpi_order 
         ,
-        colors(#e0726c #83c983)
-        ///colors(#e0726c #83c983 #cccccc)
+        colors(#f79290 	#97c2dd)
         ///cuts(@min(2)@max)
         cuts(0 1 3) 
-        p(lcolor(gs16) lalign(center) lw(0.05))
+        p(lcolor(gs16) lalign(center) lw(0.25))
         discrete
         statistic(asis)
 
@@ -322,7 +321,7 @@ local dagger = uchar(8224)
         text(-1.5 2 "Control" "movement" "into country" , place(c) size(2.5) )
         text(-1.5 6.5 "Control" "movement" "in country" , place(c) size(2.5) )
         text(-1.5 11 "Control" "gatherings" , place(c) size(2.5) )
-        note("`dagger' NPI: non-pharmaceutical intervention")
+        note("`dagger' NPI: non-pharmaceutical intervention", size(2.5))
 
         legend(size(2.5) position(2) ring(5) colf cols(1) lc(gs16)
         region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -334,5 +333,27 @@ local dagger = uchar(8224)
         name(heatmap_acaps1) 
         ;
     #delimit cr
-    ///graph export "`outputpath'/04_TechDocs/heatmap_newcases_$S_DATE.png", replace width(4000)
+    graph export "`outputpath'/04_TechDocs/figure3_$S_DATE.png", replace width(6000)
+
+** Export data for pre-print availability
+drop measure snpi_order corder
+export excel using "`datapath'\version02\3-output\npi_caribbean_23may2020", first(var) sheet("npi_caribbean", replace)
+
+/*
+
+** Save to PDF file
+    putpdf begin, pagesize(letter) font("Calibri", 10) margin(top,1cm) margin(bottom,0.5cm) margin(left,1cm) margin(right,1cm)
+
+    ** Figure 2 Title 
+    putpdf paragraph ,  font("Calibri Light", 12)
+    putpdf text ("Figure 3. ") , bold
+    putpdf text ("Non pharmaceutical interventions (NPIs) implemented by 22 Caribbean countries and territories and 9 international locations, stratified by type of NPI")
+
+    putpdf table fig1 = (1,1), width(75%) halign(left)    
+    putpdf table fig1(.,.), border(all, nil) valign(center)
+    putpdf table fig1(1,1) = image("`outputpath'/04_TechDocs/figure3_$S_DATE.png")
+** Save the PDF
+    local c_date = c(current_date)
+    local date_string = subinstr("`c_date'", " ", "", .)
+    putpdf save "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151\05_Outputs_Papers\01_NPIs_progressreport\Figure3_`date_string'", replace
 

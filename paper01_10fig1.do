@@ -403,12 +403,12 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 ** 1. BAR CHART    --> CUMULATIVE CASES
         #delimit ;
         gr twoway 
-            (bar metric3 date if mtype==1 , col("33 93 146"))
-            (bar metric2 date if mtype==1 , col("103 155 200"))
-            (bar metric1 date if mtype==1 , col("204 231 255"))            
-            (bar metric3 date if mtype==3 , col("189 5 43"))
-            (bar metric2 date if mtype==3 , col("255 158 131"))
-            (bar metric1 date if mtype==3 , col("255 221 204")          
+            (bar metric3 date if mtype==1 , lc(gs0) lw(0.05) fc("101 104 176"))
+            (bar metric2 date if mtype==1 , lc(gs0) lw(0.05) fc("151 194 221"))
+            (bar metric1 date if mtype==1 , lc(gs0) lw(0.05) fc("232 246 250"))            
+            (bar metric3 date if mtype==3 , lc(gs0) lw(0.05) fc("188 64 92"))
+            (bar metric2 date if mtype==3 , lc(gs0) lw(0.05) fc("247 146 114"))
+            (bar metric1 date if mtype==3 , lc(gs0) lw(0.05) fc("254 232 172")          
             )
             ,
 
@@ -430,12 +430,12 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
             , labs(3.5) nogrid glc(gs16) angle(45) format(%9.0f))
             xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
                 
-            ylab(0 2000 "2,000" 4000 "4,000" 6000 "6,000" 8000 "8,000" 10000 "10,000" 12000 "12,000" 14000 "14,000" 16000 "16,000"
+            ylab(0 2000 "2,000" 4000 "4,000" 6000 "6,000" 8000 "8,000" 10000 "10,000" 12000 "12,000" 14000 "14,000" 16000 "16,000" 18000 "18000"
             , labs(3.5) notick nogrid glc(gs16) angle(0))
             yscale(fill noline range(0(1)14)) 
             ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
             
-            title("(A) Cumulative cases in 22 Caribbean SIDS", pos(11) ring(1) size(4))
+            title("(A) Cumulative cases in 22 Caribbean SIDS", pos(11) ring(1) size(4) color(gs0))
 
             legend(size(3.5) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -450,18 +450,18 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
                 name(cases_bar_01) 
                 ;
         #delimit cr
-        ///graph export "`outputpath'/04_TechDocs/cumcases_region_$S_DATE.png", replace width(4000)
+        graph export "`outputpath'/04_TechDocs/figure1A_$S_DATE.png", replace width(4000)
 
 
 ** 2. BAR CHART    --> NEW DAILY CASES.
         #delimit ;
         gr twoway 
-            (bar daily3 date if mtype==1 , col("33 93 146"))
-            (bar daily2 date if mtype==1 , col("103 155 200"))
-            (bar daily1 date if mtype==1 , col("204 231 255"))            
-            (bar daily3 date if mtype==3 , col("189 5 43"))
-            (bar daily2 date if mtype==3 , col("255 158 131"))
-            (bar daily1 date if mtype==3 , col("255 221 204")     
+            (bar daily3 date if mtype==1 , lc(gs0) lw(0.05) fc("101 104 176"))
+            (bar daily2 date if mtype==1 , lc(gs0) lw(0.05) fc("151 194 221"))
+            (bar daily1 date if mtype==1 , lc(gs0) lw(0.05) fc("232 246 250"))           
+            (bar daily3 date if mtype==3 , lc(gs0) lw(0.05) fc("188 64 92"))
+            (bar daily2 date if mtype==3 , lc(gs0) lw(0.05) fc("247 146 114"))
+            (bar daily1 date if mtype==3 , lc(gs0) lw(0.05) fc("254 232 172")    
             
             )
             ,
@@ -489,7 +489,7 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
             yscale(fill noline range(0(1)14)) 
             ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
             
-            title("(B) Daily cases in 22 Caribbean SIDS", pos(11) ring(1) size(4))
+            title("(B) Daily cases in 22 Caribbean SIDS", pos(11) ring(1) size(4) color(gs0))
 
             legend(off size(4) position(11) ring(0) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -497,4 +497,22 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
                 name(cases_bar_02) 
                 ;
         #delimit cr
-        ///graph export "`outputpath'/04_TechDocs/newcases_region_$S_DATE.png", replace width(4000)
+        graph export "`outputpath'/04_TechDocs/figure1B_$S_DATE.png", replace width(8000)
+
+** Save to PDF file
+    putpdf begin, pagesize(letter) landscape font("Calibri", 10) margin(top,1cm) margin(bottom,0.5cm) margin(left,1cm) margin(right,1cm)
+
+    ** Figure 1 Title 
+    putpdf paragraph ,  font("Calibri Light", 12)
+    putpdf text ("Figure 1. ") , bold
+    putpdf text ("Numbers of confirmed cases and confirmed deaths from COVID‐19 in 22 Caribbean countries and territories up to 27 May 2020")
+
+    putpdf table fig1 = (1,2), width(90%) halign(left)    
+    putpdf table fig1(.,.), border(all, nil) valign(center)
+    putpdf table fig1(1,1) = image("`outputpath'/04_TechDocs/figure1A_$S_DATE.png")
+    putpdf table fig1(1,2) = image("`outputpath'/04_TechDocs/figure1B_$S_DATE.png")
+** Save the PDF
+    local c_date = c(current_date)
+    local date_string = subinstr("`c_date'", " ", "", .)
+    putpdf save "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151\05_Outputs_Papers\01_NPIs_progressreport\Figure1_`date_string'", replace
+

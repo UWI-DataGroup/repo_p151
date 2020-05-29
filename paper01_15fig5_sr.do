@@ -405,13 +405,14 @@ gen flock = 10
 
 ** Finally - merge partial and full lockdown 
 egen locki = rowmax(plocki flocki) 
+local dagger = uchar(8224)
 
         #delimit ;
         gr twoway 
-            (bar minavmov iso_num , horiz lcol(gs16) fcol("82 179 99") barwidth(0.9))                    
+            (bar minavmov iso_num , horiz lcol(gs16) fcol("151 194 221") barwidth(0.9))                    
             /// Curfew 
-            (scatter iso_num curfew if curfewi==1, msize(4) mlc(gs8%50) mfcolor("66 146 198%50"))
-            (scatter iso_num curfew if curfewi==0, msize(4) mlc(gs8%50) mfcolor("66 146 198%0"))
+            (scatter iso_num curfew if curfewi==1, msize(4) mlc(gs8%50) mfcolor("254 232 172"))
+            (scatter iso_num curfew if curfewi==0, msize(4) mlc(gs8%50) mfcolor("254 232 172%0"))
             /// Partial Lockdown 
             (scatter iso_num plock if plocki==1, msize(4) mlc(gs8%50) mfcolor("241 105 19%50"))
             (scatter iso_num plock if plocki==0, msize(4) mlc(gs8%50) mfcolor("241 105 19%0"))
@@ -426,36 +427,39 @@ egen locki = rowmax(plocki flocki)
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
             bgcolor(white) 
-            ysize(15) xsize(10)
+            ysize(16) xsize(9)
 
 
             xlab(0(-20)-100   
             , labs(3.5) nogrid glc(gs16) angle(45) format(%9.0f))
-            xtitle("% reduction in movement", size(3.5) margin(l=0 r=0 t=0 b=0)) 
+            xtitle("% reduction in movement", size(3.5) margin(l=0 r=0 t=0 b=5)) 
             xscale(noextend reverse) 
                 
             ylab(
-                1 "Antigua and Barbuda" 
-                2 "The Bahamas" 
-                3 "Barbados"
-                4 "Belize" 
+                1 "Antigua and Barbuda `dagger'" 
+                2 "The Bahamas `dagger'" 
+                3 "Barbados `dagger'"
+                4 "Belize `dagger'" 
                 5 "Dominican Republic"
-                6 "Haiti"
-                7 "Jamaica"
-                8 "Trinidad and Tobago"
-                10 "Germany"
+                6 "Haiti `dagger'"
+                7 "Jamaica `dagger'"
+                8 "Trinidad and Tobago `dagger'"
+                10 "Germany `dagger'"
                 11 "Italy"
-                12 "New Zealand"
+                12 "New Zealand `dagger'"
                 13 "Singapore"
                 14 "South Korea"
-                15 "Sweden"
-                16 "United Kingdom"
+                15 "Sweden `dagger'"
+                16 "United Kingdom `dagger'"
                 17 "Vietnam"                
             , labs(3.5) notick nogrid glc(gs16) angle(0))
             yscale(reverse fill noline range(0(1)14)) 
             ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
             
             ///title("", pos(11) ring(1) size(4))
+            note("`dagger' The maximum average weekly reduction in" 
+                 "movement coincided with the Easter weekend"
+                 "(10th-13th April 2020)", size(2.75))
 
             legend(size(3.5) position(12) ring(1) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
@@ -468,5 +472,23 @@ egen locki = rowmax(plocki flocki)
                 name(movement_bar) 
                 ;
         #delimit cr
-        ///graph export "`outputpath'/04_TechDocs/cumcases_region_$S_DATE.png", replace width(4000)
+        graph export "`outputpath'/04_TechDocs/figure5_$S_DATE.png", replace width(6000)
+
+** Save to PDF file
+    putpdf begin, pagesize(letter) font("Calibri", 10) margin(top,1cm) margin(bottom,0.5cm) margin(left,1cm) margin(right,1cm)
+
+    ** Figure 2 Title 
+    putpdf paragraph ,  font("Calibri Light", 12)
+    putpdf text ("Figure 5. ") , bold
+    putpdf text ("The maximum average weekly reduction in population mobility among 8 Caribbean countries and 8 comparator countries")
+
+    putpdf table fig1 = (1,1), width(60%) halign(left)    
+    putpdf table fig1(.,.), border(all, nil) valign(center)
+    putpdf table fig1(1,1) = image("`outputpath'/04_TechDocs/figure5_$S_DATE.png")
+** Save the PDF
+    local c_date = c(current_date)
+    local date_string = subinstr("`c_date'", " ", "", .)
+    putpdf save "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151\05_Outputs_Papers\01_NPIs_progressreport\Figure5_`date_string'", replace
+
+
 
