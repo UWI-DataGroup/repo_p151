@@ -32,7 +32,7 @@
 ** This will allow 2 things:
 **   --> Formal check of ECDC against JHopkins, taking the latest available data
 **   --> easier inclusion of the 6 UKOTS 
-**   --> Anguilla, Bermuda, Cayman Islands, Turks and Caicos, Monserrat, BVI
+**   --> Anguilla, Bermuda, Cayman Islands, Turks and Caicos, Montserrat, BVI
 ** https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide.xlsx
 ** https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
 

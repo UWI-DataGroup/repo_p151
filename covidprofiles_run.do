@@ -38,6 +38,6 @@ do "`logpath'\covidprofiles_004_metrics_v3"
 do "`logpath'\covidprofiles_005_country1_v3"
 ** Regional Profiles
 do "`logpath'\covidprofiles_006_region1_v3"
-do "`logpath'\covidprofiles_007_region2_v3"
+do "`logpath'\covidprofiles_007_region2_v4"
 ** Slide Deck
 do "`logpath'\covidprofiles_009_slides"
