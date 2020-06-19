@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_007_region2_v4.do
+    //  algorithm name					covidprofiles_006_region2_v5.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            7-JUN-2020
@@ -30,47 +30,55 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_007_region2_v4", replace
+    log using "`logpath'\covidprofiles_006_region2_v5", replace
 ** HEADER -----------------------------------------------------
 
 
 ** -----------------------------------------
 ** Pre-Load the COVID metrics --> as Global Macros
 ** -----------------------------------------
-qui do "`logpath'\covidprofiles_004_metrics_v3"
+qui do "`logpath'\covidprofiles_003_metrics_v5"
 ** -----------------------------------------
 
 ** Close any open log file and open a new log file
 capture log close
-log using "`logpath'\covidprofiles_007_region2_v4", replace
+log using "`logpath'\covidprofiles_006_region2_v5", replace
 
 ** Country Labels
 #delimit ; 
 label define cname_ 1 "Anguilla" 
                     2 "Antigua and Barbuda"
                     3 "The Bahamas"
-                    4 "Belize"
-                    5 "Bermuda"
-                    6 "Barbados"
-                    7 "Cayman Islands" 
-                    8 "Dominica"
-                    9 "Grenada"
-                    10 "Guyana"
-                    11 "Haiti"
-                    12 "Jamaica"
-                    13 "Saint Kitts and Nevis"
-                    14 "Saint Lucia"
-                    15 "Montserrat"
-                    16 "Suriname"
-                    17 "Turks and Caicos"
-                    18 "Trinidad and Tobago"
-                    19 "Saint Vincent and the Grenadines"
-                    20 "British Virgin Islands"
+                    4 "Barbados"
+                    5 "Belize"
+                    6 "Bermuda"
+                    7 "British Virgin Islands"                    
+                    8 "Cayman Islands" 
+                    9 "Dominica"
+                    10 "Grenada"
+                    11 "Guyana"
+                    12 "Haiti"
+                    13 "Jamaica"
+                    14 "Montserrat"
+                    15 "Saint Kitts and Nevis"
+                    16 "Saint Lucia"
+                    17 "Saint Vincent and the Grenadines"
+                    18 "Suriname"
+                    19 "Trinidad and Tobago"
+                    20 "Turks and Caicos"
+                    21 "Iceland"
+                    22 "New Zealand"
+                    23 "Singapore"
+                    24 "South Korea"
+                    25 "United Kingdom"
+                    26 "United States"
+                    27 "Cuba"
+                    28 "Dominican Republic"
                     ;
 #delimit cr 
 
 
-** COUNTRY RESTRICTION: CARICOM countries only (N=14)
+** COUNTRY RESTRICTION: CARICOM countries only (N=20)
 #delimit ; 
     keep if 
         iso=="AIA" |
@@ -103,35 +111,27 @@ label define cname_ 1 "Anguilla"
     sort iso_num date
     ///drop if date>date[_n+1] & iso_num!=iso_num[_n+1]
     ///drop if inlist(_n, _N)
-    replace confirmed = 0 if confirmed==.
-    replace deaths = 0 if deaths==.
-    replace recovered = 0 if recovered==.
+    replace total_cases = 0 if total_cases==.
+    replace total_deaths = 0 if total_deaths==.
 
 ** Attack Rate (per 1,000 --> not yet used)
-gen confirmed_rate = (confirmed / pop) * 10000
+gen cases_rate = (total_cases / pop) * 10000
 
 ** Keep selected variables
 decode iso_num, gen(country2)
-keep date iso_num country2 iso pop confirmed confirmed_rate deaths recovered
-order date iso_num country2 iso pop confirmed confirmed_rate deaths recovered
+keep date iso_num country2 iso pop total_cases cases_rate total_deaths 
+order date iso_num country2 iso pop total_cases cases_rate total_deaths 
 bysort iso_num : gen elapsed = _n 
-keep iso_num pop date confirmed confirmed_rate deaths recovered
+keep iso_num pop date total_cases cases_rate total_deaths 
 
-** Fix Guyana 
-replace confirmed = 4 if iso_num==14 & date>=d(17mar2020) & date<=d(23mar2020)
-** Fix --> Single Montserrat value 
-replace confirmed = 5 if confirmed==0 & iso_num==22 & date==d(01apr2020)
-replace pop = 4999 if pop==. & iso_num==22 & date==d(01apr2020)
-rename confirmed metric1
-rename confirmed_rate metric2
-rename deaths metric3
-rename recovered metric4
+rename total_cases metric1
+rename cases_rate metric2
+rename total_deaths metric3
 reshape long metric, i(iso_num pop date) j(mtype)
-label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths" 4 "recovered"
+label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths" 
 label values mtype mtype_
 sort iso_num mtype date 
-drop if mtype==2 | mtype==4 
-
+drop if mtype==2
 
 ** DOUBLING RATE
 ** Then create a rolling average 
@@ -213,28 +213,8 @@ global fdate = fdate1
 global fdatef : di %tdD_m date("$S_DATE", "DMY")
 
 
-** New numeric running from 1 to 14 
-gen corder = .
-replace corder = 1 if iso_num==1        /* Anguilla */
-replace corder = 2 if iso_num==3        /* Antigua */
-replace corder = 3 if iso_num==4        /* Bahamas */
-replace corder = 4 if iso_num==7        /* Barbados order */
-replace corder = 5 if iso_num==5        /* Belize order */
-replace corder = 6 if iso_num==6        /* Bermuda order */
-replace corder = 7 if iso_num==30       /* British Virgin islands */
-replace corder = 8 if iso_num==9        /* Cayman islands */
-replace corder = 9 if iso_num==10       /* Dominica */
-replace corder = 10 if iso_num==13      /* Grenada */
-replace corder = 11 if iso_num==14      /* Guyana */
-replace corder = 12 if iso_num==16      /* Haiti */
-replace corder = 13 if iso_num==18      /* Jamaica */
-replace corder = 14 if iso_num==22      /* Montserrat */
-replace corder = 15 if iso_num==19      /* St Kitts */
-replace corder = 16 if iso_num==21      /* St Lucia */
-replace corder = 17 if iso_num==29      /* St Vincent switched order*/
-replace corder = 18 if iso_num==25      /* Suriname switched order*/
-replace corder = 19 if iso_num==27      /* Trinidad switched order*/ 
-replace corder = 20 if iso_num==26      /* Turks and Caicos Islands*/
+** Graphics numeric running from 1 to 20
+gen corder = iso_num
 
 
 ** -----------------------------------------

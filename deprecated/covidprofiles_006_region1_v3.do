@@ -232,6 +232,7 @@ restore
 
 ** LOOP through N=14 CARICOM member states and 6 UKOTS
 local clist "ATG BHS BLZ BRB DMA GRD GUY HTI JAM KNA LCA SUR TTO VCT AIA BMU VGB CYM MSR TCA"
+** local clist "CYM"
 foreach country of local clist {
     ** country  = 3-character ISO name
     ** cname    = FULL country name
@@ -268,7 +269,8 @@ foreach country of local clist {
             xlab(0(1)${m05_`country'}
             , labs(6) nogrid glc(gs16) angle(0) format(%9.0f))
             xtitle("Days since first case", size(6) margin(l=2 r=2 t=2 b=2)) 
-            xscale(off range(1(1)${m05_`country'})) 
+            ///xscale(off range(1(2)${m05_`country'})) 
+            xscale(off) 
 
             ylab(0(1)${m01_`country'}
             , labs(6) notick nogrid glc(gs16) angle(0))
@@ -302,11 +304,12 @@ foreach country of local clist {
             xlab(0(1)${m05_`country'}
             , labs(6) nogrid glc(gs16) angle(0) format(%9.0f))
             xtitle("Days since first case", size(6) margin(l=2 r=2 t=2 b=2)) 
-            xscale(off range(0(1)${m05_`country'})) 
+            ///xscale(off range(0(1)${m05_`country'})) 
+            xscale(off) 
 
             ylab(0(1)${m02_`country'}
             , labs(6) notick nogrid glc(gs16) angle(0))
-            yscale(off range(0(1)${m02_`country'})) 
+            yscale(off range(0(2)${m02_`country'})) 
             ytitle("Cumulative # of Cases", size(6) margin(l=2 r=2 t=2 b=2)) 
 
             text(${dposy_`country'} ${dposx_`country'} "${m02_`country'}", size(25) place(e) color("124 10 7") j(left))
@@ -349,6 +352,7 @@ preserve
     replace out = 1 if iso=="`country'"
 
 local clist "ATG BHS BLZ BRB DMA GRD GUY HTI JAM KNA LCA SUR TTO VCT AIA BMU VGB CYM MSR TCA"
+** local clist "CYM"
 
     #delimit ;
     collapse    (sum) metric_tot=metric

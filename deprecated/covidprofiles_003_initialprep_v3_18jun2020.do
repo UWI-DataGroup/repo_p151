@@ -29,7 +29,7 @@
 ** RUN covidprofiles_002_jhopkins.do BEFORE this algorithm
 use "`datapath'\version01\2-working\jh_time_series", clear 
 
-** JOHNS HOKINS DATABASE CORRECTIONS TO COUNTRY NAMES
+** JOHNS HOPKINS DATABASE CORRECTIONS TO COUNTRY NAMES
 ** UK has 2 names in database
 replace countryregion = "UK" if countryregion=="United Kingdom"
 ** Bahamas has 3 names in database 
@@ -226,23 +226,96 @@ sort iso date
 replace _merge = 3 if _merge==1 & _merge[_n-1]==3 & iso==iso[_n-1]
 #delimit ;
     keep if (_merge==3 | _merge==2)                     | 
-            (iso=="AIA" | iso=="ANT" | iso=="BMU" | iso=="CYM" | iso=="VGB" | iso=="TCA" | iso=="HKG" | iso=="MSR");
+            (iso=="AIA" | iso=="ANT" | iso=="BMU" | iso=="CYM" | iso=="VGB" | iso=="TCA" | iso=="HKG" | iso=="MSR");    
 #delimit cr
 drop _merge
 
 
 order date iso confirmed1 confirmed2 deaths1 deaths2 recovered1
 
-
 ** ---------------------------------------------------------
 ** FINAL PREPARATION
 ** ---------------------------------------------------------
 
 ** Create internal numeric variable for countries 
-encode iso, gen(iso_num)
+local clist "AIA ATG BHS BLZ BMU BRB CYM DMA GRD GUY HTI JAM KNA LCA MSR SUR TCA TTO VCT VGB"
+gen iso_num = . 
+replace iso_num = 1 if iso == "AIA"
+replace iso_num = 2 if iso == "ANT"
+replace iso_num = 3 if iso == "ATG"
+replace iso_num = 4 if iso == "BHS"
+replace iso_num = 5 if iso == "BLZ"
 
+replace iso_num = 6 if iso == "BMU"
+replace iso_num = 7 if iso == "BRB"
+replace iso_num = 8 if iso == "CUB"
+replace iso_num = 9 if iso == "CYM"
+replace iso_num = 10 if iso == "DMA"
 
-** METRIC: Country populations
+replace iso_num = 11 if iso == "DOM"
+replace iso_num = 12 if iso=="GBR"
+replace iso_num = 13 if iso == "GRD"
+replace iso_num = 14 if iso == "GUY"
+replace iso_num = 15 if iso == "HKG"
+
+replace iso_num = 16 if iso == "HTI"
+replace iso_num = 17 if iso == "ISL"
+replace iso_num = 18 if iso == "JAM"
+replace iso_num = 19 if iso == "KNA"
+replace iso_num = 20 if iso=="KOR"
+
+replace iso_num = 21 if iso == "LCA"
+replace iso_num = 22 if iso == "MSR"
+replace iso_num = 23 if iso == "NZL"
+replace iso_num = 24 if iso=="SGP"
+replace iso_num = 25 if iso == "SUR"
+
+replace iso_num = 26 if iso=="TCA"
+replace iso_num = 27 if iso == "TTO"
+replace iso_num = 28 if iso=="USA"
+replace iso_num = 29 if iso == "VCT"
+replace iso_num = 30 if iso=="VGB"
+
+** Labelling
+#delimit ; 
+label define  iso_num_  1 "Anguilla" 
+                2 "Neth. Antilles" 
+                3 "Antigua and Barbuda"
+                4 "The Bahamas"
+                5 "Belize"
+                6 "Bermuda" 
+                7 "Barbados"
+                8 "Cuba"
+                9 "Cayman Islands" 
+                10 "Dominica"
+
+                11 "Dominican Republic"
+                12 "UK"
+                13 "Grenada"
+                14 "Guyana"
+                15 "Hong Kong"
+
+                16 "Haiti"
+                17 "Iceland"
+                18 "Jamaica"
+                19 "Saint Kitts and Nevis"
+                20 "South Korea" 
+
+                21 "Saint Lucia"
+                22 "Montserrat"
+                23 "New Zealand"
+                24 "Singapore"
+                25 "Suriname"
+
+                26 "Turks and Caicos Islands"
+                27 "Trinidad and Tobago"
+                28 "USA"
+                29 "Saint Vincent and the Grenadines"
+                30 "British Virgin Islands";
+label values iso_num iso_num_; 
+#delimit cr 
+
+** METRIC: Country iso_numulations
 ** SOURCE UN WPP 2019
 gen pop = . 
 replace pop = 15002 if iso == "AIA"
@@ -327,6 +400,12 @@ sort iso date
 drop confirmed1 confirmed2 deaths1 deaths2 
 sort iso date
 ///drop if date>date[_n+1] & iso!=iso[_n+1] & (iso!="AIA" & iso!="ANT" & iso!="BMU" & iso!="CYM" & iso!="VGB" & iso!="TCA" & iso!="HKG" & iso!="MSR")
+
+** 18-JUN-2020
+** Emergency append
+append using "`datapath'\version02\2-working\paper01_covid_TCA"
+drop cgroup 
+replace iso_num = 26 if iso=="TCA"
 
 ** Save the cleaned and restricted dataset
 save "`datapath'\version01\2-working\jh_time_series_restricted", replace

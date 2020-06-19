@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_009_slides.do
+    //  algorithm name					covidprofiles_007_slides.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            29-APR-2020
@@ -30,19 +30,19 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_009_slides", replace
+    log using "`logpath'\covidprofiles_007_slides", replace
 ** HEADER -----------------------------------------------------
 
 ** -----------------------------------------
 ** Pre-Load the COVID metrics --> as Global Macros
 ** -----------------------------------------
-qui do "`logpath'\covidprofiles_004_metrics_v3"
+qui do "`logpath'\covidprofiles_003_metrics_v5"
 ** -----------------------------------------
 
 
 ** Close any open log file and open a new log file
 capture log close
-log using "`logpath'\covidprofiles_006_region1_v3", replace
+log using "`logpath'\covidprofiles_007_slides", replace
 
 ** Labelling of the internal country numeric
 #delimit ; 
@@ -79,25 +79,19 @@ label define cname_ 1 "Anguilla"
                     ;
 #delimit cr 
 ** Attack Rate (per 1,000 --> not yet used)
-gen confirmed_rate = (confirmed / pop) * 10000
-** "Fix" --> Early Guyana values 
-replace confirmed = 4 if iso_num==14 & date>=d(17mar2020) & date<=d(23mar2020)
-** Fix --> Single Montserrat value 
-replace confirmed = 5 if confirmed==0 & iso_num==22 & date==d(01apr2020)
-
+gen cases_rate = (total_cases / pop) * 10000
 
 ** SMOOTHED CASES for graphic
-bysort iso: asrol confirmed , stat(mean) window(date 3) gen(confirmed_av3)
-bysort iso: asrol deaths , stat(mean) window(date 3) gen(deaths_av3)
+bysort iso: asrol total_cases , stat(mean) window(date 3) gen(cases_av3)
+bysort iso: asrol total_deaths , stat(mean) window(date 3) gen(deaths_av3)
 
 
 ** REGIONAL VALUES
-rename confirmed metric1
-rename confirmed_rate metric2
-rename deaths metric3
-rename recovered metric4
+rename total_cases metric1
+rename cases_rate metric2
+rename total_deaths metric3
 reshape long metric, i(iso_num iso date) j(mtype)
-label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths" 4 "recovered"
+label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths"
 label values mtype mtype_
 keep if mtype==1 | mtype==3
 sort iso mtype date 
@@ -131,7 +125,7 @@ global m02 =  $m02_ATG + $m02_BHS + $m02_BRB + $m02_BLZ + $m02_DMA + $m02_GRD + 
             + $m02_HTI + $m02_JAM + $m02_KNA + $m02_LCA + $m02_VCT + $m02_SUR + $m02_TTO
 
 
-** UKOTS
+** UKOTS x6
 ** METRIC 60
 ** Cases in past 1-day across region 
 global m60ukot =  $m60_AIA + $m60_BMU + $m60_VGB + $m60_CYM + $m60_MSR + $m60_TCA
@@ -153,6 +147,35 @@ global m01ukot =  $m01_AIA + $m01_BMU + $m01_VGB + $m01_CYM + $m01_MSR + $m01_TC
 ** METRIC 02
 ** CURRENT CONFIRMED DEATHS across region
 global m02ukot = $m02_AIA + $m02_BMU + $m02_VGB + $m02_CYM + $m02_MSR + $m02_TCA  
+
+
+
+
+** UKOTS x5
+** METRIC 60
+** Cases in past 1-day across region 
+global m60ukot5 =  $m60_AIA + $m60_BMU + $m60_VGB + $m60_CYM + $m60_MSR 
+** METRIC 62
+** Cases in past 7-days across region 
+global m62ukot5 =  $m62_AIA + $m62_BMU + $m62_VGB + $m62_CYM + $m62_MSR  
+
+** METRIC 61
+** Deaths in past 1-day across region 
+global m61ukot5 =  $m61_AIA + $m61_BMU + $m61_VGB + $m61_CYM + $m61_MSR  
+** METRIC 63
+** Deaths in past 7-days across region 
+global m63ukot5 =  $m63_AIA + $m63_BMU + $m63_VGB + $m63_CYM + $m63_MSR  
+
+** METRIC 01 
+** CURRENT CONFIRMED CASES across region
+global m01ukot5 =  $m01_AIA + $m01_BMU + $m01_VGB + $m01_CYM + $m01_MSR   
+
+** METRIC 02
+** CURRENT CONFIRMED DEATHS across region
+global m02ukot5 = $m02_AIA + $m02_BMU + $m02_VGB + $m02_CYM + $m02_MSR   
+
+
+
 
 ** SUBSETS 
 gen touse = 1
@@ -228,6 +251,8 @@ preserve
     egen m06ukot = max(elapsedd)
     global m06ukot = m06 
 restore
+
+
 
 ** ------------------------------------------------------
 ** PDF REGIONAL REPORT (COUNTS OF CONFIRMED CASES)
@@ -384,6 +409,7 @@ putpdf pagebreak
     putpdf table t1(4,1)=("Cases"), halign(center) 
     putpdf table t1(5,1)=("Deaths"), halign(center)  
 
+if $errortrap == 0 {
     putpdf table t1(4,2)=("${m01ukot}"), halign(center) 
     putpdf table t1(5,2)=("${m02ukot}"), halign(center) 
     putpdf table t1(4,3)=("${m60ukot}"), halign(center) 
@@ -394,7 +420,19 @@ putpdf pagebreak
     putpdf table t1(5,5)=("${m04ukot}"), halign(center) 
     putpdf table t1(4,6)=("${m05ukot}"), halign(center) 
     putpdf table t1(5,6)=("${m06ukot}"), halign(center) 
-
+}
+else if $errortrap != 0 {
+    putpdf table t1(4,2)=("${m01ukot5}"), halign(center) 
+    putpdf table t1(5,2)=("${m02ukot5}"), halign(center) 
+    putpdf table t1(4,3)=("${m60ukot5}"), halign(center) 
+    putpdf table t1(5,3)=("${m61ukot5}"), halign(center) 
+    putpdf table t1(4,4)=("${m62ukot5}"), halign(center) 
+    putpdf table t1(5,4)=("${m63ukot5}"), halign(center) 
+    putpdf table t1(4,5)=("${m03ukot5}"), halign(center) 
+    putpdf table t1(5,5)=("${m04ukot5}"), halign(center) 
+    putpdf table t1(4,6)=("${m05ukot5}"), halign(center) 
+    putpdf table t1(5,6)=("${m06ukot5}"), halign(center) 
+}
 
 
 ** SLIDE 2. DAILY NEW CASES
@@ -593,6 +631,67 @@ putpdf pagebreak
     putpdf table f2(3,2)=("Turks and Caicos Islands"), halign(left) font("Calibri Light", 20, 0e497c)  
     putpdf table f2(4,2)=image("`outputpath'/04_TechDocs/spark_TCA_$S_DATE.png")
 
+
+/*
+** 15-JUN-2020
+** EXTRA SLIDE - ALL GROWTH CURVES ON ONE SLIDES
+putpdf pagebreak
+    putpdf table intro2 = (1,20), width(100%) halign(left)    
+    putpdf table intro2(.,.), border(all, nil) valign(center)
+    putpdf table intro2(1,.), font("Calibri Light", 24, 000000)  
+    putpdf table intro2(1,1)
+    putpdf table intro2(1,2), colspan(14)
+    putpdf table intro2(1,16), colspan(5)
+    putpdf table intro2(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
+    putpdf table intro2(1,2)=("REGIONAL COVID-19 GROWTH CURVES"), halign(left) linebreak
+    putpdf table intro2(1,2)=("(Updated on: $S_DATE)"), halign(left) append  font("Calibri Light", 18, 000000)  
+    putpdf table intro2(1,16)=("SLIDE 10A"), halign(right)  font("Calibri Light", 16, 8c8c8c) linebreak
+** FIGURE 
+    putpdf table f2 = (8,5), width(100%) border(all,nil) halign(center)
+    putpdf table f2(1,1)=("Angilla"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(2,1)=image("`outputpath'/04_TechDocs/spark_AIA_$S_DATE.png")
+    putpdf table f2(1,2)=("Antigua and Barbuda"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(2,2)=image("`outputpath'/04_TechDocs/spark_ATG_$S_DATE.png")
+    putpdf table f2(1,3)=("The Bahamas"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(2,3)=image("`outputpath'/04_TechDocs/spark_BHS_$S_DATE.png")
+    putpdf table f2(1,4)=("Barbados"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(2,4)=image("`outputpath'/04_TechDocs/spark_BRB_$S_DATE.png")
+    putpdf table f2(1,5)=("Belize"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(2,5)=image("`outputpath'/04_TechDocs/spark_BLZ_$S_DATE.png")
+
+    putpdf table f2(3,1)=("Bermuda"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(4,1)=image("`outputpath'/04_TechDocs/spark_BMU_$S_DATE.png")
+    putpdf table f2(3,2)=("British Virgin Islands"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(4,2)=image("`outputpath'/04_TechDocs/spark_VGB_$S_DATE.png")
+    putpdf table f2(3,3)=("Cayman Islands"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(4,3)=image("`outputpath'/04_TechDocs/spark_CYM_$S_DATE.png")
+    putpdf table f2(3,4)=("Dominica"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(4,4)=image("`outputpath'/04_TechDocs/spark_DMA_$S_DATE.png")
+    putpdf table f2(3,5)=("Grenada"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(4,5)=image("`outputpath'/04_TechDocs/spark_GRD_$S_DATE.png")
+
+    putpdf table f2(5,1)=("Guyana"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(6,1)=image("`outputpath'/04_TechDocs/spark_GUY_$S_DATE.png")
+    putpdf table f2(5,2)=("Haiti"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(6,2)=image("`outputpath'/04_TechDocs/spark_HTI_$S_DATE.png")
+    putpdf table f2(5,3)=("Jamaica"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(6,3)=image("`outputpath'/04_TechDocs/spark_JAM_$S_DATE.png")
+    putpdf table f2(5,4)=("Montserrat"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(6,4)=image("`outputpath'/04_TechDocs/spark_MSR_$S_DATE.png")
+    putpdf table f2(5,5)=("St Kitts & Nevis"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(6,5)=image("`outputpath'/04_TechDocs/spark_KNA_$S_DATE.png")
+
+    putpdf table f2(7,1)=("St Lucia"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(8,1)=image("`outputpath'/04_TechDocs/spark_LCA_$S_DATE.png")
+    putpdf table f2(7,2)=("St Vincent & the Grenadines"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(8,2)=image("`outputpath'/04_TechDocs/spark_VCT_$S_DATE.png")
+    putpdf table f2(7,3)=("Suriname"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(8,3)=image("`outputpath'/04_TechDocs/spark_SUR_$S_DATE.png")
+    putpdf table f2(7,4)=("Trinidad & Tobago"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(8,4)=image("`outputpath'/04_TechDocs/spark_TTO_$S_DATE.png")
+    putpdf table f2(7,5)=("Turks and Caicos Islands"), halign(left) font("Calibri Light", 12, 0e497c)  
+    putpdf table f2(8,5)=image("`outputpath'/04_TechDocs/spark_TCA_$S_DATE.png")
+*/
 
 
 ** SLIDE 11: ANGUILLA

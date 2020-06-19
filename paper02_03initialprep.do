@@ -383,12 +383,22 @@ rename recovered1 recovered
 replace confirmed = confirmed1 if confirmed==. & confirmed1<. & 
             (iso=="ATG" | iso=="BHS" | iso=="BLZ" | iso=="CUB" | iso=="DMA" | 
              iso=="DOM" | iso=="FJI" | iso=="GRD" | iso=="GUY" | iso=="JAM" |
-             iso=="KNA" | iso=="LCA" | iso=="NZL" | iso=="VCT" | iso=="VNM");
+             iso=="KNA" | iso=="LCA" | iso=="NZL" | iso=="VCT" | iso=="VNM" | 
+             iso=="CRI" | iso=="GTM" | iso=="HND" | iso=="MEX" | iso=="ARG" | 
+             iso=="BOL" | iso=="CHL" | iso=="COL" | iso=="ECU" | iso=="PER" | 
+             iso=="PRY" | iso=="URY" | iso=="VEN" );
+
 replace deaths = deaths1 if deaths==. & deaths1<. & 
             (iso=="ATG" | iso=="BHS" | iso=="BLZ" | iso=="CUB" | iso=="DMA" | 
              iso=="DOM" | iso=="FJI" | iso=="GRD" | iso=="GUY" | iso=="JAM" |
-             iso=="KNA" | iso=="LCA" | iso=="NZL" | iso=="VCT" | iso=="VNM");
+             iso=="KNA" | iso=="LCA" | iso=="NZL" | iso=="VCT" | iso=="VNM" |
+             iso=="CRI" | iso=="GTM" | iso=="HND" | iso=="MEX" | iso=="ARG" | 
+             iso=="BOL" | iso=="CHL" | iso=="COL" | iso=="ECU" | iso=="PER" | 
+             iso=="PRY" | iso=="URY" | iso=="VEN" );             
 #delimit cr 
+drop if confirmed == 0 & deaths==0 & iso=="BRA"
+drop if confirmed == 0 & deaths==0 & iso=="MEX"
+drop if confirmed == 0 & deaths==0 & iso=="COL"
 
 ** Barbados need to impute backwards
 replace confirmed = confirmed[_n+1] if confirmed==. & confirmed[_n+1]<. & iso=="BRB"

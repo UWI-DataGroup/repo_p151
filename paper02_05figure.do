@@ -218,7 +218,7 @@ local sup3 = uchar(179)
     ** Figure 1 Title 
     putpdf paragraph ,  font("Calibri Light", 12)
     putpdf text ("Figure. ") , bold
-    putpdf text ("Average numbers `sup1' of confirmed cases in 20 Caribbean countries `sup2' and 17 Latin American countries `sup3' up to 13 June 2020")
+    putpdf text ("Average numbers `sup1' of confirmed cases in 20 Caribbean countries `sup2' and 17 Latin American countries `sup3' up to 17 June 2020")
 
     putpdf table fig1 = (2,2), width(90%) halign(left)    
     putpdf table fig1(.,.), border(all, nil) valign(center)

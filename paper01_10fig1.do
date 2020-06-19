@@ -87,7 +87,7 @@ global m02car =  $m02_ATG + $m02_BHS + $m02_BRB + $m02_BLZ + $m02_DMA + $m02_GRD
 
 
 
-** CARICOM (N=14)
+** CARICOM (N=20)
 ** METRIC 60
 ** Cases in past 1-day across region 
 global m60caricom =  $m60_ATG + $m60_BHS + $m60_BRB + $m60_BLZ + $m60_DMA + $m60_GRD + $m60_GUY ///

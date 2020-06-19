@@ -348,7 +348,7 @@ keep if metric>0
 collapse (mean) ag=gr7  (p50) p50ag=gr7 (p25) p25ag=gr7 (p75) p75ag=gr7 (p90) p90ag=gr7 (min) ming=gr7 (max) maxg=gr7, by(iso_num)
 
 
-
+/*
 
 ** Save to PDF file
     putpdf begin, pagesize(letter) landscape font("Calibri", 10) margin(top,1cm) margin(bottom,0.5cm) margin(left,1cm) margin(right,1cm)

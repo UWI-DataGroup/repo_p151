@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_004_metrics_v3.do
+    //  algorithm name					covidprofiles_003_metrics_v3.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            17-APR-2020
@@ -23,16 +23,15 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_004_metrics_v3", replace
+    log using "`logpath'\covidprofiles_003_metrics_v3", replace
 ** HEADER -----------------------------------------------------
 
 ** JH time series COVD-19 data 
 ** RUN covidprofiles_002_jhopkins.do BEFORE this algorithm
-use "`datapath'\version01\2-working\jh_time_series_restricted", clear
-
+use "`datapath'\version01\2-working\covid_restricted_001", clear
 
 ** ---------------------------------------------------
-** THE METRICS
+** THE GLOBAL METRICS
 ** ---------------------------------------------------
 ** Metric 01: current number of confirmed cases
 ** Metric 02: current number of confirmed deaths
@@ -75,25 +74,25 @@ use "`datapath'\version01\2-working\jh_time_series_restricted", clear
 ** ---------------------------------------------------
 
 ** METRIC 01 : CURRENT CONFIRMED CASES BY COUNTRY 
-bysort iso: egen m01 = max(confirmed)
+bysort iso: egen m01 = max(total_cases)
 ** METRIC 02: CURRENT CONFIRMED DEATHS BY COUNTRY 
-bysort iso: egen m02 = max(deaths)
+bysort iso: egen m02 = max(total_deaths)
 ** METRIC 03: The DATE OF FIRST CONFIRMED CASE
 bysort iso: egen m03 = min(date)
 format m03 %td 
 ** METRIC 04: The DATE OF FIRST CONFIRMED DEATH
 gen deaths_i = 0 
-replace deaths_i = 1 if deaths>0 
+replace deaths_i = 1 if total_deaths>0 
 bysort iso deaths_i: egen m04t = min(date) if deaths_i==1
 bysort iso: egen m04 = min(m04t)
 format m04 %td 
 ** METRIC 05: Days since first reported case
 sort iso date 
-bysort iso: gen elapsed = _n 
+bysort iso: gen elapsed = _n - 1
 bysort iso: egen m05 = max(elapsed)
 ** METRIC 06: Days since first reported death
 sort iso date 
-bysort iso deaths_i: gen elapsedd = _n
+bysort iso deaths_i: gen elapsedd = _n - 1
 bysort iso deaths_i: egen m06t = max(elapsedd)
 replace m06t = . if deaths_i==0 
 bysort iso: egen m06 = min(m06t)
@@ -104,7 +103,7 @@ local metric = 20
 local numv = "25 50 100 200 400 800 1600 3200 6400 12800"
 foreach num of local numv {
 sort iso date 
-gen t`num' = date if confirmed>=`num' & confirmed[_n-1]<`num'
+gen t`num' = date if total_cases>=`num' & total_cases[_n-1]<`num'
 bysort iso: egen d`num' = min(t`num')
 gen m`metric' = d`num' - m03 
 drop t`num' d`num'
@@ -116,7 +115,7 @@ local metric = 40
 local numv = "25 50 100 200 400 800 1600 3200 6400 12800"
 foreach num of local numv {
 sort iso date 
-gen t`num' = date if deaths>=`num' & deaths[_n-1]<`num'
+gen t`num' = date if total_deaths>=`num' & total_deaths[_n-1]<`num'
 bysort iso: egen d`num' = min(t`num')
 gen m`metric' = d`num' - m03 
 drop t`num' d`num'
@@ -126,8 +125,8 @@ local metric = `metric'+1
 ** METRIC 70 and 71:
 ** Growth rate - Cases / Deaths
 sort iso date 
-gen m70  = log(confirmed/confirmed[_n-1]) if iso==iso[_n-1] 
-gen m71 = log(deaths/deaths[_n-1]) if iso==iso[_n-1] 
+gen m70  = log(total_cases/total_cases[_n-1]) if iso==iso[_n-1] 
+gen m71 = log(total_deaths/total_deaths[_n-1]) if iso==iso[_n-1] 
 
 ** METRIC 72 and 73: 
 ** Doubling time - Cases / Deaths
@@ -141,7 +140,8 @@ by iso: asrol dr_deaths , stat(mean) window(date 10) gen(m73)
 ** Create local macros for the various metrics
 ** These will be used to create graphics and post to PDF briefings
 local numz = "25 50 100 200 400 800 1600 3200 6400 12800"
-local clist "AIA ANT ATG BHS BLZ BMU BRB CUB CYM DMA DOM GBR GRD GUY HKG HTI ISL JAM KNA KOR LCA MSR NZL SGP SUR TCA TTO USA VCT VGB"
+local clist "AIA ATG BHS BRB BLZ BMU VGB CYM DMA GRD GUY HTI JAM MSR KNA LCA VCT SUR TTO TCA ISL NZL SGP KOR GBR USA CUB DOM"
+
 foreach country of local clist {
 
     ** METRIC 01
@@ -205,11 +205,10 @@ foreach country of local clist {
         drop diff_*
     }
 
-
     ** METRIC 60:
     ** 1 DAY INCREASE in CASES
     sort iso date 
-    gen t1 = confirmed - confirmed[_n-1] if iso!=iso[_n+1] & iso=="`country'"
+    gen t1 = total_cases - total_cases[_n-1] if iso!=iso[_n+1] & iso=="`country'"
     egen t2 = min(t1)
     local m60_`country' = t2 
     global m60_`country' = t2 
@@ -218,7 +217,7 @@ foreach country of local clist {
     ** METRIC 61:
     ** 1 DAY INCREASE in DEATHS
     sort iso date 
-    gen t1 = deaths - deaths[_n-1] if iso!=iso[_n+1] & iso=="`country'"
+    gen t1 = total_deaths - total_deaths[_n-1] if iso!=iso[_n+1] & iso=="`country'"
     egen t2 = min(t1)
     local m61_`country' = t2 
     global m61_`country' = t2 
@@ -227,7 +226,7 @@ foreach country of local clist {
     ** METRIC 62:
     ** 7 DAY INCREASE in CASES
     sort iso date 
-    gen t1 = confirmed - confirmed[_n-7] if iso!=iso[_n+1] & iso=="`country'"
+    gen t1 = total_cases - total_cases[_n-7] if iso!=iso[_n+1] & iso=="`country'"
     egen t2 = min(t1)
     local m62_`country' = t2
     global m62_`country' = t2
@@ -236,7 +235,7 @@ foreach country of local clist {
     ** METRIC 63:
     ** 7 DAY INCREASE in DEATHS
     sort iso date 
-    gen t1 = deaths - deaths[_n-7] if iso!=iso[_n+1] & iso=="`country'"
+    gen t1 = total_deaths - total_deaths[_n-7] if iso!=iso[_n+1] & iso=="`country'"
     egen t2 = min(t1)
     local m63_`country' = t2
     global m63_`country' = t2
@@ -254,6 +253,7 @@ foreach country of local clist {
     drop i1 
     **m72_`country'1 m72_`country'2
 
+    ** METRIC 73:
     ** DOUBLING RATE in DEATHS
     sort iso date 
     gen i1 = 0
@@ -267,10 +267,78 @@ foreach country of local clist {
 
 }
 
-drop if confirmed==0 
+** CARICOM (N=20 countries)
 
-drop m* deaths_i dr_cases dr_deaths
-order iso iso_num pop date confirmed deaths recovered elapsed elapsedd
+** METRIC 01 
+** CURRENT CONFIRMED CASES across region
+global m01caricom =  $m01_ATG + $m01_BHS + $m01_BRB + $m01_BLZ + $m01_DMA + $m01_GRD + $m01_GUY ///
+            + $m01_HTI + $m01_JAM + $m01_KNA + $m01_LCA + $m01_VCT + $m01_SUR + $m01_TTO        ///
+            + $m01_AIA + $m01_BMU + $m01_VGB + $m01_CYM + $m01_MSR + $m01_TCA
 
-** Save the metrics dataset
-save "`datapath'\version01\2-working\jh_time_series_metrics", replace
+** METRIC 02
+** CURRENT CONFIRMED DEATHS across region
+global m02caricom =  $m02_ATG + $m02_BHS + $m02_BRB + $m02_BLZ + $m02_DMA + $m02_GRD + $m02_GUY ///
+            + $m02_HTI + $m02_JAM + $m02_KNA + $m02_LCA + $m02_VCT + $m02_SUR + $m02_TTO        ///
+            + $m02_AIA + $m02_BMU + $m02_VGB + $m02_CYM + $m02_MSR + $m02_TCA
+
+** METRIC 60
+** Cases in past 1-day across region 
+global m60caricom =  $m60_ATG + $m60_BHS + $m60_BRB + $m60_BLZ + $m60_DMA + $m60_GRD + $m60_GUY ///
+            + $m60_HTI + $m60_JAM + $m60_KNA + $m60_LCA + $m60_VCT + $m60_SUR + $m60_TTO        ///
+            + $m60_AIA + $m60_BMU + $m60_VGB + $m60_CYM + $m60_MSR + $m60_TCA
+
+** METRIC 61
+** Deaths in past 1-day across region 
+global m61caricom =  $m61_ATG + $m61_BHS + $m61_BRB + $m61_BLZ + $m61_DMA + $m61_GRD + $m61_GUY ///
+            + $m61_HTI + $m61_JAM + $m61_KNA + $m61_LCA + $m61_VCT + $m61_SUR + $m61_TTO        ///
+            + $m61_AIA + $m61_BMU + $m61_VGB + $m61_CYM + $m61_MSR + $m61_TCA
+            
+** METRIC 62
+** Cases in past 7-days across region 
+global m62caricom =  $m62_ATG + $m62_BHS + $m62_BRB + $m62_BLZ + $m62_DMA + $m62_GRD + $m62_GUY ///
+            + $m62_HTI + $m62_JAM + $m62_KNA + $m62_LCA + $m62_VCT + $m62_SUR + $m62_TTO        ///
+            + $m62_AIA + $m62_BMU + $m62_VGB + $m62_CYM + $m62_MSR + $m62_TCA
+
+** METRIC 63
+** Deaths in past 7-days across region 
+global m63caricom =  $m63_ATG + $m63_BHS + $m63_BRB + $m63_BLZ + $m63_DMA + $m63_GRD + $m63_GUY ///
+            + $m63_HTI + $m63_JAM + $m63_KNA + $m63_LCA + $m63_VCT + $m63_SUR + $m63_TTO        ///
+            + $m63_AIA + $m63_BMU + $m63_VGB + $m63_CYM + $m63_MSR + $m63_TCA
+
+
+keep country country_order iso iso_num pop date new_cases new_deaths total_cases total_deaths elapsed
+order country country_order iso iso_num pop date new_cases new_deaths total_cases total_deaths elapsed 
+
+
+/*
+
+**! ------------------------------------------
+**! The weekly surveillance update
+**! Run this every Thursday 
+**! ------------------------------------------
+
+** CARICOM cases in past week
+dis $m62caricom
+
+** CARICOM deaths in past week
+dis $m63caricom
+
+** HAITI
+dis $m62_HTI
+
+** Reminaing cases
+dis $m62caricom - $m62_HTI 
+
+** New cases and deaths in past 24 hours
+dis $m60caricom
+dis $m61caricom
+
+** Total cases in Haiti
+dis $m01_HTI 
+
+** Dom Rep
+dis $m01_DOM
+dis $m62_DOM
+dis $m02_DOM
+
+

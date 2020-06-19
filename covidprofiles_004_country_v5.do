@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_005_country1_v3.do
+    //  algorithm name					covidprofiles_004_country_v5.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            27-APR-2020
@@ -31,48 +31,47 @@
 ** HEADER -----------------------------------------------------
 
 
+
 ** -----------------------------------------
 ** Pre-Load the COVID metrics --> as Global Macros
 ** -----------------------------------------
-qui do "`logpath'\covidprofiles_004_metrics_v3"
+qui do "`logpath'\covidprofiles_003_metrics_v5"
 ** -----------------------------------------
 
 ** Close any open log file and open a new log file
 capture log close
-log using "`logpath'\covidprofiles_005_country1_v3", replace
+log using "`logpath'\covidprofiles_004_country_v5", replace
 
 ** Labelling of the internal country numeric
 #delimit ; 
 label define cname_ 1 "Anguilla" 
-                    2 "Bonaire, Saint Eustatius, Saba" 
-                    3 "Antigua and Barbuda"
-                    4 "The Bahamas"
+                    2 "Antigua and Barbuda"
+                    3 "The Bahamas"
+                    4 "Barbados"
                     5 "Belize"
                     6 "Bermuda"
-                    7 "Barbados"
-                    8 "Cuba"
-                    9 "Cayman Islands" 
-                    10 "Dominica"
-                    11 "Dominican Republic"
-                    12 "UK" 
-                    13 "Grenada"
-                    14 "Guyana"
-                    15 "Hong Kong"
-                    16 "Haiti"
-                    17 "Iceland"
-                    18 "Jamaica"
-                    19 "Saint Kitts and Nevis"
-                    20 "South Korea"
-                    21 "Saint Lucia"
-                    22 "Montserrat"
-                    23 "New Zeland"
-                    24 "Singapore"
-                    25 "Suriname"
-                    26 "Turks and Caicos"
-                    27 "Trinidad and Tobago"
-                    28 "USA"
-                    29 "Saint Vincent and the Grenadines"
-                    30 "The British Virgin Islands"
+                    7 "British Virgin Islands"                    
+                    8 "Cayman Islands" 
+                    9 "Dominica"
+                    10 "Grenada"
+                    11 "Guyana"
+                    12 "Haiti"
+                    13 "Jamaica"
+                    14 "Montserrat"
+                    15 "Saint Kitts and Nevis"
+                    16 "Saint Lucia"
+                    17 "Saint Vincent and the Grenadines"
+                    18 "Suriname"
+                    19 "Trinidad and Tobago"
+                    20 "Turks and Caicos"
+                    21 "Iceland"
+                    22 "New Zealand"
+                    23 "Singapore"
+                    24 "South Korea"
+                    25 "United Kingdom"
+                    26 "United States"
+                    27 "Cuba"
+                    28 "Dominican Republic"
                     ;
 #delimit cr 
 
@@ -85,14 +84,15 @@ bysort iso: egen elapsed_max = max(elapsed)
 ** SAVE THE FILE FOR REGIONAL WORK 
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
+    save "`datapath'\version01\2-working\owid_time_series_`date_string'", replace
 
 ** SMOOTHED CASES for graphic
-by iso: asrol confirmed , stat(mean) window(date 3) gen(confirmed_av3)
-by iso: asrol deaths , stat(mean) window(date 3) gen(deaths_av3)
+by iso: asrol total_cases , stat(mean) window(date 3) gen(cases_av3)
+by iso: asrol total_deaths , stat(mean) window(date 3) gen(deaths_av3)
 
-** LOOP through N=14 CARICOM member states
+** LOOP through N=20 CARICOM member states
 local clist "AIA ATG BHS BLZ BMU BRB CYM DMA GRD GUY HTI JAM KNA LCA MSR SUR TCA TTO VCT VGB"
+** ISL NZL SGP KOR GBR USA CUB DOM
 foreach country of local clist {
     ** country  = 3-character ISO name
     ** cname    = FULL country name
@@ -113,10 +113,10 @@ foreach country of local clist {
 ** GRAPHIC: CASES + DEATHS (Bar with line overlay)
         #delimit ;
         gr twoway 
-            (bar confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', col("181 215 244"))
-            (bar deaths elapsed if iso=="`country'" & elapsed<=`elapsed', col("255 158 131"))
-            (line confirmed_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', lc("14 73 124") lw(0.4) lp("-"))
-            (scat confirmed_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', msize(2.5) mc("14 73 124") m(o))
+            (bar total_cases elapsed if iso=="`country'" & elapsed<=`elapsed', col("181 215 244"))
+            (bar total_deaths elapsed if iso=="`country'" & elapsed<=`elapsed', col("255 158 131"))
+            (line cases_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', lc("14 73 124") lw(0.4) lp("-"))
+            (scat cases_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', msize(2.5) mc("14 73 124") m(o))
             (line deaths_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', lc("124 10 7") lw(0.4) lp("-"))
             (scat deaths_av3 elapsed if iso=="`country'" & elapsed<=`elapsed', msize(2.5) mc("124 10 7") m(o)
 
@@ -150,14 +150,12 @@ foreach country of local clist {
 ** LINE CHART (LOGARITHM)
     #delimit ;
         gr twoway             
-            ///(line confirmed elapsed if iso=="USA" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
-            ///(line confirmed elapsed if iso=="GBR" & elapsed<=`elapsed', lc(orange%40) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="NZL" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="ISL" & elapsed<=`elapsed', lc(orange%40) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="HKG" & elapsed<=`elapsed', lc(red%40) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="SGP" & elapsed<=`elapsed', lc(purple%40) lw(0.35) lp("-"))
-            (line confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', lc("14 73 124") lw(0.4) lp("-"))
-            (scat confirmed elapsed if iso=="`country'" & elapsed<=`elapsed', msize(2.5) mc("14 73 124") m(o))
+            (line total_cases elapsed if iso=="NZL" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
+            (line total_cases elapsed if iso=="ISL" & elapsed<=`elapsed', lc(orange%40) lw(0.35) lp("-"))
+            (line total_cases elapsed if iso=="SGP" & elapsed<=`elapsed', lc(purple%40) lw(0.35) lp("-"))
+            (line total_cases elapsed if iso=="GBR" & elapsed<=`elapsed', lc(red%40) lw(0.35) lp("-"))
+            (line total_cases elapsed if iso=="`country'" & elapsed<=`elapsed', lc("14 73 124") lw(0.4) lp("-"))
+            (scat total_cases elapsed if iso=="`country'" & elapsed<=`elapsed', msize(2.5) mc("14 73 124") m(o))
             ,
 
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -170,19 +168,20 @@ foreach country of local clist {
                 xscale(fill noline) 
                 xtitle("Days since first case", size(6) margin(l=2 r=2 t=2 b=2)) 
                 
-                ylab(
+                ylab(10 100 1000 "1,000" 10000 "10,000" 100000 "100,000" 500000 "500,000"
                 ,
                 labs(5) nogrid glc(gs16) angle(0) format(%9.0f))
                 ytitle("Cumulative # of Cases", size(6) margin(l=2 r=2 t=2 b=2)) 
                 yscale(log)
+                ytick(5 50 500 5000 50000)
 
                 legend(size(6) position(4) ring(1) bm(t=1 b=1 l=1 r=1) colf cols(1) lc(gs16)
                 region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
                 order(5 1 2 3 4) 
                 lab(1 "New Zealand") 
                 lab(2 "Iceland")
-                lab(3 "Hong Kong") 
-                lab(4 "Singapore") 
+                lab(3 "Singapore") 
+                lab(4 "United Kingdom") 
                 lab(5 "`cname'")
                 )
                 name(line_`country') 
