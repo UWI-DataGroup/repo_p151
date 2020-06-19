@@ -3,8 +3,8 @@
     //  algorithm name					covidprofiles_007_slides.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	            29-APR-2020
-    //  algorithm task			        SLIDES
+    // 	date last modified	            19-JUN-2020
+    //  algorithm task			        SLIDES - summary of all PDF outputs on 30 slides
 
     ** General algorithm set-up
     version 16
@@ -23,6 +23,8 @@
     ** LOGFILES to unencrypted OneDrive folder
     local logpath "X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151"
     ** Reports and Other outputs
+    ** ! This contains a local Windows-specific location 
+    ** ! Would need changing for auto saving of PDF to online sync folder
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
     local parent "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\03 presentations"
     cap mkdir "`parent'\\`today'
@@ -274,7 +276,7 @@ restore
     putpdf table intro1(1,2)=("Group Contacts: Ian Hambleton (analytics), Maddy Murphy (public health interventions), "), halign(left) append italic  
     putpdf table intro1(1,2)=("Kim Quimby (logistics planning), Natasha Sobers (surveillance). "), halign(left) append italic   
     putpdf table intro1(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
-    putpdf table intro1(1,2)=("https://tinyurl.com/uwi-covid19-surveillance "), halign(left) underline append linebreak 
+    putpdf table intro1(1,2)=("www.uwi.edu/covid19/surveillance "), halign(left) underline append linebreak 
     putpdf table intro1(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
 
 ** PAGE 1. INTRODUCTION
@@ -289,7 +291,7 @@ restore
     putpdf text ("Email "), font("Calibri Light", 12, 8c8c8c)
     putpdf text ("ian.hambleton@cavehill.uwi.edu "), italic font("Calibri Light", 12, 8c8c8c)
     putpdf text ("with any questions related to these slides. All graphics are drawn from our COVID-19 briefings, updated daily and available at: "), linebreak font("Calibri Light", 12, 8c8c8c)
-    putpdf text ("https://tinyurl.com/uwi-covid19-surveillance "), italic font("Calibri Light", 12, 8c8c8c)
+    putpdf text ("www.uwi.edu/covid19/surveillance "), italic font("Calibri Light", 12, 8c8c8c)
 
 
 ** SLIDE 1: REGIONAL SUMMARY
@@ -409,7 +411,6 @@ putpdf pagebreak
     putpdf table t1(4,1)=("Cases"), halign(center) 
     putpdf table t1(5,1)=("Deaths"), halign(center)  
 
-if $errortrap == 0 {
     putpdf table t1(4,2)=("${m01ukot}"), halign(center) 
     putpdf table t1(5,2)=("${m02ukot}"), halign(center) 
     putpdf table t1(4,3)=("${m60ukot}"), halign(center) 
@@ -420,19 +421,7 @@ if $errortrap == 0 {
     putpdf table t1(5,5)=("${m04ukot}"), halign(center) 
     putpdf table t1(4,6)=("${m05ukot}"), halign(center) 
     putpdf table t1(5,6)=("${m06ukot}"), halign(center) 
-}
-else if $errortrap != 0 {
-    putpdf table t1(4,2)=("${m01ukot5}"), halign(center) 
-    putpdf table t1(5,2)=("${m02ukot5}"), halign(center) 
-    putpdf table t1(4,3)=("${m60ukot5}"), halign(center) 
-    putpdf table t1(5,3)=("${m61ukot5}"), halign(center) 
-    putpdf table t1(4,4)=("${m62ukot5}"), halign(center) 
-    putpdf table t1(5,4)=("${m63ukot5}"), halign(center) 
-    putpdf table t1(4,5)=("${m03ukot5}"), halign(center) 
-    putpdf table t1(5,5)=("${m04ukot5}"), halign(center) 
-    putpdf table t1(4,6)=("${m05ukot5}"), halign(center) 
-    putpdf table t1(5,6)=("${m06ukot5}"), halign(center) 
-}
+
 
 
 ** SLIDE 2. DAILY NEW CASES

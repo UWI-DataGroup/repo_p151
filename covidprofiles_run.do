@@ -3,8 +3,8 @@
     //  algorithm name				  covidprofiles_run.do
     //  project:				        
     //  analysts:				  	  Ian HAMBLETON
-    // 	date last modified	          10-MAY-2020
-    //  algorithm task			      Run Do file batch
+    // 	date last modified	          19-June-2020
+    //  algorithm task			      Run DO file batch
 
     ** General algorithm set-up
     version 16
@@ -27,19 +27,14 @@
 ** HEADER -----------------------------------------------------
 
 ** Load data
-** do "`logpath'\covidprofiles_002_ecdc_v3_excel"
-** do "`logpath'\covidprofiles_002_ecdc_v3_excel_16may2020"
-** do "`logpath'\covidprofiles_002_ecdc_v3_excel_18june2020"
-** do "`logpath'\covidprofiles_002_ecdc_v3_csv"
-** do "`logpath'\covidprofiles_002_jhopkins_v3"
+do "`logpath'\covidprofiles_001_readdata_owid_v5"
 ** Prepare data
-** do "`logpath'\covidprofiles_003_initialprep_v3_18jun2020"
-** do "`logpath'\covidprofiles_003_initialprep_v3"
-** do "`logpath'\covidprofiles_004_metrics_v3"
+do "`logpath'\covidprofiles_002_initialprep_v5"
+do "`logpath'\covidprofiles_003_metrics_v5"
 ** Country Profiles
-** do "`logpath'\covidprofiles_005_country1_v3"
+do "`logpath'\covidprofiles_004_country_v5"
 ** Regional Profiles
-do "`logpath'\covidprofiles_006_region1_v3"
-do "`logpath'\covidprofiles_007_region2_v4"
+do "`logpath'\covidprofiles_005_region1_v5"
+do "`logpath'\covidprofiles_006_region2_v5"
 ** Slide Deck
-do "`logpath'\covidprofiles_009_slides"
+do "`logpath'\covidprofiles_007_slides"

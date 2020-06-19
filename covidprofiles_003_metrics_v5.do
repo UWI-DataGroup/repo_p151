@@ -1,10 +1,10 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_003_metrics_v3.do
+    //  algorithm name					covidprofiles_003_metrics_v5.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	            17-APR-2020
-    //  algorithm task			        Initial cleaning of JHopkns download
+    // 	date last modified	            19-APR-2020
+    //  algorithm task			        Creating a series of global macros for use in PDF outputs
 
     ** General algorithm set-up
     version 16
@@ -23,7 +23,7 @@
 
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_003_metrics_v3", replace
+    log using "`logpath'\covidprofiles_003_metrics_v5", replace
 ** HEADER -----------------------------------------------------
 
 ** JH time series COVD-19 data 
@@ -32,6 +32,10 @@ use "`datapath'\version01\2-working\covid_restricted_001", clear
 
 ** ---------------------------------------------------
 ** THE GLOBAL METRICS
+** We use global (not local) macros here as we want them to be available
+** after the DO file has completed
+** Instead of single quotes (`xx') used for -local- macros
+** We use the dollar prefix ($xx) for global macros
 ** ---------------------------------------------------
 ** Metric 01: current number of confirmed cases
 ** Metric 02: current number of confirmed deaths
@@ -66,6 +70,10 @@ use "`datapath'\version01\2-working\covid_restricted_001", clear
 ** METRIC 61: 1-day increase in deaths
 ** METRIC 62: 7-day increase in cases
 ** METRIC 63: 7-day increase in deaths
+** METRIC 64: 14-day increase in cases
+** METRIC 65: 14-day increase in deaths
+** METRIC 66: 21-day increase in cases
+** METRIC 67: 21-day increase in deaths
 **
 ** METRIC 70: Growth rate in cases
 ** METRIC 71: Growth rate in deaths 
@@ -241,6 +249,42 @@ foreach country of local clist {
     global m63_`country' = t2
     drop t1 t2 
 
+    ** METRIC 64:
+    ** 14 DAY INCREASE in CASES
+    sort iso date 
+    gen t1 = total_cases - total_cases[_n-14] if iso!=iso[_n+1] & iso=="`country'"
+    egen t2 = min(t1)
+    local m64_`country' = t2
+    global m64_`country' = t2
+    drop t1 t2 
+
+    ** METRIC 65:
+    ** 14 DAY INCREASE in DEATHS
+    sort iso date 
+    gen t1 = total_deaths - total_deaths[_n-14] if iso!=iso[_n+1] & iso=="`country'"
+    egen t2 = min(t1)
+    local m65_`country' = t2
+    global m65_`country' = t2
+    drop t1 t2 
+
+    ** METRIC 66:
+    ** 21 DAY INCREASE in CASES
+    sort iso date 
+    gen t1 = total_cases - total_cases[_n-21] if iso!=iso[_n+1] & iso=="`country'"
+    egen t2 = min(t1)
+    local m66_`country' = t2
+    global m66_`country' = t2
+    drop t1 t2 
+
+    ** METRIC 67:
+    ** 21 DAY INCREASE in DEATHS
+    sort iso date 
+    gen t1 = total_deaths - total_deaths[_n-21] if iso!=iso[_n+1] & iso=="`country'"
+    egen t2 = min(t1)
+    local m67_`country' = t2
+    global m67_`country' = t2
+    drop t1 t2 
+
     ** METRIC 72:
     ** DOUBLING RATE in CASES
     sort iso date 
@@ -305,40 +349,32 @@ global m63caricom =  $m63_ATG + $m63_BHS + $m63_BRB + $m63_BLZ + $m63_DMA + $m63
             + $m63_HTI + $m63_JAM + $m63_KNA + $m63_LCA + $m63_VCT + $m63_SUR + $m63_TTO        ///
             + $m63_AIA + $m63_BMU + $m63_VGB + $m63_CYM + $m63_MSR + $m63_TCA
 
+** METRIC 64
+** Cases in past 14-days across region 
+global m64caricom =  $m64_ATG + $m64_BHS + $m64_BRB + $m64_BLZ + $m64_DMA + $m64_GRD + $m64_GUY ///
+            + $m64_HTI + $m64_JAM + $m64_KNA + $m64_LCA + $m64_VCT + $m64_SUR + $m64_TTO        ///
+            + $m64_AIA + $m64_BMU + $m64_VGB + $m64_CYM + $m64_MSR + $m64_TCA
+
+** METRIC 65
+** Deaths in past 14-days across region 
+global m65caricom =  $m65_ATG + $m65_BHS + $m65_BRB + $m65_BLZ + $m65_DMA + $m65_GRD + $m65_GUY ///
+            + $m65_HTI + $m65_JAM + $m65_KNA + $m65_LCA + $m65_VCT + $m65_SUR + $m65_TTO        ///
+            + $m65_AIA + $m65_BMU + $m65_VGB + $m65_CYM + $m65_MSR + $m65_TCA
+
+** METRIC 66
+** Cases in past 21-days across region 
+global m66caricom =  $m66_ATG + $m66_BHS + $m66_BRB + $m66_BLZ + $m66_DMA + $m66_GRD + $m66_GUY ///
+            + $m66_HTI + $m66_JAM + $m66_KNA + $m66_LCA + $m66_VCT + $m66_SUR + $m66_TTO        ///
+            + $m66_AIA + $m66_BMU + $m66_VGB + $m66_CYM + $m66_MSR + $m66_TCA
+
+** METRIC 67
+** Deaths in past 21-days across region 
+global m67caricom =  $m67_ATG + $m67_BHS + $m67_BRB + $m67_BLZ + $m67_DMA + $m67_GRD + $m67_GUY ///
+            + $m67_HTI + $m67_JAM + $m67_KNA + $m67_LCA + $m67_VCT + $m67_SUR + $m67_TTO        ///
+            + $m67_AIA + $m67_BMU + $m67_VGB + $m67_CYM + $m67_MSR + $m67_TCA
+
 
 keep country country_order iso iso_num pop date new_cases new_deaths total_cases total_deaths elapsed
 order country country_order iso iso_num pop date new_cases new_deaths total_cases total_deaths elapsed 
-
-
-/*
-
-**! ------------------------------------------
-**! The weekly surveillance update
-**! Run this every Thursday 
-**! ------------------------------------------
-
-** CARICOM cases in past week
-dis $m62caricom
-
-** CARICOM deaths in past week
-dis $m63caricom
-
-** HAITI
-dis $m62_HTI
-
-** Reminaing cases
-dis $m62caricom - $m62_HTI 
-
-** New cases and deaths in past 24 hours
-dis $m60caricom
-dis $m61caricom
-
-** Total cases in Haiti
-dis $m01_HTI 
-
-** Dom Rep
-dis $m01_DOM
-dis $m62_DOM
-dis $m02_DOM
 
 

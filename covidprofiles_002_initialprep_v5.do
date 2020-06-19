@@ -3,8 +3,8 @@
     //  algorithm name					covidprofiles_002_initialprep_v5.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	            18-JUN-2020
-    //  algorithm task			        Initial cleaning of OWID data downloads
+    // 	date last modified	            19-JUN-2020
+    //  algorithm task			        Initial cleaning of OWID / JH data downloads
 
     ** General algorithm set-up
     version 16
@@ -34,6 +34,7 @@ rename countryregion country
 ** Keep 20 CARICOM countries 
 ** And keep selected international comparators 
 ** UK, USA, Sth Korea, Singapore, New Zealand, Iceland
+** Plus Cuba and Dom Rep (just in case)
 #delimit ; 
 keep if 
         /// caricom
@@ -53,8 +54,9 @@ keep if
         ;
 #delimit cr    
 
-** Add a variable that creates alphabetica order for heatmap graphics 
+** Add a variable that creates alphabetical order for graphics (thinking of heatmaps in particular)
 gen country_order = .
+** CARICOM
 replace country_order = 1 if iso=="AIA"
 replace country_order = 2 if iso=="ATG"
 replace country_order = 3 if iso=="BHS"
@@ -75,12 +77,14 @@ replace country_order = 17 if iso=="VCT"
 replace country_order = 18 if iso=="SUR"
 replace country_order = 19 if iso=="TTO"
 replace country_order = 20 if iso=="TCA"
+** Comparators
 replace country_order = 21 if iso=="ISL"
 replace country_order = 22 if iso=="NZL"
 replace country_order = 23 if iso=="SGP"
 replace country_order = 24 if iso=="KOR"
 replace country_order = 25 if iso=="GBR"
 replace country_order = 26 if iso=="USA"
+** Cuba and Dom Rep
 replace country_order = 27 if iso=="CUB"
 replace country_order = 28 if iso=="DOM"
 labmask country_order, values(country)
@@ -120,13 +124,10 @@ replace iso_num = 28 if iso=="DOM"
 labmask iso_num, values(iso)
 order iso_num, after(iso) 
 
-
-** Final CASE and DEATH variables
+** Some minor cleaning of the Case and Death variables
 sort iso date
-
-** EMPTY ROWSS NOT NEEDED
-** But we do need to fillin some dates that have no row
-** but are after the date of the first case...
+** But need to fillin some early outbreak dates that have no associated row
+** This needed to allow accurate count of days since start of outbreak
 fillin iso date 
 sort iso date
 replace new_cases = 0 if new_cases==. & new_cases[_n-1]<. & iso==iso[_n-1] 
@@ -137,6 +138,10 @@ replace country = country[_n-1] if country=="" & country[_n-1]!="" & iso==iso[_n
 replace country_order = country_order[_n-1] if country_order==. & country_order[_n-1]<. & iso==iso[_n-1] 
 replace iso_num = iso_num[_n-1] if iso_num==. & iso_num[_n-1]<. & iso==iso[_n-1] 
 replace pop = pop[_n-1] if pop==. & pop[_n-1]<. & iso==iso[_n-1] 
+** Drop some rows that exist prior to outbreak onset (
+** EITHER both total_case and total_death entries are zero) 
+** OR there are no entries at all for total_cases and total_deaths (missing)
+** In the second case, we use -pop- as an indicator for a row of missing data 
 drop if total_cases==0 | pop==.
 
 ** Save the cleaned and restricted dataset

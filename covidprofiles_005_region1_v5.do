@@ -4,7 +4,7 @@
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            27-APR-2020
-    //  algorithm task			        xxx
+    //  algorithm task			        Single summary PDF of CARICOM region, by country
 
     ** General algorithm set-up
     version 16
@@ -23,6 +23,8 @@
     ** LOGFILES to unencrypted OneDrive folder
     local logpath "X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151"
     ** Reports and Other outputs
+    ** ! This contains a local Windows-specific location 
+    ** ! Would need changing for auto saving of PDF to online sync folder
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
     local parent "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\02 regional_summaries"
     cap mkdir "`parent'\\`today'
@@ -88,6 +90,7 @@ bysort iso: asrol total_deaths , stat(mean) window(date 3) gen(deaths_av3)
 rename total_cases  metric1
 rename cases_rate metric2
 rename total_deaths metric3
+
 reshape long metric, i(iso_num iso date) j(mtype)
 label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths" 
 label values mtype mtype_
@@ -147,42 +150,12 @@ global m01ukot =  $m01_AIA + $m01_BMU + $m01_VGB + $m01_CYM + $m01_MSR + $m01_TC
 global m02ukot = $m02_AIA + $m02_BMU + $m02_VGB + $m02_CYM + $m02_MSR + $m02_TCA  
 
 
-
-** UKOTS (x5) - TCA
-** METRIC 60
-** Cases in past 1-day across region 
-global m60ukot5 =  $m60_AIA + $m60_BMU + $m60_VGB + $m60_CYM + $m60_MSR
-** METRIC 62
-** Cases in past 7-days across region 
-global m62ukot5 =  $m62_AIA + $m62_BMU + $m62_VGB + $m62_CYM + $m62_MSR 
-
-** METRIC 61
-** Deaths in past 1-day across region 
-global m61ukot5 =  $m61_AIA + $m61_BMU + $m61_VGB + $m61_CYM + $m61_MSR 
-** METRIC 63
-** Deaths in past 7-days across region 
-global m63ukot5 =  $m63_AIA + $m63_BMU + $m63_VGB + $m63_CYM + $m63_MSR 
-
-** METRIC 01 
-** CURRENT CONFIRMED CASES across region
-global m01ukot5 =  $m01_AIA + $m01_BMU + $m01_VGB + $m01_CYM + $m01_MSR  
-
-** METRIC 02
-** CURRENT CONFIRMED DEATHS across region
-global m02ukot5 = $m02_AIA + $m02_BMU + $m02_VGB + $m02_CYM + $m02_MSR   
-
-
-
-
 ** SUBSETS 
 gen touse = 1
 replace touse = 0 if    iso=="GBR" | iso=="USA" | iso=="KOR" | iso=="SGP" | iso=="DOM" | iso=="CUB" |   ///
                         iso=="ISL" | iso=="NZL"
 gen ukot6 = 0 
 replace ukot6 =1 if iso=="AIA" | iso=="BMU" | iso=="VGB" | iso=="CYM" | iso=="MSR" | iso=="TCA"
-
-gen ukot5 = 0 
-replace ukot5 =1 if iso=="AIA" | iso=="BMU" | iso=="VGB" | iso=="CYM" | iso=="MSR"
 
 ** METRIC 03 
 ** DATE OF FIRST CONFIRMED CASE
@@ -253,50 +226,19 @@ restore
 
 
 
-** UKOTS (x5) - TCA
-** METRIC 03 
-** DATE OF FIRST CONFIRMED CASE
-preserve 
-    keep if ukot5==1 & mtype==1 & metric>0 
-    egen m03ukot = min(date) 
-    format m03ukot %td 
-    global m03ukot5 : disp %tdDD_Month m03
-restore
-** METRIC 04 
-** The DATE OF FIRST CONFIRMED DEATH
-preserve 
-    keep if ukot5==1 & mtype==3 & metric>0 
-    egen m04ukot = min(date) 
-    format m04ukot %td 
-    global m04ukot5 : disp %tdDD_Month m04
-restore
-** METRIC 05: Days since first reported case
-preserve 
-    keep if ukot5==1 & mtype==1 & metric>0
-    collapse (sum) metric, by(date)
-    gen elapsedcukot = _n -1
-    egen m05ukot = max(elapsedc)
-    global m05ukot5 = m05 
-restore 
-** METRIC 06: Days since first reported death
-preserve 
-    keep if ukot5==1 & mtype==3 & metric>0
-    collapse (sum) metric, by(date)
-    gen elapseddukot = _n -1
-    egen m06ukot = max(elapsedd)
-    global m06ukot5 = m06 
-restore
-
-
 
 ** LOOP through N=20 CARICOM member states and 6 UKOTS
+* The CAPTURE command means that if a country does not exist
+** The code will continue - and the error will be captured in the (_rc) local macro 
 local clist "AIA ATG BHS BRB BLZ BMU VGB CYM DMA GRD GUY HTI JAM MSR KNA LCA VCT SUR TTO TCA"
 capture {
     foreach country of local clist {
-        ** country  = 3-character ISO name
-        ** cname    = FULL country name
-        ** -country- used in all loop structures
-        ** -cname- used for visual display of full country name on PDF
+    ** This code chunk creates COUNTRY ISO CODE and COUNTRY NAME
+    ** for automated use in the PDF reports.
+    **      country  = 3-character ISO name
+    **      cname    = FULL country name
+    **      -country- used in all loop structures
+    **      -cname- used for visual display of full country name on PDF
         gen c3 = iso_num if iso=="`country'"
         label values c3 cname_
         egen c4 = min(c3)
@@ -305,10 +247,11 @@ capture {
         local cname = c5
         drop c3 c4 c5
 
-        ** Position of value on cases x and y-axis
+        ** Position of COUNT on cases x and y-axis
+        ** The divisor puts the number at a proportion of the way across the graphic 
         global cposx_`country' = ${m05_`country'}/4
         global cposy_`country' = ${m01_`country'}/1.5
-        ** Position of value on deaths x-axis
+        ** Position of COUNT on deaths x-axis
         global dposx_`country' = ${m06_`country'}/4
         global dposy_`country' = ${m02_`country'}/1.5
 
@@ -410,8 +353,8 @@ preserve
     gen out = 0
     replace out = 1 if iso=="`country'"
 
-** local clist "AIA ATG BHS BRB BLZ BMU VGB CYM DMA GRD GUY HTI JAM MSR KNA LCA VCT SUR TTO TCA"
-
+    ** These percentile summaries allow us to create bands of color
+    ** relating to regional distribution of confirmed cases (as percentiles)
     #delimit ;
     collapse    (sum) metric_tot=metric
                 (mean) metric_av=metric
@@ -425,9 +368,10 @@ preserve
                 , by(out mtype date);
     #delimit cr 
 
+    ** Elapsed days since first case / death
     bysort out mtype: gen elapsed = _n
 
-    ** SMOOTHED CASES for graphic
+    ** SMOOTHED CASES distribution percentiles for graphic
     sort mtype out date
     bysort mtype out: asrol metric_tot , stat(mean) window(date 7) gen(tots)
     bysort mtype out: asrol metric_p50 , stat(mean) window(date 7) gen(p50s)
@@ -474,7 +418,10 @@ preserve
 restore 
 }
 }
-
+** Any error code due to a missing country is shifted to a global macros (errortrap)
+** If no error, then _rc==0
+** If an error exists, _rc>0 
+** This was introduced on 18-Jun-2020 in response to missing TCA data 
 global errortrap = _rc 
 
 ** ------------------------------------------------------
@@ -496,7 +443,7 @@ global errortrap = _rc
     putpdf table intro(1,2)=("Group Contacts: Ian Hambleton (analytics), Maddy Murphy (public health interventions), "), halign(left) append italic  
     putpdf table intro(1,2)=("Kim Quimby (logistics planning), Natasha Sobers (surveillance). "), halign(left) append italic   
     putpdf table intro(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
-    putpdf table intro(1,2)=("https://tinyurl.com/uwi-covid19-surveillance "), halign(left) underline append linebreak 
+    putpdf table intro(1,2)=("www.uwi.edu/covid19/surveillance "), halign(left) underline append linebreak 
     putpdf table intro(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
 
 ** REPORT PAGE 1 - INTRODUCTORY TEXT
@@ -819,19 +766,14 @@ global errortrap = _rc
     putpdf table intro2(1,1)
     putpdf table intro2(1,2), colspan(11)
     putpdf table intro2(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
-if $errortrap == 0 {
     putpdf table intro2(1,2)=("COVID-19 trajectories for 6 United Kingdom Overseas Territories (UKOTS)"), halign(left) linebreak font("Calibri Light", 12, 000000)
-}
-else if $errortrap != 0 {
-    putpdf table intro2(1,2)=("COVID-19 trajectories for 5 United Kingdom Overseas Territories (UKOTS)"), halign(left) linebreak font("Calibri Light", 12, 000000)
-}
     putpdf table intro2(1,2)=("Briefing created by staff of the George Alleyne Chronic Disease Research Centre "), append halign(left) 
     putpdf table intro2(1,2)=("and the Public Health Group of The Faculty of Medical Sciences, Cave Hill Campus, "), halign(left) append  
     putpdf table intro2(1,2)=("The University of the West Indies. "), halign(left) append 
     putpdf table intro2(1,2)=("Group Contacts: Ian Hambleton (analytics), Maddy Murphy (public health interventions), "), halign(left) append italic  
     putpdf table intro2(1,2)=("Kim Quimby (logistics planning), Natasha Sobers (surveillance). "), halign(left) append italic   
     putpdf table intro2(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
-    putpdf table intro2(1,2)=("https://tinyurl.com/uwi-covid19-surveillance "), halign(left) underline append linebreak 
+    putpdf table intro2(1,2)=("www.uwi.edu/covid19/surveillance "), halign(left) underline append linebreak 
     putpdf table intro2(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
 
 ** REPORT PAGE 3 - INTRODUCTORY TEXT
@@ -890,19 +832,6 @@ else if $errortrap != 0 {
     putpdf table t4(4,1)=("Cases"), halign(center) 
     putpdf table t4(5,1)=("Deaths"), halign(center)  
 
-if $errortrap != 0 {
-    putpdf table t4(4,2)=("${m01ukot5}"), halign(center) 
-    putpdf table t4(5,2)=("${m02ukot5}"), halign(center) 
-    putpdf table t4(4,3)=("${m60ukot5}"), halign(center) 
-    putpdf table t4(5,3)=("${m61ukot5}"), halign(center) 
-    putpdf table t4(4,4)=("${m62ukot5}"), halign(center) 
-    putpdf table t4(5,4)=("${m63ukot5}"), halign(center) 
-    putpdf table t4(4,5)=("${m03ukot5}"), halign(center) 
-    putpdf table t4(5,5)=("${m04ukot5}"), halign(center) 
-    putpdf table t4(4,6)=("${m05ukot}"), halign(center) 
-    putpdf table t4(5,6)=("${m06ukot}"), halign(center) 
-    }
-else if $errortrap == 0 {
     putpdf table t4(4,2)=("${m01ukot}"), halign(center) 
     putpdf table t4(5,2)=("${m02ukot}"), halign(center) 
     putpdf table t4(4,3)=("${m60ukot}"), halign(center) 
@@ -913,7 +842,6 @@ else if $errortrap == 0 {
     putpdf table t4(5,5)=("${m04ukot}"), halign(center) 
     putpdf table t4(4,6)=("${m05ukot}"), halign(center) 
     putpdf table t4(5,6)=("${m06ukot}"), halign(center) 
-    }
 
 ** REPORT PAGE 3 - TABLE: COUNTRY SUMMARY METRICS
     putpdf table t5 = (8,11), width(90%) halign(center)    
@@ -1076,37 +1004,10 @@ else if $errortrap == 0 {
     putpdf table p3(3,1)=("This range is represented by percentiles (darker blue region represents 25th to 75th percentile, lighter blue "), append
     putpdf table p3(3,1)=("region represents 5th to 95th percntiles). All curves and regions are 7-day smoothed averages."), append
 
-
-
-
-
-
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     ** putpdf save "`outputpath'/05_Outputs/covid19_trajectory_regional_version3_`date_string'", replace
-    putpdf save "`syncpath'/covid19_trajectory_regional_version3_`date_string'", replace
+    putpdf save "`syncpath'/covid19_trajectory_regional_version5_`date_string'", replace
 
 
-/*
-** 26-APR-2020
-** First day of adding ECDC data
-** This created a small quirk on the days - pushing the reporting date from 25th PM (JH) to 26th (AM) ECDC
-** This meant incorrect new cases in past 24 hrs - which we corrected one-time for the regional report
-** one correction for 14 CARICOM and 1 correction for the 6 UKOTS
-** Code for UKOTS below
-** different restrction for 14 CARICOM
- #delimit ; 
-    keep if 
-        iso=="AIA" |
-        iso=="BMU" |
-        iso=="VGB" |
-        iso=="CYM" |
-        iso=="MSR" |
-        iso=="TCA";
-#delimit cr
-gen diff1  = metric - metric[_n-1]               
-gen diff2  = metric - metric[_n-2]               
-keep if date == d(26apr2020) 
-bysort mtype: egen tot2 = sum(diff2)
-bysort mtype: egen tot1 = sum(diff1)

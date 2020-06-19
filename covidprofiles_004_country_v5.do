@@ -3,8 +3,8 @@
     //  algorithm name					covidprofiles_004_country_v5.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	            27-APR-2020
-    //  algorithm task			        xxx
+    // 	date last modified	            19-JUN-2020
+    //  algorithm task			        COUNTRY-level graphics and PDF reports
 
     ** General algorithm set-up
     version 16
@@ -23,6 +23,8 @@
     ** LOGFILES to unencrypted OneDrive folder
     local logpath "X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151"
     ** Reports and Other outputs
+    ** ! This contains a local Windows-specific location 
+    ** ! Would need changing for auto saving of PDF to online sync folder
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
     local parent "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\01 country_summaries"
     cap mkdir "`parent'\\`today'
@@ -81,23 +83,30 @@ label define cname_ 1 "Anguilla"
 ** BY Country: Elapased time in days from first case
 bysort iso: egen elapsed_max = max(elapsed)
 
-** SAVE THE FILE FOR REGIONAL WORK 
+** SAVE THE COUNTRY_LEVEL DATA FILE 
+** We have already saved a daily copy in 
+** covidprofiles_001_readdata_owid_v5.do
+** I'm being careful, given the ephemeral nature of the data sources (!)
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    save "`datapath'\version01\2-working\owid_time_series_`date_string'", replace
+    save "`datapath'\version01\2-working\owid_countrydata_`date_string'", replace
 
-** SMOOTHED CASES for graphic
+** Smoothed CASES and DEATHS for graphic
 by iso: asrol total_cases , stat(mean) window(date 3) gen(cases_av3)
 by iso: asrol total_deaths , stat(mean) window(date 3) gen(deaths_av3)
 
 ** LOOP through N=20 CARICOM member states
+** The looping structure AFTER the PDF creation
+** It means that we create 1 PDF for each COUNTRY ISO listed in the local macros -clist-
 local clist "AIA ATG BHS BLZ BMU BRB CYM DMA GRD GUY HTI JAM KNA LCA MSR SUR TCA TTO VCT VGB"
 ** ISL NZL SGP KOR GBR USA CUB DOM
 foreach country of local clist {
-    ** country  = 3-character ISO name
-    ** cname    = FULL country name
-    ** -country- used in all loop structures
-    ** -cname- used for visual display of full country name on PDF
+    ** This code chunk creates COUNTRY ISO CODE and COUNTRY NAME
+    ** for automated use in the PDF reports.
+    **      country  = 3-character ISO name
+    **      cname    = FULL country name
+    **      -country- used in all loop structures
+    **      -cname- used for visual display of full country name on PDF
     gen el_`country'1 = elapsed_max if iso=="`country'"
     egen el_`country'2 = min(el_`country'1) 
     local elapsed = el_`country'2
@@ -110,7 +119,7 @@ foreach country of local clist {
 
 
 
-** GRAPHIC: CASES + DEATHS (Bar with line overlay)
+** GRAPHIC 1: CASES + DEATHS (Bar with line overlay)
         #delimit ;
         gr twoway 
             (bar total_cases elapsed if iso=="`country'" & elapsed<=`elapsed', col("181 215 244"))
@@ -147,7 +156,7 @@ foreach country of local clist {
         #delimit cr
         graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(6000)
 
-** LINE CHART (LOGARITHM)
+** GRAPHIC 2: LINE CHART - for international comparison (LOGARITHM = GROWTH RATE)
     #delimit ;
         gr twoway             
             (line total_cases elapsed if iso=="NZL" & elapsed<=`elapsed', lc(green%40) lw(0.35) lp("-"))
@@ -190,6 +199,7 @@ foreach country of local clist {
         graph export "`outputpath'/04_TechDocs/line_`country'_$S_DATE.png", replace width(6000)
         drop c3 c4 c5
 
+
 ** ------------------------------------------------------
 ** PDF COUNTRY REPORT
 ** ------------------------------------------------------
@@ -209,7 +219,7 @@ foreach country of local clist {
     putpdf table intro(1,2)=("Group Contacts: Ian Hambleton (analytics), Maddy Murphy (public health interventions), "), halign(left) append italic  
     putpdf table intro(1,2)=("Kim Quimby (logistics planning), Natasha Sobers (surveillance). "), halign(left) append italic   
     putpdf table intro(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
-    putpdf table intro(1,2)=("https://tinyurl.com/uwi-covid19-surveillance "), halign(left) underline append linebreak 
+    putpdf table intro(1,2)=("www.uwi.edu/covid19/surveillance "), halign(left) underline append linebreak 
     putpdf table intro(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
 
 ** INTRODUCTION
@@ -310,6 +320,6 @@ foreach country of local clist {
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     ** putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_version3_`date_string'_test", replace
-    putpdf save "`syncpath'/covid19_trajectory_`country'_version3_`date_string'", replace
+    putpdf save "`syncpath'/covid19_trajectory_`country'_version5_`date_string'", replace
 
 }

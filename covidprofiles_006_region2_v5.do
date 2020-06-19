@@ -4,7 +4,7 @@
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            7-JUN-2020
-    //  algorithm task			        HEATMAP
+    //  algorithm task			        Regional PDF with heatmaps of new and cumulative cases and deaths
 
     ** General algorithm set-up
     version 16
@@ -23,6 +23,8 @@
     ** LOGFILES to unencrypted OneDrive folder
     local logpath "X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151"
     ** Reports and Other outputs
+    ** ! This contains a local Windows-specific location 
+    ** ! Would need changing for auto saving of PDF to online sync folder
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
     local parent "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\02 regional_summaries"
     cap mkdir "`parent'\\`today'
@@ -105,8 +107,8 @@ label define cname_ 1 "Anguilla"
 
 ** HEATMAP preparation - ADD ROWS
 ** Want symmetric / rectangular matrix of dates. So we need 
-** to backfill dates foreach country to date of first 
-** COVID appearance - which I think was in JAM
+** to backfill dates for each country to date of first 
+** COVID appearance - which (for CARICOM) was in JAM
     fillin date iso_num 
     sort iso_num date
     ///drop if date>date[_n+1] & iso_num!=iso_num[_n+1]
@@ -270,6 +272,7 @@ replace new = . if new==0
             22045 "10 May"
             22055 "20 May"
             22065 "30 May"
+            22076 "10 Jun"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -349,6 +352,7 @@ replace gr7 = . if gr7==0
             22045 "10 May"
             22055 "20 May"
             22065 "30 May"
+            22076 "10 Jun"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -426,6 +430,7 @@ replace metric = . if metric==0
             22045 "10 May"
             22055 "20 May"
             22065 "30 May"
+            22076 "10 Jun"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -494,14 +499,9 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
     xlab(   21984 "10 Mar" 
-            21994 "20 Mar" 
-            22004 "30 Mar" 
             22015 "10 Apr"
-            22025 "20 Apr"
-            22035 "30 Apr"
             22045 "10 May"
-            22055 "20 May"
-            22065 "30 May"
+            22076 "10 Jun"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -572,14 +572,9 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
 
     xlab(   21984 "10 Mar" 
-            21994 "20 Mar" 
-            22004 "30 Mar" 
             22015 "10 Apr"
-            22025 "20 Apr"
-            22035 "30 Apr"
             22045 "10 May"
-            22055 "20 May"
-            22065 "30 May"
+            22076 "10 Jun"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -618,7 +613,7 @@ graph export "`outputpath'/04_TechDocs/heatmap_newdeaths_$S_DATE.png", replace w
     putpdf table intro1(1,2)=("Group Contacts: Ian Hambleton (analytics), Maddy Murphy (public health interventions), "), halign(left) append italic  
     putpdf table intro1(1,2)=("Kim Quimby (logistics planning), Natasha Sobers (surveillance). "), halign(left) append italic   
     putpdf table intro1(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
-    putpdf table intro1(1,2)=("https://tinyurl.com/uwi-covid19-surveillance "), halign(left) underline append linebreak 
+    putpdf table intro1(1,2)=("www.uwi.edu/covid19/surveillance "), halign(left) underline append linebreak 
     putpdf table intro1(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
 
 ** PAGE 1. INTRODUCTION
@@ -781,4 +776,4 @@ putpdf pagebreak
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     ** putpdf save "`outputpath'/05_Outputs/covid19_heatmap_version3_`date_string'", replace
-    putpdf save "`syncpath'/covid19_heatmap_version4_`date_string'", replace
+    putpdf save "`syncpath'/covid19_heatmap_version5_`date_string'", replace
