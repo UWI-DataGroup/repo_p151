@@ -108,10 +108,71 @@ local change1d = $m65caricom - $m63caricom
 local change2 = $m66caricom - $m64caricom 
 local change2d = $m67caricom - $m65caricom 
 
-** Remaing deaths after removing Haiti 
+** Remaining deaths after removing Haiti 
 local remain = $m62caricom - $m62_HTI 
 
+** How many countries had one ore more cases ?
+local number = 0
+    if $m62_AIA>0 {
+        local number = `number'+1
+    }
+    if $m62_ATG>0 {
+        local number = `number'+1
+    }
+    if $m62_BHS>0 {
+        local number = `number'+1
+    }
+    if $m62_BLZ>0 {
+        local number = `number'+1
+    }
+    if $m62_BRB>0 {
+        local number = `number'+1
+    }
+    if $m62_BMU>0 {
+        local number = `number'+1
+    }
+    if $m62_VGB>0 {
+        local number = `number'+1
+    }
+    if $m62_CYM>0 {
+        local number = `number'+1
+    }
+    if $m62_DMA>0 {
+        local number = `number'+1
+    }
+    if $m62_GRD>0 {
+        local number = `number'+1
+    }
+    if $m62_GUY>0 {
+        local number = `number'+1
+    }
+    if $m62_JAM>0 {
+        local number = `number'+1
+    }
+    if $m62_MSR>0 {
+        local number = `number'+1
+    }
+    if $m62_KNA>0 {
+        local number = `number'+1
+    }
+    if $m62_LCA>0 {
+        local number = `number'+1
+    }
+    if $m62_VCT>0 {
+        local number = `number'+1
+    }
+    if $m62_SUR>0 {
+        local number = `number'+1
+    }
+    if $m62_TTO>0 {
+        local number = `number'+1
+    }
+    if $m62_TCA>0 {
+        local number = `number'+1
+    }
 
+** BULLET
+local bullet = uchar(8226)
 
 ** ------------------------------------------------------
 ** PDF COUNTRY REPORT
@@ -137,147 +198,140 @@ local remain = $m62caricom - $m62_HTI
 
 ** INTRODUCTION
     putpdf paragraph ,  font("Calibri Light", 10)
-    putpdf text ("Weekly Summary for the week ending $S_DATE. ") , bold linebreak
+    putpdf text ("Weekly Summary for the week ending `day' $S_DATE. ") , bold linebreak
     putpdf text ("In the week to `day' $S_DATE among the 20 CARICOM members and associate members, there have been ")
     putpdf text ("$m62caricom "),  
     putpdf text ("new confirmed cases (compared to `change1' last week, and `change2' two weeks ago) "),  
     putpdf text ("and $m63caricom new confirmed deaths (compared to `change1d' last week, and `change2d' two weeks ago). "),  
-    putpdf text ("Most of these new cases were identified in Haiti ($m62_HTI). The remaining `remain' cases were reported in "),  
+    putpdf text ("Most of these new cases were identified in Haiti ($m62_HTI). The remaining `remain' cases were reported in `number' countries: "), linebreak  
+    putpdf text (" "), linebreak  
+
+
+    putpdf paragraph ,  font("Calibri Light", 10) indent(left, 35pt)
+
     if $m62_AIA == 1 {
-        putpdf text ("Anguilla ($m62_AIA case), "),
+        putpdf text ("`bullet' Anguilla ($m62_AIA case)"), linebreak 
     }
     if $m62_AIA > 1 {
-        putpdf text ("Anguilla ($m62_AIA cases), "),
+        putpdf text ("`bullet' Anguilla ($m62_AIA cases) "), linebreak 
     }
     if $m62_ATG == 1 {
-        putpdf text ("Antigua and Barbuda ($m62_ATG case), "),
+        putpdf text ("`bullet' Antigua and Barbuda ($m62_ATG case) "), linebreak 
     }
     if $m62_ATG > 1 {
-        putpdf text ("Antigua and Barbuda ($m62_ATG cases), "),
+        putpdf text ("`bullet' Antigua and Barbuda ($m62_ATG cases) "), linebreak 
     }
     if $m62_BHS == 1 {
-        putpdf text ("The Bahamas ($m62_BHS case), "),
+        putpdf text ("`bullet' The Bahamas ($m62_BHS case) "), linebreak 
     }
     if $m62_BHS > 1 {
-        putpdf text ("The Bahamas ($m62_BHS cases), "),
+        putpdf text ("`bullet' The Bahamas ($m62_BHS cases) "), linebreak 
     }
     if $m62_BRB == 1 {
-        putpdf text ("Barbados ($m62_BRB case), "),
+        putpdf text ("`bullet' Barbados ($m62_BRB case) "), linebreak 
     }
     if $m62_BRB > 1 {
-        putpdf text ("Barbados ($m62_BRB cases), "),
+        putpdf text ("`bullet' Barbados ($m62_BRB cases) "), linebreak 
     }
     if $m62_BLZ == 1 {
-        putpdf text ("Belize ($m62_BLZ case), "),
+        putpdf text ("`bullet' Belize ($m62_BLZ case) "), linebreak
     }
     if $m62_BLZ > 1 {
-        putpdf text ("Belize ($m62_BLZ cases), "),
+        putpdf text ("`bullet' Belize ($m62_BLZ cases) "), linebreak
     }
-
     if $m62_BMU == 1 {
-        putpdf text ("Bermuda ($m62_BMU case), "),
+        putpdf text ("`bullet' Bermuda ($m62_BMU case) "), linebreak
     }
     if $m62_BMU > 1 {
-        putpdf text ("Bermuda ($m62_BMU cases), "),
+        putpdf text ("`bullet' Bermuda ($m62_BMU cases) "), linebreak
     }
-
     if $m62_VGB == 1 {
-        putpdf text ("The British Virgin Islands ($m62_VGB case), "),
+        putpdf text ("`bullet' The British Virgin Islands ($m62_VGB case) "), linebreak
     }
     if $m62_VGB > 1 {
-        putpdf text ("The British Virgin Islands ($m62_VGB cases), "),
+        putpdf text ("`bullet' The British Virgin Islands ($m62_VGB cases) "), linebreak
     }
-
     if $m62_CYM == 1 {
-        putpdf text ("Cayman Islands ($m62_CYM case), "),
+        putpdf text ("`bullet' Cayman Islands ($m62_CYM case) "), linebreak
     }
     if $m62_CYM > 1 {
-        putpdf text ("Cayman Islands ($m62_CYM cases), "),
+        putpdf text ("`bullet' Cayman Islands ($m62_CYM cases) "), linebreak
     }
-
     if $m62_DMA == 1 {
-        putpdf text ("Dominica ($m62_DMA case), "),
+        putpdf text ("`bullet' Dominica ($m62_DMA case) "), linebreak
     }
     if $m62_DMA > 1 {
-        putpdf text ("Dominica ($m62_DMA cases), "),
+        putpdf text ("`bullet' Dominica ($m62_DMA cases) "), linebreak
     }
-
     if $m62_GRD == 1 {
-        putpdf text ("Grenada ($m62_GRD case), "),
+        putpdf text ("`bullet' Grenada ($m62_GRD case) "), linebreak
     }
     if $m62_GRD > 1 {
-        putpdf text ("Grenada ($m62_GRD cases), "),
+        putpdf text ("`bullet' Grenada ($m62_GRD cases) "), linebreak
     }
-
     if $m62_GUY == 1 {
-        putpdf text ("Guyana ($m62_GUY case), "),
+        putpdf text ("`bullet' Guyana ($m62_GUY case) "), linebreak
     }
     if $m62_GUY > 1 {
-        putpdf text ("Guyana ($m62_GUY cases), "),
+        putpdf text ("`bullet' Guyana ($m62_GUY cases) "), linebreak
     }
-
     if $m62_JAM == 1 {
-        putpdf text ("Jamaica ($m62_JAM case), "),
+        putpdf text ("`bullet' Jamaica ($m62_JAM case) "), linebreak
     }
     if $m62_JAM > 1 {
-        putpdf text ("Jamaica ($m62_JAM cases), "),
+        putpdf text ("`bullet' Jamaica ($m62_JAM cases) "), linebreak
     }
-
     if $m62_MSR == 1 {
-        putpdf text ("Montserrat ($m62_MSR case), "),
+        putpdf text ("`bullet' Montserrat ($m62_MSR case) "), linebreak
     }
     if $m62_MSR > 1 {
-        putpdf text ("Montserrat ($m62_MSR cases), "),
+        putpdf text ("`bullet' Montserrat ($m62_MSR cases) "), linebreak
     }
-
     if $m62_KNA == 1 {
-        putpdf text ("St Kitts and Nevis ($m62_KNA case), "),
+        putpdf text ("`bullet' St Kitts and Nevis ($m62_KNA case) "), linebreak
     }
     if $m62_KNA > 1 {
-        putpdf text ("St Kitts and Nevis ($m62_KNA cases), "),
+        putpdf text ("`bullet' St Kitts and Nevis ($m62_KNA cases) "), linebreak
     }
-
     if $m62_LCA == 1 {
-        putpdf text ("St Lucia ($m62_LCA case), "),
+        putpdf text ("`bullet' St Lucia ($m62_LCA case) "), linebreak
     }
     if $m62_LCA > 1 {
-        putpdf text ("St Lucia ($m62_LCA cases), "),
+        putpdf text ("`bullet' St Lucia ($m62_LCA cases) "), linebreak
     }
-
     if $m62_VCT == 1 {
-        putpdf text ("St Vincent and thee Grenadines ($m62_VCT case), "),
+        putpdf text ("`bullet' St Vincent and thee Grenadines ($m62_VCT case) "), linebreak
     }
     if $m62_VCT > 1 {
-        putpdf text ("St Vincent and the Grenadines ($m62_VCT cases), "),
+        putpdf text ("`bullet' St Vincent and the Grenadines ($m62_VCT cases) "), linebreak
     }
-
     if $m62_SUR == 1 {
-        putpdf text ("Suriname ($m62_SUR case), "),
+        putpdf text ("`bullet' Suriname ($m62_SUR case) "), linebreak
     }
     if $m62_SUR > 1 {
-        putpdf text ("Suriname ($m62_SUR cases), "),
+        putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
     }
-
     if $m62_TTO == 1 {
-        putpdf text ("Trinidad and Tobago ($m62_TTO case), "),
+        putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO case) "), linebreak
     }
     if $m62_TTO > 1 {
-        putpdf text ("Trinidad and Tobago ($m62_TTO cases), "),
+        putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO cases) "), linebreak
     }
-
     if $m62_TCA == 1 {
-        putpdf text ("Turks and Caicos islands ($m62_TCA case), "),
+        putpdf text ("`bullet' Turks and Caicos islands ($m62_TCA case) "), linebreak
     }
     if $m62_TCA > 1 {
-        putpdf text ("Turks and Caicos Islands ($m62_TCA cases), "),
+        putpdf text ("`bullet' Turks and Caicos Islands ($m62_TCA cases) "), linebreak
     }
 
+    putpdf text (" "), linebreak  
 
-
-
-
-
-
+    putpdf paragraph ,  font("Calibri Light", 10) 
+    putpdf text ("In the past 24 hours there have been $m60caricom new confirmed cases and $m61caricom new confirmed deaths. "), 
+    putpdf text ("With $m01_HTI confirmed cases, $m62_HTI of these in the past week, "),  
+    putpdf text ("Haiti remains the outbreak hotspot among the CARICOM members. "),
+    putpdf text ("The continuing outbreak in neighbouring Dominican Republic "),
+    putpdf text ("($m01_DOM cases, $m62_DOM in the past week, $m02_DOM deaths) compounds the situation in Haiti. "),
 
 ** Save the PDF
     local c_date = c(current_date)
@@ -286,5 +340,3 @@ local remain = $m62caricom - $m62_HTI
 
 
 
-/*
-Most of these new cases were identified in Haiti (892). The remaining 188 cases were reported in Suriname (124), Jamaica (21), Guyana (15), Cayman Islands (13), Trinidad and Tobago (6), Bermuda (3), Belize (2), St Vincent and the Grenadines (2) and with single cases reported in The Bahamas and Barbados. In the past 24 hours there have been 172 new confirmed cases and 2 new confirmed deaths. With 4,688 confirmed cases, 892 of these in the past week, Haiti remains the outbreak hotspot among the CARICOM members. The continuing outbreak in neighbouring Dominican Republic (24,105 cases, 3,297 in the past week, 633 deaths) compounds the situation in Haiti. Eleven of the 20 CARICOM countries have identified new cases in the past week.

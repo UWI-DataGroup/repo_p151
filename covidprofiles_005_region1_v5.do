@@ -226,7 +226,6 @@ restore
 
 
 
-
 ** LOOP through N=20 CARICOM member states and 6 UKOTS
 * The CAPTURE command means that if a country does not exist
 ** The code will continue - and the error will be captured in the (_rc) local macro 

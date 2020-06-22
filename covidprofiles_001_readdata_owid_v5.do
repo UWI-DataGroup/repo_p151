@@ -50,6 +50,26 @@
     cd "`datapath'\version01\1-input\"
     python: count_df.to_stata('count_owid.dta')
 
+** Does data for latest dat exist
+** IF NOT - stop program, and report error code
+preserve
+    use "`datapath'\version01\1-input\count_owid", clear
+    local t1 = c(current_date)
+    gen today = d("`t1'")
+    format today %tdNN/DD/CCYY
+    rename date date_orig 
+    gen date = date(date_orig, "YMD", 2020)
+    format date %tdNN/DD/CCYY
+    drop date_orig
+    order date 
+    egen today_dataset = max(date)
+    format today_dataset %tdNN/DD/CCYY
+    if (today_dataset < today ) {
+        dis as error "The data for today ($S_DATE) are not yet available."
+        exit 301
+    }
+restore 
+
 ** Data Source A2 - OWID location information
     python: import pandas as loc_csv
     python: loc_df = loc_csv.read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/locations.csv')
@@ -63,11 +83,13 @@
     python: full_df.to_stata('full_owid.dta')
 
 ** Data Source B1 - ECDC counts
+cap{
     python: import pandas as count_csv
     python: count_df2 = count_csv.read_csv('https://opendata.ecdc.europa.eu/covid19/casedistribution/csv')
     cd "`datapath'\version01\1-input\"
     python: count_df2.to_stata('count_ecdc.dta')
-
+    }
+    
 ** Data Source C1 - JohnsHopkins counts
 ** Longer import time - includes US county-level data - much larger dataset
 local URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/"
