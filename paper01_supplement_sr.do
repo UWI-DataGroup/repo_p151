@@ -425,7 +425,7 @@ graph export "`outputpath'/04_TechDocs/movement_`iso'_paper1.png", replace width
     putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
     ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
     putpdf table intro2(1,16)=("Page 1 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
-    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
+    putpdf table intro2(1,16)=("Created: 27-May-2020"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
 ** FIGURES - ANTIGUA, BAHAMAS, BARBADOS 
     putpdf table f2 = (6,1), width(85%) border(all,nil) halign(center)
@@ -453,7 +453,7 @@ putpdf pagebreak
     putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
     ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
     putpdf table intro2(1,16)=("Page 2 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
-    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
+    putpdf table intro2(1,16)=("Created: 27-May-2020"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
     putpdf table f3 = (6,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_BLZ_paper1.png")
@@ -479,7 +479,7 @@ putpdf pagebreak
     putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
     ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
     putpdf table intro2(1,16)=("Page 3 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
-    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
+    putpdf table intro2(1,16)=("Created: 27-May-2020"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
     putpdf table f3 = (6,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_JAM_paper1.png")
@@ -508,7 +508,7 @@ putpdf pagebreak
     putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
     ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
     putpdf table intro2(1,16)=("Page 4 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
-    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
+    putpdf table intro2(1,16)=("Created: 27-May-2020"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
     putpdf table f3 = (6,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_ITA_paper1.png")
@@ -536,7 +536,7 @@ putpdf pagebreak
     putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
     ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
     putpdf table intro2(1,16)=("Page 5 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
-    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
+    putpdf table intro2(1,16)=("Created: 27-May-2020"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
     putpdf table f3 = (6,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_KOR_paper1.png")
@@ -566,7 +566,7 @@ putpdf pagebreak
     putpdf table intro2(1,2)=("Changes in community movement and dates of national curfews and lockdowns among 8 Caribbean countries and 8 comparator countries."), append halign(left) linebreak font("Calibri Light", 13, 000000)
     ** putpdf table intro2(1,2)=("(Created on: $S_DATE)"), halign(left) append  font("Calibri Light", 11, 000000) 
     putpdf table intro2(1,16)=("Page 6 of 6"), halign(right)  font("Calibri Light", 11, 8c8c8c) linebreak
-    putpdf table intro2(1,16)=("Created: $S_DATE"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
+    putpdf table intro2(1,16)=("Created: 27-May-2020"), halign(right)  font("Calibri Light", 11, 8c8c8c) append
 
     putpdf table f3 = (12,1), width(85%) border(all,nil) halign(center)
     putpdf table f3(1,1)=image("`outputpath'/04_TechDocs/movement_VNM_paper1.png")
@@ -577,6 +577,6 @@ putpdf pagebreak
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`outputpath'/05_Outputs_Papers/01_NPIs_progressreport/supplement1_covid19_movement_`date_string'", replace
+    putpdf save "`outputpath'/05_Outputs_Papers/01_NPIs_progressreport/supplement_covid19_movement_`date_string'", replace
     
 

@@ -625,16 +625,14 @@ putpdf pagebreak
 ** 15-JUN-2020
 ** EXTRA SLIDE - ALL GROWTH CURVES ON ONE SLIDES
 putpdf pagebreak
-    putpdf table intro2 = (1,20), width(100%) halign(left)    
+    putpdf table intro2 = (1,1), width(100%) halign(left)    
     putpdf table intro2(.,.), border(all, nil) valign(center)
-    putpdf table intro2(1,.), font("Calibri Light", 24, 000000)  
-    putpdf table intro2(1,1)
-    putpdf table intro2(1,2), colspan(14)
-    putpdf table intro2(1,16), colspan(5)
-    putpdf table intro2(1,1)=image("`outputpath'/04_TechDocs/uwi_crest_small.jpg")
-    putpdf table intro2(1,2)=("REGIONAL COVID-19 GROWTH CURVES"), halign(left) linebreak
-    putpdf table intro2(1,2)=("(Updated on: $S_DATE)"), halign(left) append  font("Calibri Light", 18, 000000)  
-    putpdf table intro2(1,16)=("SLIDE 10A"), halign(right)  font("Calibri Light", 16, 8c8c8c) linebreak
+    putpdf table intro2(1,.), font("Calibri Light", 12, 000000)  
+    putpdf table intro2(1,1)=("Figure 2: "), bold halign(left)
+    putpdf table intro2(1,1)=("COVID-19 outbreak growth rates for 20 CARICOM countries as of June 23 2020 (www.uwi.edu/covid19/surveillance). "), halign(left) append   
+    putpdf table intro2(1,1)=("The solid line represents the growth rate for each country. The shaded regions represent the "), halign(left) append   
+    putpdf table intro2(1,1)=("interquartile range (25th to 75th percentile, dark blue area) and range (5th to 95th percentile, lighter blue area) for the remaining 19 countries. "), append halign(left) linebreak  
+
 ** FIGURE 
     putpdf table f2 = (8,5), width(100%) border(all,nil) halign(center)
     putpdf table f2(1,1)=("Angilla"), halign(left) font("Calibri Light", 12, 0e497c)  
@@ -2171,4 +2169,5 @@ putpdf pagebreak
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     ** putpdf save "`outputpath'/05_Outputs/covid19_uwi_slides_`date_string'", replace
+    ** putpdf save "`syncpath'/covid19_uwi_slides_`date_string'", replace
     putpdf save "`syncpath'/covid19_uwi_slides_`date_string'", replace

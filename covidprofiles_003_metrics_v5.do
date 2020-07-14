@@ -16,6 +16,7 @@
     ** Set working directories: this is for DATASET and LOGFILE import and export
     ** DATASETS to encrypted SharePoint folder
     local datapath "X:\The University of the West Indies\DataGroup - repo_data\data_p151"
+    local datapath154 "X:\The University of the West Indies\DataGroup - repo_data\data_p154"
     ** LOGFILES to unencrypted OneDrive folder
     local logpath "X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151"
     ** Reports and Other outputs
@@ -378,3 +379,10 @@ keep country country_order iso iso_num pop date new_cases new_deaths total_cases
 order country country_order iso iso_num pop date new_cases new_deaths total_cases total_deaths elapsed 
 
 
+** 14-JUL-2020
+** For NS/CH: COntact Tracing analysis
+** Save dataset to p154 folder
+** Location --> X:\The University of the West Indies\DataGroup - repo_data\data_p154\version01\2-working 
+    local c_date = c(current_date)
+    local date_string = subinstr("`c_date'", " ", "", .)
+    save "`datapath154'\version01\2-working\covid_daily_surveillance_`date_string'", replace
