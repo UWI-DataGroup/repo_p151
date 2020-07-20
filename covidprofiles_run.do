@@ -40,3 +40,6 @@ do "`logpath'\covidprofiles_006_region2_v5"
 do "`logpath'\covidprofiles_007_slides"
 ** Weekly Summary
 do "`logpath'\covidprofiles_008_weeklysummary_v5"
+
+
+
