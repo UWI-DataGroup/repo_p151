@@ -50,7 +50,7 @@
     cd "`datapath'\version01\1-input\"
     python: count_df.to_stata('count_owid.dta')
 
-** Does data for latest dat exist
+** Does data for latest data exist
 ** IF NOT - stop program, and report error code
 preserve
     use "`datapath'\version01\1-input\count_owid", clear
