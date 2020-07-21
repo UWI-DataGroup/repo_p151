@@ -1,4 +1,6 @@
 ** HEADER -----------------------------------------------------
+** ! 21-JUL-2020
+** ! DO NOT ALTER
 **  DO-FILE METADATA
     //  algorithm name					covidprofiles_002_initialprep_v5.do
     //  project:				        
