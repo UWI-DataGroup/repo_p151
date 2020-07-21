@@ -3,7 +3,7 @@
     //  algorithm name					covidprofiles_006_region2_v5.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
-    // 	date last modified	            7-JUN-2020
+    // 	date last modified	            21-JUL-2020
     //  algorithm task			        Regional PDF with heatmaps of new and cumulative cases and deaths
 
     ** General algorithm set-up
@@ -26,9 +26,10 @@
     ** ! This contains a local Windows-specific location 
     ** ! Would need changing for auto saving of PDF to online sync folder
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
-    local parent "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\02 regional_summaries"
+    ** local parent "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\02 regional_summaries"
+    local parent "X:\The University of the West Indies\CaribData - Documents\COVID19Surveillance\PDF_Briefings\02 regional_summaries"
     cap mkdir "`parent'\\`today'
-    local syncpath "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\02 regional_summaries\\`today'"
+    local syncpath "X:\The University of the West Indies\CaribData - Documents\COVID19Surveillance\PDF_Briefings\02 regional_summaries\\`today'"
 
     ** Close any open log file and open a new log file
     capture log close

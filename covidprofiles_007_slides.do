@@ -26,9 +26,10 @@
     ** ! This contains a local Windows-specific location 
     ** ! Would need changing for auto saving of PDF to online sync folder
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
-    local parent "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\03 presentations"
+    ** local parent "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\03 presentations"
+    local parent "X:\The University of the West Indies\CaribData - Documents\COVID19Surveillance\PDF_Briefings\03 presentations"
     cap mkdir "`parent'\\`today'
-    local syncpath "C:\Users\Ian Hambleton\Sync\Link_folders\COVID19 Surveillance Updates\03 presentations\\`today'"
+    local syncpath "X:\The University of the West Indies\CaribData - Documents\COVID19Surveillance\PDF_Briefings\03 presentations\\`today'"
 
     ** Close any open log file and open a new log file
     capture log close

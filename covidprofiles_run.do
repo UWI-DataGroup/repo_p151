@@ -13,6 +13,10 @@
     set more 1
     set linesize 80
 
+    ** Create folder with today's date as name 
+    local c_date = c(current_date)
+    local today = lower(subinstr("`c_date'", " ", "_", .))
+
     ** Set working directories: this is for DATASET and LOGFILE import and export
     ** DATASETS to encrypted SharePoint folder
     local datapath "X:\The University of the West Indies\DataGroup - repo_data\data_p151"
@@ -20,6 +24,7 @@
     local logpath "X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151"
     ** Reports and Other outputs
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
+    local syncpath "X:\The University of the West Indies\CaribData - Documents\COVID19Surveillance\PDF_Briefings\01 country_summaries\\`today'"
 
     ** Close any open log file and open a new log file
     capture log close
@@ -40,6 +45,4 @@ do "`logpath'\covidprofiles_006_region2_v5"
 do "`logpath'\covidprofiles_007_slides"
 ** Weekly Summary
 do "`logpath'\covidprofiles_008_weeklysummary_v5"
-
-
 
