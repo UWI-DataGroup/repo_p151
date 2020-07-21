@@ -26,6 +26,9 @@
     log using "`logpath'\covidprofiles_run", replace
 ** HEADER -----------------------------------------------------
 
+** BRANCH: Ian Hambleton copy
+** Branch originally published on: 21-JUL-2020
+ 
 ** Load data
 do "`logpath'\covidprofiles_001_readdata_owid_v5"
 ** Prepare data
