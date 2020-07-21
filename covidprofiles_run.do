@@ -2,7 +2,7 @@
 **  DO-FILE METADATA
     //  algorithm name				  covidprofiles_run.do
     //  project:				        
-    //  analysts:				  	  Ian HAMBLETON
+    //  analysts:				  	  IAN HAMBLETON
     // 	date last modified	          21-July-2020
     //  algorithm task			      Run DO file batch
 
