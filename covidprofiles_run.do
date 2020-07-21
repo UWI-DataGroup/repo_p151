@@ -3,7 +3,7 @@
     //  algorithm name				  covidprofiles_run.do
     //  project:				        
     //  analysts:				  	  Ian HAMBLETON
-    // 	date last modified	          19-June-2020
+    // 	date last modified	          21-July-2020
     //  algorithm task			      Run DO file batch
 
     ** General algorithm set-up
@@ -28,7 +28,7 @@
 
 ** BRANCH: Ian Hambleton copy
 ** Branch originally published on: 21-JUL-2020
- 
+
 ** Load data
 do "`logpath'\covidprofiles_001_readdata_owid_v5"
 ** Prepare data
