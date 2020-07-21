@@ -3,7 +3,7 @@
     //  algorithm name				  covidprofiles_001_readdata_owid_v5.do
     //  project:				        
     //  analysts:				  	  Ian HAMBLETON
-    // 	date last modified	          19-JUN-2020
+    // 	date last modified	          21-JUL-2020
     //  algorithm task			      Draw Open Access Data from OWID / ECDC / JH
 
     ** General algorithm set-up
