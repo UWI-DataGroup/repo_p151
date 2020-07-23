@@ -274,6 +274,9 @@ replace new = . if new==0
             22055 "20 May"
             22065 "30 May"
             22076 "10 Jun"
+            22086 "20 Jun"
+            22096 "30 Jun"
+            22106 "10 Jul"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -354,6 +357,9 @@ replace gr7 = . if gr7==0
             22055 "20 May"
             22065 "30 May"
             22076 "10 Jun"
+            22086 "20 Jun"
+            22096 "30 Jun"
+            22106 "10 Jul"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -432,6 +438,9 @@ replace metric = . if metric==0
             22055 "20 May"
             22065 "30 May"
             22076 "10 Jun"
+            22086 "20 Jun"
+            22096 "30 Jun"
+            22106 "10 Jul"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -503,6 +512,7 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
             22015 "10 Apr"
             22045 "10 May"
             22076 "10 Jun"
+            22106 "10 Jul"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -576,6 +586,7 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
             22015 "10 Apr"
             22045 "10 May"
             22076 "10 Jun"
+            22106 "10 Jul"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 

@@ -111,6 +111,8 @@ local change2d = $m67caricom - $m65caricom
 
 ** Remaining deaths after removing Haiti 
 local remain = $m62caricom - $m62_HTI 
+** Remaining deaths after removing Haiti and Suriname
+local remain2 = $m62caricom - $m62_HTI - $m62_SUR 
 
 ** How many countries had one ore more cases ?
 local number = 0
@@ -147,6 +149,9 @@ local number = 0
     if $m62_GUY>0 {
         local number = `number'+1
     }
+    ** if $m62_HTI>0 {
+    **    local number = `number'+1
+    ** }
     if $m62_JAM>0 {
         local number = `number'+1
     }
@@ -162,9 +167,9 @@ local number = 0
     if $m62_VCT>0 {
         local number = `number'+1
     }
-    if $m62_SUR>0 {
-        local number = `number'+1
-    }
+    ** if $m62_SUR>0 {
+    **    local number = `number'+1
+    ** }
     if $m62_TTO>0 {
         local number = `number'+1
     }
@@ -204,7 +209,7 @@ local bullet = uchar(8226)
     putpdf text ("$m62caricom "),  
     putpdf text ("new confirmed cases (compared to `change1' last week, and `change2' two weeks ago) "),  
     putpdf text ("and $m63caricom new confirmed deaths (compared to `change1d' last week, and `change2d' two weeks ago). "),  
-    putpdf text ("Most of these new cases were identified in Haiti ($m62_HTI). The remaining `remain' cases were reported in `number' countries: "), linebreak  
+    putpdf text ("Most of these new cases were identified in Suriname ($m62_SUR) and in Haiti ($m62_HTI). The remaining `remain2' cases were reported in `number' countries: "), linebreak  
     putpdf text (" "), linebreak  
 
 
@@ -276,6 +281,12 @@ local bullet = uchar(8226)
     if $m62_GUY > 1 {
         putpdf text ("`bullet' Guyana ($m62_GUY cases) "), linebreak
     }
+**    if $m62_HTI == 1 {
+**        putpdf text ("`bullet' Haiti ($m62_HTI case) "), linebreak
+**    }
+**    if $m62_HTI > 1 {
+**        putpdf text ("`bullet' Haiti ($m62_HTI cases) "), linebreak
+**    }
     if $m62_JAM == 1 {
         putpdf text ("`bullet' Jamaica ($m62_JAM case) "), linebreak
     }
@@ -306,12 +317,12 @@ local bullet = uchar(8226)
     if $m62_VCT > 1 {
         putpdf text ("`bullet' St Vincent and the Grenadines ($m62_VCT cases) "), linebreak
     }
-    if $m62_SUR == 1 {
-        putpdf text ("`bullet' Suriname ($m62_SUR case) "), linebreak
-    }
-    if $m62_SUR > 1 {
-        putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
-    }
+**    if $m62_SUR == 1 {
+**        putpdf text ("`bullet' Suriname ($m62_SUR case) "), linebreak
+**    }
+**    if $m62_SUR > 1 {
+**        putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
+**    }
     if $m62_TTO == 1 {
         putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO case) "), linebreak
     }
@@ -329,10 +340,11 @@ local bullet = uchar(8226)
 
     putpdf paragraph ,  font("Calibri Light", 10) 
     putpdf text ("In the past 24 hours there have been $m60caricom new confirmed cases and $m61caricom new confirmed deaths. "), 
-    putpdf text ("With $m01_HTI confirmed cases, $m62_HTI of these in the past week, "),  
-    putpdf text ("Haiti remains the outbreak hotspot among the CARICOM members. "),
-    putpdf text ("The continuing outbreak in neighbouring Dominican Republic "),
-    putpdf text ("($m01_DOM cases, $m62_DOM in the past week, $m02_DOM deaths) compounds the situation in Haiti. "),
+
+    putpdf text ("Suriname ($m01_SUR confirmed cases, $m62_SUR in the past week) ") 
+    putpdf text ("and Haiti ($m01_HTI confirmed cases, $m62_HTI in the past week) ")
+    putpdf text ("are the current Caribbean hotspots. With borders re-opening, ") 
+    putpdf text ("a larger number of CARICOM countries are now reporting sporadic positive cases.")        
 
 ** Save the PDF
     local c_date = c(current_date)
