@@ -622,7 +622,7 @@ putpdf pagebreak
     putpdf table f2(4,2)=image("`outputpath'/04_TechDocs/spark_TCA_$S_DATE.png")
 
 
-
+/*
 ** 15-JUN-2020
 ** EXTRA SLIDE - ALL GROWTH CURVES ON ONE SLIDES
 putpdf pagebreak
@@ -679,7 +679,7 @@ putpdf pagebreak
     putpdf table f2(8,4)=image("`outputpath'/04_TechDocs/spark_TTO_$S_DATE.png")
     putpdf table f2(7,5)=("Turks and Caicos Islands"), halign(left) font("Calibri Light", 12, 0e497c)  
     putpdf table f2(8,5)=image("`outputpath'/04_TechDocs/spark_TCA_$S_DATE.png")
-
+*/
 
 
 ** SLIDE 11: ANGUILLA
@@ -2171,5 +2171,5 @@ putpdf pagebreak
     local date_string = subinstr("`c_date'", " ", "", .)
     ** putpdf save "`outputpath'/05_Outputs/covid19_uwi_slides_`date_string'", replace
     ** putpdf save "`syncpath'/covid19_uwi_slides_`date_string'", replace
-    ** putpdf save "`syncpath'/covid19_uwi_slides_`date_string'", replace
-    putpdf save "`syncpath'/covid19_uwi_slides_forClive_`date_string'", replace
+    putpdf save "`syncpath'/covid19_uwi_slides_`date_string'", replace
+    ** putpdf save "`syncpath'/covid19_uwi_slides_forClive_`date_string'", replace
