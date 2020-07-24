@@ -788,4 +788,4 @@ putpdf pagebreak
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     ** putpdf save "`outputpath'/05_Outputs/covid19_heatmap_version3_`date_string'", replace
-    putpdf save "`syncpath'/covid19_heatmap_version5_`date_string'", replace
+    putpdf save "`syncpath'/`date_string' Regional Heatmaps", replace

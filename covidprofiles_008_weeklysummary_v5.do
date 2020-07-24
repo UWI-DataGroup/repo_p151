@@ -349,7 +349,7 @@ local bullet = uchar(8226)
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
-    putpdf save "`syncpath'/covid19_weeklysummary_`date_string'", replace
+    putpdf save "`syncpath'/`date_string' Weekly Summary", replace
 
 
 

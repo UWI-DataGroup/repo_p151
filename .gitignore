@@ -10,3 +10,7 @@
 *.csv
 *.txt
 *.dct
+
+# image files
+*.jpg
+*.png 

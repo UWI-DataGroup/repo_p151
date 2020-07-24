@@ -321,6 +321,6 @@ foreach country of local clist {
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     ** putpdf save "`outputpath'/05_Outputs/covid19_trajectory_`country'_version3_`date_string'_test", replace
-    putpdf save "`syncpath'/covid19_trajectory_`country'_version5_`date_string'", replace
-
+    ** putpdf save "`syncpath'/covid19_trajectory_`country'_version5_`date_string'", replace
+    putpdf save "`syncpath'/`date_string' `country' Country Briefing", replace
 }

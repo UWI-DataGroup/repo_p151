@@ -1009,6 +1009,6 @@ global errortrap = _rc
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     ** putpdf save "`outputpath'/05_Outputs/covid19_trajectory_regional_version3_`date_string'", replace
-    putpdf save "`syncpath'/covid19_trajectory_regional_version5_`date_string'", replace
+    putpdf save "`syncpath'/`date_string' Regional Briefing ", replace
 
 
