@@ -3,7 +3,7 @@
     //  algorithm name				  covidprofiles_run.do
     //  project:				        
     //  analysts:				  	  Ian HAMBLETON
-    // 	date last modified	          21-JULY-2020
+    // 	date last modified	          24-JULY-2020
     //  algorithm task			      Run DO file batch
 
     ** General algorithm set-up
