@@ -155,7 +155,7 @@ foreach country of local clist {
                 name(bar_`country') 
                 ;
         #delimit cr
-        graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(6000)
+        graph export "`outputpath'/04_TechDocs/bar_`country'_$S_DATE.png", replace width(4000)
 
 ** GRAPHIC 2: LINE CHART - for international comparison (LOGARITHM = GROWTH RATE)
     #delimit ;
@@ -197,7 +197,7 @@ foreach country of local clist {
                 name(line_`country') 
                 ;
         #delimit cr
-        graph export "`outputpath'/04_TechDocs/line_`country'_$S_DATE.png", replace width(6000)
+        graph export "`outputpath'/04_TechDocs/line_`country'_$S_DATE.png", replace width(4000)
         drop c3 c4 c5
 
 
