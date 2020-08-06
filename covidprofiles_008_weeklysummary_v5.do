@@ -346,8 +346,9 @@ local bullet = uchar(8226)
     putpdf text ("Suriname ($m01_SUR confirmed cases, $m62_SUR in the past week), ") 
     putpdf text ("Bahamas ($m01_BHS confirmed cases, $m62_BHS in the past week) ") 
     putpdf text ("and Haiti ($m01_HTI confirmed cases, $m62_HTI in the past week) ")
-    putpdf text ("are the current Caribbean hotspots. With borders re-opening, ") 
-    putpdf text ("a larger number of CARICOM countries are now reporting sporadic positive cases.")        
+    putpdf text ("are the current Caribbean hotspots. For the first time since March") 
+    putpdf text ("Haiti's outbreak growth rate was zero. With borders re-opening, ")
+    putpdf text ("a larger number of CARICOM countries are now reporting clusters of cases.")        
 
 ** Save the PDF
     local c_date = c(current_date)
