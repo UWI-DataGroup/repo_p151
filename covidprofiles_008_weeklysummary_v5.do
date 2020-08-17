@@ -117,7 +117,7 @@ local remain2 = $m62caricom - $m62_HTI - $m62_SUR
 local remain3 = $m62caricom - $m62_SUR - $m62_BHS - $m62_HTI
 **Remaining cases after removing Suriname, Bahamas, Belize, Haiti, Jamaica, T&T and TCI
 
-local remain4 = $m62caricom - $m62_SUR - $m62_JAM - $m62_BLZ - $m62_HTI - $m62_BHS  - $m62_TCA - $m62_TTO - $m62_GUY
+local remain4 = $m62caricom - $m62_SUR - $m62_BLZ - $m62_HTI - $m62_BHS  - $m62_TTO - $m62_GUY
 
 
 
@@ -159,9 +159,9 @@ local number = 0
 **  if $m62_HTI>0 {
 **      local number = `number'+1
 **  }
-**  if $m62_JAM>0 {
-**       local number = `number'+1
-**   }
+    if $m62_JAM>0 {
+   local number = `number'+1
+    }
     if $m62_MSR>0 {
         local number = `number'+1
     }
@@ -180,9 +180,9 @@ local number = 0
 **   if $m62_TTO>0 {
 **       local number = `number'+1
 **  }
-**   if $m62_TCA>0 {
-**       local number = `number'+1
-**   }
+     if $m62_TCA>0 {
+       local number = `number'+1
+     }
 
 ****Creating a macro for countries with cases over100
 
@@ -241,9 +241,9 @@ local number2 = 0
     ** if $m62_SUR>100 {
     **    local number2 = `number2'+1
     ** }
-    if $m62_TTO>100 {
-        local number2 = `number2'+1
-    }
+    **if $m62_TTO>100 {
+        **local number2 = `number2'+1
+    **}
     if $m62_TCA>100 {
         local number2 = `number2'+1
     }
@@ -284,7 +284,7 @@ local bullet = uchar(8226)
     putpdf text ("$m62caricom "),  
     putpdf text ("new confirmed cases (compared to `change1' last week, and `change2' two weeks ago) "),  
     putpdf text ("and $m63caricom new confirmed deaths (compared to `change1d' last week, and `change2d' two weeks ago). "),  
-    putpdf text ("Most of these new cases were identified in Suriname ($m62_SUR), Bahamas ($m62_BHS) and in Belize ($m62_BLZ)."),
+    putpdf text ("Most of these new cases were identified in Suriname ($m62_SUR), Bahamas ($m62_BHS), Belize ($m62_BLZ) and in Trinidad and Tobago ($m62_TTO)."),
     putpdf text ("There were an additional `number2' countries with over 100 cases: "), linebreak
 
     putpdf paragraph ,  font("Calibri Light", 10) indent(left, 35pt)
@@ -345,9 +345,9 @@ local bullet = uchar(8226)
     **if $m62_SUR > 100 {
         **putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
     **}
-    if $m62_TTO > 100 {
-        putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO cases) "), linebreak
-    }
+    **if $m62_TTO > 100 {
+        **putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO cases) "), linebreak
+    **}
     if $m62_TCA > 100 {
         putpdf text ("`bullet' Turks and Caicos Islands ($m62_TCA cases) "), linebreak
     }
@@ -432,12 +432,12 @@ local bullet = uchar(8226)
 **    if $m62_HTI > 1 {
 **        putpdf text ("`bullet' Haiti ($m62_HTI cases) "), linebreak
 **    }
-**   if $m62_JAM == 1 {
-**       putpdf text ("`bullet' Jamaica ($m62_JAM case) "), linebreak
-**   }
-**   if $m62_JAM > 1 {
-**       putpdf text ("`bullet' Jamaica ($m62_JAM cases) "), linebreak
-**   }
+     if $m62_JAM == 1 {
+          putpdf text ("`bullet' Jamaica ($m62_JAM case) "), linebreak
+     }
+    if $m62_JAM > 1 {
+       putpdf text ("`bullet' Jamaica ($m62_JAM cases) "), linebreak
+      }
     if $m62_MSR == 1 {
         putpdf text ("`bullet' Montserrat ($m62_MSR case) "), linebreak
     }
@@ -474,12 +474,12 @@ local bullet = uchar(8226)
 **   if $m62_TTO > 1 {
 **       putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO cases) "), linebreak
 **   }
-**   if $m62_TCA == 1 {
-**       putpdf text ("`bullet' Turks and Caicos islands ($m62_TCA case) "), linebreak
-**  }
-**   if $m62_TCA > 1 {
-**      putpdf text ("`bullet' Turks and Caicos Islands ($m62_TCA cases) "), linebreak
-**  }
+    if $m62_TCA == 1 {
+     putpdf text ("`bullet' Turks and Caicos islands ($m62_TCA case) "), linebreak
+    }
+    if $m62_TCA > 1 {
+     putpdf text ("`bullet' Turks and Caicos Islands ($m62_TCA cases) "), linebreak
+      }
 
     putpdf text (" "), linebreak  
 
