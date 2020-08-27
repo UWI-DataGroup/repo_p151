@@ -2172,4 +2172,4 @@ putpdf pagebreak
     ** putpdf save "`outputpath'/05_Outputs/covid19_uwi_slides_`date_string'", replace
     ** putpdf save "`syncpath'/covid19_uwi_slides_`date_string'", replace
     putpdf save "`syncpath'/`date_string' Slides", replace
-    **putpdf save "`syncpath'/covid19_uwi_slides_forClive_`date_string'", replace
+    *putpdf save "`syncpath'/covid19_uwi_slides_forClive_`date_string'", replace
