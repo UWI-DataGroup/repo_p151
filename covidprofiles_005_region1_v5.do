@@ -312,7 +312,7 @@ capture {
 
             ylab(0(1)${m02_`country'}
             , labs(6) notick nogrid glc(gs16) angle(0))
-            yscale(off range(0(2)${m02_`country'})) 
+            yscale(off range(0(4)${m02_`country'})) 
             ytitle("Cumulative # of Cases", size(6) margin(l=2 r=2 t=2 b=2)) 
 
             text(${dposy_`country'} ${dposx_`country'} "${m02_`country'}", size(25) place(e) color("124 10 7") j(left))

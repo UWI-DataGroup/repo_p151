@@ -115,8 +115,8 @@ local remain = $m62caricom - $m62_HTI
 local remain2 = $m62caricom - $m62_HTI - $m62_SUR 
 **Remaining deahs after removing Suriname, Bahamas and Haiti
 local remain3 = $m62caricom - $m62_SUR - $m62_BHS - $m62_HTI
-**Remaining cases after removing Suriname, Belize, Haiti, Bahamas, T&T, Guyana, Jamaica
-local remain4 = $m62caricom - $m62_SUR - $m62_BLZ - $m62_HTI - $m62_BHS  - $m62_TTO - $m62_GUY - $m62_JAM
+**Remaining cases after removing Suriname, Belize, Bahamas, T&T, Guyana, Jamaica
+local remain4 = $m62caricom - $m62_SUR - $m62_BLZ - $m62_BHS  - $m62_TTO - $m62_GUY - $m62_JAM
 
 
 
@@ -155,9 +155,9 @@ local number = 0
 **   if $m62_GUY>0 {
 **       local number = `number'+1
 **  }
-**  if $m62_HTI>0 {
-**      local number = `number'+1
-**  }
+  if $m62_HTI>0 {
+      local number = `number'+1
+  }
 **    if $m62_JAM>0 {
 **   local number = `number'+1
 **  }
@@ -183,67 +183,67 @@ local number = 0
        local number = `number'+1
      }
 
-****Creating a macro for countries with cases over100
+****Creating a macro for countries with cases over 300
 
 local number2 = 0
-    if $m62_AIA>200 {
+    if $m62_AIA>300 {
         local number2 = `number2'+1
     }
-    if $m62_ATG>200 {
+    if $m62_ATG>300 {
         local number2 = `number2'+1
     }
-    **if $m62_BHS>100 {
+    **if $m62_BHS>300 {
         **local number2 = `number2'+1
     **}
-    if $m62_BLZ>100 {
+    if $m62_BLZ>300 {
         local number2 = `number2'+1
     }
-    if $m62_BRB>200 {
+    if $m62_BRB>300 {
         local number2 = `number2'+1
     }
-    if $m62_BMU>200 {
+    if $m62_BMU>300 {
         local number2 = `number2'+1
     }
-    if $m62_VGB>200 {
+    if $m62_VGB>300 {
         local number2 = `number2'+1
     }
-    if $m62_CYM>200 {
+    if $m62_CYM>300 {
         local number2 = `number2'+1
     }
-    if $m62_DMA>200 {
+    if $m62_DMA>300 {
         local number2 = `number2'+1
     }
-    if $m62_GRD>200 {
+    if $m62_GRD>300 {
         local number2 = `number2'+1
     }
-    if $m62_GUY>200 {
+    if $m62_GUY>300 {
         local number2 = `number2'+1
     }
-    if $m62_HTI>200 {
+    if $m62_HTI>300 {
        local number2 = `number2'+1
     }
-    **if $m62_JAM>200 {
+    **if $m62_JAM>300 {
     **    local number2 = `number2'+1
     **}
-    if $m62_MSR>200 {
+    if $m62_MSR>300 {
         local number2 = `number2'+1
     }
-    if $m62_KNA>200 {
+    if $m62_KNA>300 {
         local number2 = `number2'+1
     }
-    if $m62_LCA>200 {
+    if $m62_LCA>300 {
         local number2 = `number2'+1
     }
-    if $m62_VCT>200 {
+    if $m62_VCT>300 {
         local number2 = `number2'+1
     }
-    ** if $m62_SUR>200 {
-    **    local number2 = `number2'+1
-    ** }
-    **if $m62_TTO>200 {
+    if $m62_SUR>300 {
+        local number2 = `number2'+1
+     }
+    **if $m62_TTO>300 {
         **local number2 = `number2'+1
     **}
-    if $m62_TCA>200 {
+    if $m62_TCA>300 {
         local number2 = `number2'+1
     }
 
@@ -283,8 +283,8 @@ local bullet = uchar(8226)
     putpdf text ("$m62caricom "),  
     putpdf text ("new confirmed cases (compared to `change1' last week, and `change2' two weeks ago) "),  
     putpdf text ("and $m63caricom new confirmed deaths (compared to `change1d' last week, and `change2d' two weeks ago). "),  
-    putpdf text ("Most of these new cases were identified in Suriname ($m62_SUR), Trinidad and Tobago ($m62_TTO), Bahamas ($m62_BHS), and in Jamaica ($m62_JAM)."),
-    putpdf text ("There were an additional `number2' countries with over 200 cases: "), linebreak
+    putpdf text ("Most of these new cases were identified in Jamaica ($m62_JAM), Trinidad and Tobago ($m62_TTO), and the Bahamas ($m62_BHS)."),
+    putpdf text ("There were an additional `number2' countries with over 300 cases: "), linebreak
 
     putpdf paragraph ,  font("Calibri Light", 10) indent(left, 35pt)
 
@@ -294,10 +294,10 @@ local bullet = uchar(8226)
     }
     if $m62_ATG > 200 {
         putpdf text ("`bullet' Antigua and Barbuda ($m62_ATG cases) "), linebreak 
-    }
-    **if $m62_BHS > 200 {
-        **putpdf text ("`bullet' The Bahamas ($m62_BHS cases) "), linebreak 
     **}
+    **if $m62_BHS > 200 {
+    **    putpdf text ("`bullet' The Bahamas ($m62_BHS cases) "), linebreak 
+    }
     if $m62_BRB > 200 {
         putpdf text ("`bullet' Barbados ($m62_BRB cases) "), linebreak 
     }
@@ -340,9 +340,9 @@ local bullet = uchar(8226)
     if $m62_VCT > 200 {
         putpdf text ("`bullet' St Vincent and the Grenadines ($m62_VCT cases) "), linebreak
     }
-    **if $m62_SUR > 200 {
-        **putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
-    **}
+    if $m62_SUR > 200 {
+        putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
+    }
     **if $m62_TTO > 200 {
         **putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO cases) "), linebreak
     **}
@@ -424,12 +424,12 @@ local bullet = uchar(8226)
 **   if $m62_GUY > 1 {
 **       putpdf text ("`bullet' Guyana ($m62_GUY cases) "), linebreak
 **  }
-**    if $m62_HTI == 1 {
-**        putpdf text ("`bullet' Haiti ($m62_HTI case) "), linebreak
-**    }
-**    if $m62_HTI > 1 {
-**        putpdf text ("`bullet' Haiti ($m62_HTI cases) "), linebreak
-**    }
+    if $m62_HTI == 1 {
+        putpdf text ("`bullet' Haiti ($m62_HTI case) "), linebreak
+    }
+    if $m62_HTI > 1 {
+        putpdf text ("`bullet' Haiti ($m62_HTI cases) "), linebreak
+    }
 **    if $m62_JAM == 1 {
 **        putpdf text ("`bullet' Jamaica ($m62_JAM case) "), linebreak
 **     }
@@ -484,7 +484,6 @@ local bullet = uchar(8226)
     putpdf paragraph ,  font("Calibri Light", 10) 
     putpdf text ("In the past 24 hours there have been $m60caricom new confirmed cases and $m61caricom new confirmed deaths. "), 
 
-    putpdf text ("Suriname ($m01_SUR confirmed cases, $m62_SUR in the past week), ") 
     putpdf text ("Trinidad and Tobago ($m01_TTO confirmed cases, $m62_TTO in the past week) ") 
     putpdf text ("Bahamas ($m01_BHS confirmed cases, $m62_BHS in the past week) ") 
     putpdf text ("and Jamaica ($m01_JAM confirmed cases, $m62_JAM in the past week) ")
