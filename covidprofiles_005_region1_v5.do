@@ -419,6 +419,8 @@ preserve
 restore 
 }
 }
+
+
 ** Any error code due to a missing country is shifted to a global macros (errortrap)
 ** If no error, then _rc==0
 ** If an error exists, _rc>0 
