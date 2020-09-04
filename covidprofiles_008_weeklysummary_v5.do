@@ -183,73 +183,69 @@ local number = 0
        local number = `number'+1
      }
 
-****Creating a macro for countries with cases over 300
+****Creating a macro for countries with cases over 200
 
 local number2 = 0
-    if $m62_AIA>300 {
+    if $m62_AIA>200 {
         local number2 = `number2'+1
     }
-    if $m62_ATG>300 {
+    if $m62_ATG>200 {
         local number2 = `number2'+1
     }
-    **if $m62_BHS>300 {
+    **if $m62_BHS>200 {
         **local number2 = `number2'+1
     **}
-    if $m62_BLZ>300 {
+    if $m62_BLZ>200 {
         local number2 = `number2'+1
     }
-    if $m62_BRB>300 {
+    if $m62_BRB>200 {
         local number2 = `number2'+1
     }
-    if $m62_BMU>300 {
+    if $m62_BMU>200 {
         local number2 = `number2'+1
     }
-    if $m62_VGB>300 {
+    if $m62_VGB>200 {
         local number2 = `number2'+1
     }
-    if $m62_CYM>300 {
+    if $m62_CYM>200 {
         local number2 = `number2'+1
     }
-    if $m62_DMA>300 {
+    if $m62_DMA>200 {
         local number2 = `number2'+1
     }
-    if $m62_GRD>300 {
+    if $m62_GRD>200 {
         local number2 = `number2'+1
     }
-    if $m62_GUY>300 {
+    if $m62_GUY>200 {
         local number2 = `number2'+1
     }
-    if $m62_HTI>300 {
+    if $m62_HTI>200 {
        local number2 = `number2'+1
     }
-    **if $m62_JAM>300 {
+    **if $m62_JAM>200 {
     **    local number2 = `number2'+1
     **}
-    if $m62_MSR>300 {
+    if $m62_MSR>200 {
         local number2 = `number2'+1
     }
-    if $m62_KNA>300 {
+    if $m62_KNA>200 {
         local number2 = `number2'+1
     }
-    if $m62_LCA>300 {
+    if $m62_LCA>200 {
         local number2 = `number2'+1
     }
-    if $m62_VCT>300 {
+    if $m62_VCT>200 {
         local number2 = `number2'+1
-    }
-    if $m62_SUR>300 {
-        local number2 = `number2'+1
+    **}
+    **if $m62_SUR>200 {
+     **   local number2 = `number2'+1
      }
-    **if $m62_TTO>300 {
+    **if $m62_TTO>200 {
         **local number2 = `number2'+1
     **}
-    if $m62_TCA>300 {
+    if $m62_TCA>200 {
         local number2 = `number2'+1
     }
-
-
-
-
 
 ** BULLET
 local bullet = uchar(8226)
@@ -283,8 +279,8 @@ local bullet = uchar(8226)
     putpdf text ("$m62caricom "),  
     putpdf text ("new confirmed cases (compared to `change1' last week, and `change2' two weeks ago) "),  
     putpdf text ("and $m63caricom new confirmed deaths (compared to `change1d' last week, and `change2d' two weeks ago). "),  
-    putpdf text ("Most of these new cases were identified in Jamaica ($m62_JAM), Trinidad and Tobago ($m62_TTO), and the Bahamas ($m62_BHS)."),
-    putpdf text ("There were an additional `number2' countries with over 300 cases: "), linebreak
+    putpdf text ("Most of these new cases were identified in Jamaica ($m62_JAM), Trinidad and Tobago ($m62_TTO), the Bahamas ($m62_BHS) and Suriname ($m62_SUR)."),
+    putpdf text ("There were an additional `number2' countries with over 200 cases: "), linebreak
 
     putpdf paragraph ,  font("Calibri Light", 10) indent(left, 35pt)
 
@@ -340,9 +336,9 @@ local bullet = uchar(8226)
     if $m62_VCT > 200 {
         putpdf text ("`bullet' St Vincent and the Grenadines ($m62_VCT cases) "), linebreak
     }
-    if $m62_SUR > 200 {
-        putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
-    }
+    **if $m62_SUR > 200 {
+    **    putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
+    **}
     **if $m62_TTO > 200 {
         **putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO cases) "), linebreak
     **}
@@ -483,10 +479,10 @@ local bullet = uchar(8226)
 
     putpdf paragraph ,  font("Calibri Light", 10) 
     putpdf text ("In the past 24 hours there have been $m60caricom new confirmed cases and $m61caricom new confirmed deaths. "), 
-
+    putpdf text ("Jamaica ($m01_JAM confirmed cases, $m62_JAM in the past week) ")
     putpdf text ("Trinidad and Tobago ($m01_TTO confirmed cases, $m62_TTO in the past week) ") 
     putpdf text ("Bahamas ($m01_BHS confirmed cases, $m62_BHS in the past week) ") 
-    putpdf text ("and Jamaica ($m01_JAM confirmed cases, $m62_JAM in the past week) ")
+    putpdf text ("and Suriname ($m01_SUR confirmed cases, $m62_SUR in the past week) ") 
     putpdf text ("are the current Caribbean hotspots.") 
     putpdf text ("With borders re-opening, ")
     putpdf text ("a larger number of CARICOM countries are now reporting clusters of cases.")        
