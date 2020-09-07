@@ -16,12 +16,18 @@
     ** Set working directories: this is for DATASET and LOGFILE import and export
     ** DATASETS to encrypted SharePoint folder
     local datapath "X:\The University of the West Indies\DataGroup - repo_data\data_p151"
+    **local datapath "X:\The UWI - Cave Hill Campus\DataGroup - repo_data\data_p151" // SW to use this datapath when running the do-file
     local datapath154 "X:\The University of the West Indies\DataGroup - repo_data\data_p154"
+    **local datapath154 "X:\The UWI - Cave Hill Campus\DataGroup - repo_data\data_p154" // SW to use this datapath when running the do-file
+   
     ** LOGFILES to unencrypted OneDrive folder
     local logpath "X:\OneDrive - The University of the West Indies\repo_datagroup\repo_p151"
+    **local logpath "X:\OneDrive - The UWI - Cave Hill Campus\repo_datagroup\repo_p151" // SW to use this logpath when running the do-file
+   
     ** Reports and Other outputs
     local outputpath "X:\The University of the West Indies\DataGroup - DG_Projects\PROJECT_p151"
-
+   **local outputpath "X:\The UWI - Cave Hill Campus\DataGroup - PROJECT_p151" // SW to use this outputpath when running do-file
+    
     ** Close any open log file and open a new log file
     capture log close
     log using "`logpath'\covidprofiles_003_metrics_v5", replace
