@@ -290,6 +290,7 @@ replace new = . if new==0
             22126 "30 Jul"
             22137 "10 Aug"
             22147 "20 Aug"
+            22157 "30 Aug"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -377,6 +378,7 @@ replace gr7 = . if gr7==0
             22126 "30 Jul"
             22137 "10 Aug"
             22147 "20 Aug"
+            22157 "30 Aug"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -462,6 +464,7 @@ replace metric = . if metric==0
             22126 "30 Jul"
             22137 "10 Aug"
             22147 "20 Aug"
+            22157 "20 Aug"
             $fdate "$fdatef"
     , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 

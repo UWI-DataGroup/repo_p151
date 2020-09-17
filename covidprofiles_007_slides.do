@@ -630,7 +630,7 @@ putpdf pagebreak
     putpdf table f2(4,2)=image("`outputpath'/04_TechDocs/spark_TCA_$S_DATE.png")
 
 
-/*
+
 ** 05-AUG-2020
 ** EXTRA SLIDE - ALL GROWTH CURVES ON ONE SLIDES
 putpdf pagebreak
@@ -688,7 +688,7 @@ putpdf pagebreak
     putpdf table f2(7,5)=("Turks and Caicos Islands"), halign(left) font("Calibri Light", 12, 0e497c)  
     putpdf table f2(8,5)=image("`outputpath'/04_TechDocs/spark_TCA_$S_DATE.png")
 
-*/
+
 
 ** SLIDE 11: ANGUILLA
 putpdf pagebreak
