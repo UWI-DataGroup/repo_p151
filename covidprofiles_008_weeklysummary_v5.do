@@ -123,12 +123,10 @@ local remain = $m62caricom - $m62_HTI
 local remain2 = $m62caricom - $m62_HTI - $m62_SUR 
 **Remaining deahs after removing Suriname, Bahamas and Haiti
 local remain3 = $m62caricom - $m62_SUR - $m62_BHS - $m62_HTI
-**Remaining cases after removing Suriname, Bahamas, T&T, Guyana, Jamaica
-local remain4 = $m62caricom - $m62_SUR - $m62_BHS  - $m62_TTO - $m62_GUY - $m62_JAM
+**Remaining cases after removing countries with >= 200 cases (Jamaica, Trinidad and Tobago, Bahamas, Belize, Guyana)
+local remain4 = $m62caricom - $m62_JAM - $m62_TTO - $m62_BHS - $m62_BLZ - $m62_GUY 
 
-
-
-** How many countries had one or more cases ?
+** How many countries had one or more cases (excluding countries with >= 200 cases?
 local number = 0
     if $m62_AIA>0 {
         local number = `number'+1
@@ -139,9 +137,9 @@ local number = 0
     **if $m62_BHS>0 {
         **local number = `number'+1
     **}
-    if $m62_BLZ>0 {
-        local number = `number'+1
-    }
+    **if $m62_BLZ>0 {
+      **  local number = `number'+1
+    **}
     if $m62_BRB>0 {
         local number = `number'+1
     }
@@ -191,7 +189,7 @@ local number = 0
        local number = `number'+1
      }
 
-****Creating a macro for countries with cases over 200
+****Creating a macro for countries with cases over 200 (this excludes any countries highlighted as the top hot spots)
 
 local number2 = 0
     if $m62_AIA>200 {
@@ -248,9 +246,9 @@ local number2 = 0
     if $m62_SUR>200 {
         local number2 = `number2'+1
      }
-    **if $m62_TTO>200 {
-        **local number2 = `number2'+1
-    **}
+    if $m62_TTO>200 {
+        local number2 = `number2'+1
+    }
     if $m62_TCA>200 {
         local number2 = `number2'+1
     }
@@ -287,12 +285,12 @@ local bullet = uchar(8226)
     putpdf text ("$m62caricom "),  
     putpdf text ("new confirmed cases (compared to `change1' last week, and `change2' two weeks ago) "),  
     putpdf text ("and $m63caricom new confirmed deaths (compared to `change1d' last week, and `change2d' two weeks ago). "),  
-    putpdf text ("Most of these new cases were identified in Jamaica ($m62_JAM) and Trinidad and Tobago ($m62_TTO)."),
+    putpdf text ("The highest number of new cases was identified in Jamaica ($m62_JAM)."),
     putpdf text ("There were an additional `number2' countries with over 200 cases: "), linebreak
 
     putpdf paragraph ,  font("Calibri Light", 10) indent(left, 35pt)
 
-    
+    **exclude top hotspot highlighted above
     if $m62_AIA > 200 {
         putpdf text ("`bullet' Anguilla ($m62_AIA cases) "), linebreak 
     }
@@ -347,9 +345,9 @@ local bullet = uchar(8226)
     if $m62_SUR > 200 {
         putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
     }
-    **if $m62_TTO > 200 {
-        **putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO cases) "), linebreak
-    **}
+    if $m62_TTO > 200 {
+        putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO cases) "), linebreak
+    }
     if $m62_TCA > 200 {
         putpdf text ("`bullet' Turks and Caicos Islands ($m62_TCA cases) "), linebreak
     }
@@ -361,7 +359,7 @@ local bullet = uchar(8226)
 
 
     putpdf paragraph ,  font("Calibri Light", 10) indent(left, 35pt)
-
+    **exclude countries with > 200 cases
     if $m62_AIA == 1 {
         putpdf text ("`bullet' Anguilla ($m62_AIA case)"), linebreak 
     }
@@ -386,12 +384,12 @@ local bullet = uchar(8226)
     if $m62_BRB > 1 {
         putpdf text ("`bullet' Barbados ($m62_BRB cases) "), linebreak 
     }
-    if $m62_BLZ == 1 {
-        putpdf text ("`bullet' Belize ($m62_BLZ case) "), linebreak
-    }
-    if $m62_BLZ > 1 {
-        putpdf text ("`bullet' Belize ($m62_BLZ cases) "), linebreak
-    }
+    **if $m62_BLZ == 1 {
+    **    putpdf text ("`bullet' Belize ($m62_BLZ case) "), linebreak
+    **}
+    **if $m62_BLZ > 1 {
+    **    putpdf text ("`bullet' Belize ($m62_BLZ cases) "), linebreak
+    **}
     if $m62_BMU == 1 {
         putpdf text ("`bullet' Bermuda ($m62_BMU case) "), linebreak
     }
@@ -488,8 +486,7 @@ local bullet = uchar(8226)
     putpdf paragraph ,  font("Calibri Light", 10) 
     putpdf text ("In the past 24 hours there have been $m60caricom new confirmed cases and $m61caricom new confirmed deaths. "), 
     putpdf text ("Jamaica ($m01_JAM confirmed cases, $m62_JAM in the past week) ")
-    putpdf text ("and Trinidad and Tobago ($m01_TTO confirmed cases, $m62_TTO in the past week) ")  
-    putpdf text ("are the current Caribbean hotspots.")       
+    putpdf text ("is the current Caribbean hotspot.")       
 
 ** Save the PDF
     local c_date = c(current_date)
