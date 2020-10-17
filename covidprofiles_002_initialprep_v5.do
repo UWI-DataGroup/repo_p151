@@ -149,5 +149,12 @@ replace pop = pop[_n-1] if pop==. & pop[_n-1]<. & iso==iso[_n-1]
 ** In the second case, we use -pop- as an indicator for a row of missing data 
 drop if total_cases==0 | pop==.
 
+** 16-OCT-2020
+** ZERO total_death counts early in outbreak when daily cumulation = 0 IE no deaths yet
+** In this situation - The total_deaths count = missing
+** Need to replace this missing with ZERO counts 
+sort iso_num date 
+replace total_deaths = 0 if total_deaths==. & new_deaths==0 
+
 ** Save the cleaned and restricted dataset
 save "`datapath'\version01\2-working\covid_restricted_001", replace

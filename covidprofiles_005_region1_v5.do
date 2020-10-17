@@ -240,7 +240,7 @@ restore
 * The CAPTURE command means that if a country does not exist
 ** The code will continue - and the error will be captured in the (_rc) local macro 
 local clist "AIA ATG BHS BRB BLZ BMU VGB CYM DMA GRD GUY HTI JAM MSR KNA LCA VCT SUR TTO TCA"
-capture {
+**capture {
     foreach country of local clist {
     ** This code chunk creates COUNTRY ISO CODE and COUNTRY NAME
     ** for automated use in the PDF reports.
@@ -264,6 +264,7 @@ capture {
         global dposx_`country' = ${m06_`country'}/4
         global dposy_`country' = ${m02_`country'}/1.5
 
+
 ** 1. BAR CHART    --> CUMULATIVE CASES
         #delimit ;
         gr twoway 
@@ -280,8 +281,8 @@ capture {
             xlab(0(1)${m05_`country'}
             , labs(6) nogrid glc(gs16) angle(0) format(%9.0f))
             xtitle("Days since first case", size(6) margin(l=2 r=2 t=2 b=2)) 
-            ///xscale(off range(1(2)${m05_`country'})) 
-            xscale(off) 
+            xscale(off range(1(8)${m05_`country'})) 
+            ///xscale(off) 
 
             ylab(0(1)${m01_`country'}
             , labs(6) notick nogrid glc(gs16) angle(0))
@@ -297,6 +298,7 @@ capture {
                 ;
         #delimit cr
         graph export "`outputpath'/04_TechDocs/cases_`country'_$S_DATE.png", replace width(400)
+
 
 
 ** 1. BAR CHART    --> CUMULATIVE DEATHS
@@ -315,12 +317,13 @@ capture {
             xlab(0(1)${m05_`country'}
             , labs(6) nogrid glc(gs16) angle(0) format(%9.0f))
             xtitle("Days since first case", size(6) margin(l=2 r=2 t=2 b=2)) 
-            ///xscale(off range(0(1)${m05_`country'})) 
-            xscale(off) 
+            xscale(off range(0(8)${m05_`country'})) 
+            ///xscale(off) 
 
             ylab(0(1)${m02_`country'}
             , labs(6) notick nogrid glc(gs16) angle(0))
-            yscale(off range(0(4)${m02_`country'})) 
+            ///yscale(off range(0(8)${m02_`country'})) 
+            yscale(off) 
             ytitle("Cumulative # of Cases", size(6) margin(l=2 r=2 t=2 b=2)) 
 
             text(${dposy_`country'} ${dposx_`country'} "${m02_`country'}", size(25) place(e) color("124 10 7") j(left))
@@ -332,6 +335,7 @@ capture {
                 ;
         #delimit cr
         graph export "`outputpath'/04_TechDocs/deaths_`country'_$S_DATE.png", replace width(400)
+
 
 ** LINE CHART (LOGARITHM)
 ** LINE against region for other 13 CARICOM countries 
@@ -425,7 +429,6 @@ preserve
         #delimit cr
         graph export "`outputpath'/04_TechDocs/spark_`country'_$S_DATE.png", replace width(4000)
 restore 
-}
 }
 
 
