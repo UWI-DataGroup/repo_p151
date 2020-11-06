@@ -123,14 +123,9 @@ local remain = $m62caricom - $m62_HTI
 local remain2 = $m62caricom - $m62_HTI - $m62_SUR 
 **Remaining deahs after removing Suriname, Bahamas and Haiti
 local remain3 = $m62caricom - $m62_SUR - $m62_BHS - $m62_HTI
-**Remaining cases after removing countries with >= 200 cases (Jamaica, Bahamas, Belize, Guyana)
 local remain4 = $m62caricom - $m62_JAM - $m62_BLZ - $m62_BHS - $m62_GUY
 
-** How many countries had one or more cases (excluding countries with >= 200 cases?
-local number = 0
-    if $m62_AIA>0 {
-        local number = `number'+1
-    }
+    
     if $m62_ATG>0 {
         local number = `number'+1
     }
@@ -304,7 +299,7 @@ local bullet = uchar(8226)
     }
     if $m62_BLZ > 200 {
         putpdf text ("`bullet' Belize ($m62_BLZ cases) "), linebreak
-    }
+   }
     if $m62_BMU > 200 {
         putpdf text ("`bullet' Bermuda ($m62_BMU cases) "), linebreak
     }
