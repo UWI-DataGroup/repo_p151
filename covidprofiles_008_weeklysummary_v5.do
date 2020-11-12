@@ -480,9 +480,7 @@ local bullet = uchar(8226)
     putpdf paragraph ,  font("Calibri Light", 10) 
     putpdf text ("In the past 24 hours there have been $m60caricom new confirmed cases and $m61caricom new confirmed deaths. "), 
     putpdf text ("Belize ($m01_BLZ confirmed cases, $m62_BLZ in the past week)")
-    putpdf text ("and Jamaica ($m01_JAM confirmed cases, $m62_JAM in the past week) ")
-
-    putpdf text ("are the current Caribbean hotspots.")       
+    putpdf text ("is the current Caribbean hotspot.")       
 
 ** Save the PDF
     local c_date = c(current_date)

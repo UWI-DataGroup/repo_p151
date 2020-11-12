@@ -631,14 +631,13 @@ putpdf pagebreak
 
 
 
-/** 05-AUG-2020
-** EXTRA SLIDE - ALL GROWTH CURVES ON ONE SLIDES
+** EXTRA SLIDE - ALL GROWTH CURVES ON ONE SLIDES - need to change date in text when re-run
 putpdf pagebreak
     putpdf table intro2 = (1,1), width(100%) halign(left)    
     putpdf table intro2(.,.), border(all, nil) valign(center)
     putpdf table intro2(1,.), font("Calibri Light", 12, 000000)  
     putpdf table intro2(1,1)=("Figure 2: "), bold halign(left)
-    putpdf table intro2(1,1)=("COVID-19 outbreak growth rates for 20 CARICOM countries as of November 5 2020 (www.uwi.edu/covid19/surveillance). "), halign(left) append   
+    putpdf table intro2(1,1)=("COVID-19 outbreak growth rates for 20 CARICOM countries as of November 10 2020 (www.uwi.edu/covid19/surveillance). "), halign(left) append   
     putpdf table intro2(1,1)=("The solid line represents the growth rate for each country. The shaded regions represent the "), halign(left) append   
     putpdf table intro2(1,1)=("interquartile range (25th to 75th percentile, dark blue area) and range (5th to 95th percentile, lighter blue area) for the remaining 19 countries. "), append halign(left) linebreak  
 
@@ -688,7 +687,7 @@ putpdf pagebreak
     putpdf table f2(7,5)=("Turks and Caicos Islands"), halign(left) font("Calibri Light", 12, 0e497c)  
     putpdf table f2(8,5)=image("`outputpath'/04_TechDocs/spark_TCA_$S_DATE.png")
 
-*/
+
 
 ** SLIDE 11: ANGUILLA
 putpdf pagebreak
