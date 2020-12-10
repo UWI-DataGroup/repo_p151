@@ -59,10 +59,12 @@
 ** Does data for latest data exist
 ** IF NOT - stop program, and report error code
 preserve
-    use "`datapath'\version01\1-input\count_owid", clear
+    use "`datapath'\version01\1-input\full_owid", clear
     local t1 = c(current_date)
     gen today = d("`t1'")
+    gen yesterday = today - 1
     format today %tdNN/DD/CCYY
+    format yesterday %tdNN/DD/CCYY
     rename date date_orig 
     gen date = date(date_orig, "YMD", 2020)
     format date %tdNN/DD/CCYY
@@ -70,8 +72,126 @@ preserve
     order date 
     egen today_dataset = max(date)
     format today_dataset %tdNN/DD/CCYY
-    if (today_dataset < today ) {
+    if (today_dataset < yesterday ) {
         dis as error "The data for today ($S_DATE) are not yet available."
         exit 301
     }
 restore 
+
+** Data Source B1 - ECDC counts
+cap{
+    python: import pandas as count_csv
+    python: count_df2 = count_csv.read_csv('https://opendata.ecdc.europa.eu/covid19/casedistribution/csv')
+    cd "`datapath'\version01\1-input\"
+    python: count_df2.to_stata('count_ecdc.dta')
+    }
+   
+/** Data Source C1 - JohnsHopkins counts
+** Longer import time - includes US county-level data - much larger dataset
+local URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/"
+forvalues month = 1/12 {
+   forvalues day = 1/31 {
+      local month = string(`month', "%02.0f")
+      local day = string(`day', "%02.0f")
+      local year = "2020"
+      local today = "`month'-`day'-`year'"
+      local FileName = "`URL'`today'.csv"
+      clear
+      capture import delimited "`FileName'"
+      capture confirm variable ïprovincestate
+      if _rc == 0 {
+         rename ïprovincestate provincestate
+         label variable provincestate "Province/State"
+      }
+      capture rename province_state provincestate
+      capture rename country_region countryregion
+      capture rename last_update lastupdate
+      capture rename lat latitude
+      capture rename long longitude
+      generate tempdate = "`today'"
+      capture save "`today'", replace
+   }
+}
+clear
+forvalues month = 1/12 {
+   forvalues day = 1/31 {
+      local month = string(`month', "%02.0f")
+      local day = string(`day', "%02.0f")
+      local year = "2020"
+      local today = "`month'-`day'-`year'"
+      capture append using "`today'"
+   }
+}
+
+
+** ----------------------------------------------------------------------------
+** 18-Jun-2020
+** Save a daily backup of the Johns Hopkins data
+local c_date = c(current_date)
+local date_string = subinstr("`c_date'", " ", "", .)
+save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
+** use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+
+** 18-jun-2020
+** We keep Turks and Caicos Islands from JH dataset for appending to ECDC/OWID
+** TCA has been missing in ECDC data since 18-Jun-2020. Reason unknown. No response to email enquiry.
+** We have included an IF-ASSERT statement to allow for the 
+** re-appearance of TCA in ECDC in a later edition
+    keep if provincestate=="Turks and Caicos Islands"
+
+    ** Match JH format to OWID format before appending
+    generate date = date(tempdate, "MDY")
+    format date %tdNN/DD/CCYY
+    drop tempdate 
+    rename provincestate location 
+    rename confirmed total_cases
+    rename deaths total_deaths 
+    * Fix data error (1-Apr-2020). Recorded as 6, should be 5
+    replace total_cases = total_cases[_n+1] if total_cases>total_cases[_n+1] 
+    * Two new variables - daily cases and deaths
+    sort date 
+    gen new_cases = total_cases - total_cases[_n-1]
+    replace new_cases = total_cases if new_cases==. & _n==1 
+    gen new_deaths = total_deaths - total_deaths[_n-1]
+    replace new_deaths = total_deaths if new_deaths==. & _n==1
+    keep date location new_cases new_deaths total_cases total_deaths
+    save "`datapath'\version01\2-working\jh_time_series_TCA_`date_string'", replace 
+** ----------------------------------------------------------------------------
+*/
+
+use "`datapath'\version01\1-input\full_owid", clear
+
+rename date date_orig 
+gen date = date(date_orig, "YMD", 2020)
+format date %tdNN/DD/CCYY
+drop date_orig
+order date 
+sort location date 
+
+** 19-Jun-2020
+** ERROR correction 
+** 08-Apr-2020 NZL has 8 identical entries 
+** Otehr countries are affected by this error - not sure why the imported dataset would have dups like this
+** To investigate (at some point!) 
+bysort iso date: gen dups = _n 
+drop if dups>1 
+drop dups 
+
+** TEXT NAME FOR COUNTRY (STRING)
+rename location countryregion 
+** POPULATION
+rename population pop
+
+** Save out the dataset for next DO file
+rename iso_code iso 
+keep countryregion iso pop date new_cases new_deaths total_cases total_deaths 
+order countryregion iso pop date new_cases new_deaths total_cases total_deaths 
+gsort countryregion -date 
+save "`datapath'\version01\2-working\owid_time_series", replace
+
+** Added 18-Jun-2020
+** Save a daily backup of the data
+local c_date = c(current_date)
+local date_string = subinstr("`c_date'", " ", "", .)
+keep iso date new_cases new_deaths total_cases total_deaths country pop
+save "`datapath'\version01\2-working\owid_time_series_`date_string'", replace
