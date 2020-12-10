@@ -56,4 +56,22 @@
     cd "`datapath'\version01\1-input\"
     python: full_df.to_stata('full_owid.dta')
 
-
+** Does data for latest data exist
+** IF NOT - stop program, and report error code
+preserve
+    use "`datapath'\version01\1-input\count_owid", clear
+    local t1 = c(current_date)
+    gen today = d("`t1'")
+    format today %tdNN/DD/CCYY
+    rename date date_orig 
+    gen date = date(date_orig, "YMD", 2020)
+    format date %tdNN/DD/CCYY
+    drop date_orig
+    order date 
+    egen today_dataset = max(date)
+    format today_dataset %tdNN/DD/CCYY
+    if (today_dataset < today ) {
+        dis as error "The data for today ($S_DATE) are not yet available."
+        exit 301
+    }
+restore 
