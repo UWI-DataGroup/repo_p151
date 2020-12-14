@@ -44,18 +44,14 @@
     capture log close
     log using "`logpath'\covidprofiles_006_region2_v5", replace
 ** HEADER -----------------------------------------------------
-
-
 ** -----------------------------------------
 ** Pre-Load the COVID metrics --> as Global Macros
 ** -----------------------------------------
 qui do "`logpath'\covidprofiles_003_metrics_v5"
 ** -----------------------------------------
-
 ** Close any open log file and open a new log file
 capture log close
 log using "`logpath'\covidprofiles_006_region2_v5", replace
-
 ** Country Labels
 #delimit ; 
 label define cname_ 1 "Anguilla" 
@@ -88,8 +84,6 @@ label define cname_ 1 "Anguilla"
                     28 "Dominican Republic"
                     ;
 #delimit cr 
-
-
 ** COUNTRY RESTRICTION: CARICOM countries only (N=20)
 #delimit ; 
     keep if 
@@ -114,7 +108,6 @@ label define cname_ 1 "Anguilla"
         iso=="TTO" |
         iso=="TCA";
 #delimit cr    
-
 ** HEATMAP preparation - ADD ROWS
 ** Want symmetric / rectangular matrix of dates. So we need 
 ** to backfill dates for each country to date of first 
@@ -125,17 +118,14 @@ label define cname_ 1 "Anguilla"
     ///drop if inlist(_n, _N)
     replace total_cases = 0 if total_cases==.
     replace total_deaths = 0 if total_deaths==.
-
 ** Attack Rate (per 1,000 --> not yet used)
 gen cases_rate = (total_cases / pop) * 10000
-
 ** Keep selected variables
 decode iso_num, gen(country2)
 keep date iso_num country2 iso pop total_cases cases_rate total_deaths 
 order date iso_num country2 iso pop total_cases cases_rate total_deaths 
 bysort iso_num : gen elapsed = _n 
 keep iso_num pop date total_cases cases_rate total_deaths 
-
 rename total_cases metric1
 rename cases_rate metric2
 rename total_deaths metric3
@@ -144,7 +134,6 @@ label define mtype_ 1 "cases" 2 "attack rate" 3 "deaths"
 label values mtype mtype_
 sort iso_num mtype date 
 drop if mtype==2
-
 ** DOUBLING RATE
 ** Then create a rolling average 
 ** Using 1-week window for now
@@ -158,11 +147,9 @@ sort iso_num mtype date
 gen gr100 = growthrate*100
 bysort iso_num mtype: asrol gr100, stat(mean) window(date 10) gen(gr7)
 bysort iso_num mtype: asrol doublingtime , stat(mean) window(date 7) gen(dt7)
-
 ** NEW CASES EACH DAY
 by iso_num mtype: gen new = metric - metric[_n-1]
 replace new = 0 if new==.
-
 ** Automate changing bin-width for color bins
 ** Do this by calulcating # needed to have XX bins
 ** Max anad Min across ALL countries
@@ -172,40 +159,34 @@ bysort mtype: egen maxgr = max(gr7)
 bysort mtype: egen mingr = min(gr7) 
 bysort mtype: egen maxnc = max(new)
 bysort mtype: egen minnc = min(new) 
-
 ** Count: cumulative cases
 gen diffv = maxv - minv 
 gen diffc1 = diffv if mtype==1
 egen diffc2 = min(diffc1) 
 gen diffc = round(diffc2/25)
 global binc = diffc 
-
 ** Count: attack rate
 gen diffar1 = diffv if mtype==2
 egen diffar2 = min(diffar1) 
 gen diffar = diffar2/20
 global binar = diffar 
-
 ** Count: cumulative deaths
 gen diffd1 = diffv if mtype==3
 egen diffd2 = min(diffd) 
 gen diffd = round(diffd2/20)
 global bind = diffd 
-
 ** Daily new events: cases
 gen diffnc = maxnc - minnc 
 gen diffnc1 = diffnc if mtype==1
 egen diffnc2 = min(diffnc1) 
 gen diffnc3 = round(diffnc2/10)
 global binnc = diffnc3 
-
 ** Daily new events: deaths
 gen diffnd = maxnc - minnc 
 gen diffnd1 = diffnd if mtype==3
 egen diffnd2 = min(diffnd1) 
 gen diffnd3 = round(diffnd2/5)
 global binnd = diffnd3 
-
 ** Growth rate : cases
 replace gr7 = round(gr7, 1) 
 gen diffgrc = maxgr - mingr 
@@ -213,22 +194,15 @@ gen diffgrc1 = diffgrc if mtype==1
 egen diffgrc2 = min(diffgrc1) 
 gen diffgrc3 = round(diffgrc2/10,1)
 global bingrc = diffgrc3 
-
 drop maxv minv diffv diffd diffd1 diffd2 diffc diffc1 diffc2 diffar diffar1 diffar2 diffgrc diffgrc1 diffgrc2 diffgrc3
 drop maxgr mingr minnc maxnc diffnc diffnc1 diffnc2 diffnc3 diffnd diffnd1 diffnd2 diffnd3
-
-
 ** Automate final date on x-axis 
 ** Use latest date in dataset 
 egen fdate1 = max(date)
 global fdate = fdate1 
 global fdatef : di %tdD_m date("$S_DATE", "DMY")
-
-
 ** Graphics numeric running from 1 to 20
 gen corder = iso_num
-
-
 ** -----------------------------------------
 ** HEATMAP -- NEW CASES
 ** -----------------------------------------
@@ -243,11 +217,9 @@ replace new = . if new==0
     discrete
     statistic(asis)
     missing(label("zero") fc(gs12) lc(gs16) lw(0.05) )
-
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
     ysize(9) xsize(15)
-
     ylab(   1 "Anguilla"
             2 "Antigua and Barbuda" 
             3 "The Bahamas" 
@@ -272,7 +244,6 @@ replace new = . if new==0
     yscale(reverse fill noline range(0(1)14)) 
     ///yscale(log reverse fill noline) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     xlab(   21984 "10 Mar" 
             21994 "20 Mar" 
             22004 "30 Mar" 
@@ -297,12 +268,13 @@ replace new = . if new==0
             22198 "10 Oct"
             22208 "20 Oct"
             22218 "30 Oct"
+            22229 "10 Nov"
+            22239 "20 Nov"
+            22249 "30 Nov"
             $fdate "$fdatef"
-    , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     title("Daily cases by $S_DATE", pos(11) ring(1) size(3.5))
-
     legend(size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
     sub("Daily" "Cases", size(2.75))
@@ -311,10 +283,6 @@ replace new = . if new==0
     ;
 #delimit cr
 graph export "`outputpath'/04_TechDocs/heatmap_newcases_$S_DATE.png", replace width(4000)
-
-
-
-
 ** -----------------------------------------
 ** HEATMAP -- CASES -- GROWTH RATE
 ** -----------------------------------------
@@ -330,18 +298,15 @@ replace gr7 = . if gr7==0
     discrete
     statistic(asis)
     missing(label("zero") fc(gs12) lc(gs16) lw(0.05) )
-
     ///color(spmap, blues)
     ///cuts(1($bingrc)@max)
     ///keylabels(all, range(1))
     ///p(lcolor(white) lalign(center) lw(0.05))
     ///discrete
     ///statistic(asis)
-
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
     ysize(9) xsize(15)
-
     ylab(   1 "Anguilla"
             2 "Antigua and Barbuda" 
             3 "The Bahamas" 
@@ -366,7 +331,6 @@ replace gr7 = . if gr7==0
     yscale(reverse fill noline range(0(1)14)) 
     ///yscale(log reverse fill noline) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     xlab(   21984 "10 Mar" 
             21994 "20 Mar" 
             22004 "30 Mar" 
@@ -391,12 +355,13 @@ replace gr7 = . if gr7==0
             22198 "10 Oct"
             22208 "20 Oct"
             22218 "30 Oct"
+            22229 "10 Nov"
+            22239 "20 Nov"
+            22249 "30 Nov"
             $fdate "$fdatef"
-    , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     title("Growth rate by $S_DATE", pos(11) ring(1) size(3.5))
-
     legend(size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
     sub("Growth" "Rate (%)", size(2.75))
@@ -405,9 +370,6 @@ replace gr7 = . if gr7==0
     ;
 #delimit cr
 graph export "`outputpath'/04_TechDocs/heatmap_growthrate_$S_DATE.png", replace width(4000)
-
-
-
 ** -----------------------------------------
 ** HEATMAP -- CUMULATIVE CASES -- COUNT
 ** -----------------------------------------
@@ -430,11 +392,9 @@ replace metric = . if metric==0
     ///p(lcolor(white) lalign(center) lw(0.05))
     ///discrete
     ///statistic(asis)
-
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
     ysize(9) xsize(15)
-
     ylab(   1 "Anguilla"
             2 "Antigua and Barbuda" 
             3 "The Bahamas" 
@@ -458,7 +418,6 @@ replace metric = . if metric==0
     , labs(2.75) notick nogrid glc(gs16) angle(0))
     yscale(reverse fill noline range(0(1)14)) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     xlab(   21984 "10 Mar" 
             21994 "20 Mar" 
             22004 "30 Mar" 
@@ -483,12 +442,13 @@ replace metric = . if metric==0
             22198 "10 Oct"
             22208 "20 Oct"
             22218 "30 Oct"
+            22229 "10 Nov"
+            22239 "20 Nov"
+            22249 "30 Nov"
             $fdate "$fdatef"
-    , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     title("Cumulative cases by $S_DATE", pos(11) ring(1) size(3.5))
-
     legend(size(2.75) position(2) ring(4) colf cols(1) lc(gs16)
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
     sub("Confirmed" "Cases", size(2.75))
@@ -497,9 +457,6 @@ replace metric = . if metric==0
     ;
 #delimit cr
 graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width(4000)
-
-
-
 ** -----------------------------------------
 ** HEATMAP -- CUMULATIVE DEATHS -- COUNT
 ** -----------------------------------------
@@ -521,11 +478,9 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
     ///p(lcolor(white) lalign(center) lw(0.05))
     ///discrete
     ///statistic(asis)
-
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
     ysize(12) xsize(12)
-
     ylab(   1 "Anguilla"
             2 "Antigua and Barbuda" 
             3 "The Bahamas" 
@@ -549,7 +504,6 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
     , labs(2.75) notick nogrid glc(gs16) angle(0))
     yscale(reverse fill noline range(0(1)14)) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     xlab(   21984 "10 Mar" 
             22015 "10 Apr"
             22045 "10 May"
@@ -558,12 +512,11 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
             22137 "10 Aug"
             22168 "10 Sep"
             22198 "10 Oct"
+            22229 "10 Nov"
             $fdate "$fdatef"
-    , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     title("Cumulative deaths by $S_DATE", pos(11) ring(1) size(3.5))
-
     legend(size(2.75) position(2) ring(4) colf cols(1) lc(gs16)
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
     sub("Confirmed" "Deaths", size(2.75))
@@ -572,8 +525,6 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
     ;
 #delimit cr 
 graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace width(4000)
-
-
 ** -----------------------------------------
 ** HEATMAP -- NEW DEATHS
 ** -----------------------------------------
@@ -589,7 +540,6 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
     statistic(asis)
     missing(label("zero") fc(gs12) lc(gs16) lw(0.05) )
     srange(1)
-
     ///color(spmap, reds)
     ///cuts(@min(1){@max+1})
     ///keylabels(all, range(1))
@@ -597,11 +547,9 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
     ///discrete
     ///statistic(asis)
     ///srange(1)
-
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
     graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
     ysize(12) xsize(12)
-
     ylab(   1 "Anguilla"
             2 "Antigua and Barbuda" 
             3 "The Bahamas" 
@@ -626,7 +574,6 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
     yscale(reverse fill noline range(0(1)14)) 
     ///yscale(log reverse fill noline) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     xlab(   21984 "10 Mar" 
             22015 "10 Apr"
             22045 "10 May"
@@ -635,12 +582,11 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
             22137 "10 Aug"
             22168 "10 Sep"
             22198 "10 Oct"
+            22229 "10 Dec"
             $fdate "$fdatef"
-    , labs(2.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
-
     title("Daily deaths by $S_DATE", pos(11) ring(1) size(3.5))
-
     legend(size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
     region(fcolor(gs16) lw(vthin) margin(l=2 r=2 t=2 b=2) lc(gs16)) 
     sub("Daily" "Deaths", size(2.75))
@@ -649,15 +595,10 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
     ;
 #delimit cr
 graph export "`outputpath'/04_TechDocs/heatmap_newdeaths_$S_DATE.png", replace width(4000)
-
-
-
-
 ** ------------------------------------------------------
 ** PDF REGIONAL REPORT (COUNTS OF CONFIRMED CASES)
 ** ------------------------------------------------------
     putpdf begin, pagesize(letter) landscape font("Calibri Light", 10) margin(top,0.5cm) margin(bottom,0.25cm) margin(left,0.5cm) margin(right,0.25cm)
-
 ** PAGE 1. DAILY CURVES
 ** PAGE 1. TITLE, ATTRIBUTION, DATE of CREATION
     putpdf table intro1 = (1,16), width(100%) halign(left)    
@@ -675,7 +616,6 @@ graph export "`outputpath'/04_TechDocs/heatmap_newdeaths_$S_DATE.png", replace w
     putpdf table intro1(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
     putpdf table intro1(1,2)=("www.uwi.edu/covid19/surveillance "), halign(left) underline append linebreak 
     putpdf table intro1(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
-
 ** PAGE 1. INTRODUCTION
     putpdf paragraph ,  font("Calibri Light", 9)
     putpdf text ("Aim of this briefing. ") , bold
@@ -688,13 +628,9 @@ graph export "`outputpath'/04_TechDocs/heatmap_newdeaths_$S_DATE.png", replace w
     putpdf text ("The heatmap was created for two main reasons: (A) to highlight outbreak hotspots, and (B) to track locations that have seen small numbers of recent cases. ") 
     putpdf text ("An extended period with no or sporadic isolated cases might be used as one of several ") 
     putpdf text ("potential triggers needed before considering the easing of national COVID-19 control measures.")
-
 ** PAGE 1. FIGURE OF DAILY COVID-19 COUNT
     putpdf table f1 = (1,1), width(92%) border(all,nil) halign(center)
     putpdf table f1(1,1)=image("`outputpath'/04_TechDocs/heatmap_newcases_$S_DATE.png")
-
-
-
 ** PAGE 2. GROWTH CURVES
 ** PAGE 2. TITLE, ATTRIBUTION, DATE of CREATION
 putpdf pagebreak
