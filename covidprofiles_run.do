@@ -39,7 +39,7 @@
 ** HEADER -----------------------------------------------------
 
 ** Load data
-do "`logpath'\covidprofiles_001_readdata_owid_v5"
+do "`logpath'\covidprofiles_001_readdata_owid_v6"
 ** Prepare data
 do "`logpath'\covidprofiles_002_initialprep_v5"
 do "`logpath'\covidprofiles_003_metrics_v5"

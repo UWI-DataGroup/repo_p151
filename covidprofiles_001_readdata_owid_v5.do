@@ -95,8 +95,8 @@ cap{
     cd "`datapath'\version01\1-input\"
     python: count_df2.to_stata('count_ecdc.dta')
     }
-  */  
-*/* Data Source C1 - JohnsHopkins counts
+   
+** Data Source C1 - JohnsHopkins counts
 ** Longer import time - includes US county-level data - much larger dataset
 local URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/"
 forvalues month = 1/12 {

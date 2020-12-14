@@ -86,7 +86,7 @@ cap{
     python: count_df2.to_stata('count_ecdc.dta')
     }
    
-/** Data Source C1 - JohnsHopkins counts
+** Data Source C1 - JohnsHopkins counts
 ** Longer import time - includes US county-level data - much larger dataset
 local URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/"
 forvalues month = 1/12 {
@@ -129,16 +129,19 @@ forvalues month = 1/12 {
 ** Save a daily backup of the Johns Hopkins data
 local c_date = c(current_date)
 local date_string = subinstr("`c_date'", " ", "", .)
-save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
-** use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+*save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
+ use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
 
+tempfile TCA AIA BMU CYM MSR VGB
 ** 18-jun-2020
-** We keep Turks and Caicos Islands from JH dataset for appending to ECDC/OWID
+** We keep UKOTS from JH dataset for appending to ECDC/OWID
 ** TCA has been missing in ECDC data since 18-Jun-2020. Reason unknown. No response to email enquiry.
 ** We have included an IF-ASSERT statement to allow for the 
 ** re-appearance of TCA in ECDC in a later edition
-    keep if provincestate=="Turks and Caicos Islands"
 
+**TCA
+ use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+    keep if provincestate=="Turks and Caicos Islands" 
     ** Match JH format to OWID format before appending
     generate date = date(tempdate, "MDY")
     format date %tdNN/DD/CCYY
@@ -150,14 +153,117 @@ save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
     replace total_cases = total_cases[_n+1] if total_cases>total_cases[_n+1] 
     * Two new variables - daily cases and deaths
     sort date 
+    *by location: gen new_cases = total_cases - total_cases[_n-1]
     gen new_cases = total_cases - total_cases[_n-1]
     replace new_cases = total_cases if new_cases==. & _n==1 
     gen new_deaths = total_deaths - total_deaths[_n-1]
     replace new_deaths = total_deaths if new_deaths==. & _n==1
     keep date location new_cases new_deaths total_cases total_deaths
-    save "`datapath'\version01\2-working\jh_time_series_TCA_`date_string'", replace 
+    save `TCA', replace
+
+**AIA
+ use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+keep if provincestate=="Anguilla" 
+    ** Match JH format to OWID format before appending
+    generate date = date(tempdate, "MDY")
+    format date %tdNN/DD/CCYY
+    drop tempdate 
+    rename provincestate location 
+    rename confirmed total_cases
+    rename deaths total_deaths 
+    * Two new variables - daily cases and deaths
+    sort date 
+    *by location: gen new_cases = total_cases - total_cases[_n-1]
+    gen new_cases = total_cases - total_cases[_n-1]
+    replace new_cases = total_cases if new_cases==. & _n==1 
+    gen new_deaths = total_deaths - total_deaths[_n-1]
+    replace new_deaths = total_deaths if new_deaths==. & _n==1
+    keep date location new_cases new_deaths total_cases total_deaths
+    save `AIA', replace
+
+    **BMU
+ use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+keep if provincestate=="Bermuda" 
+    ** Match JH format to OWID format before appending
+    generate date = date(tempdate, "MDY")
+    format date %tdNN/DD/CCYY
+    drop tempdate 
+    rename provincestate location 
+    rename confirmed total_cases
+    rename deaths total_deaths 
+    * Two new variables - daily cases and deaths
+    sort date 
+    *by location: gen new_cases = total_cases - total_cases[_n-1]
+    gen new_cases = total_cases - total_cases[_n-1]
+    replace new_cases = total_cases if new_cases==. & _n==1 
+    gen new_deaths = total_deaths - total_deaths[_n-1]
+    replace new_deaths = total_deaths if new_deaths==. & _n==1
+    keep date location new_cases new_deaths total_cases total_deaths
+    save `BMU', replace
+
+
+       **CYM
+        use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+keep if provincestate=="Cayman Islands" 
+    ** Match JH format to OWID format before appending
+    generate date = date(tempdate, "MDY")
+    format date %tdNN/DD/CCYY
+    drop tempdate 
+    rename provincestate location 
+    rename confirmed total_cases
+    rename deaths total_deaths 
+    * Two new variables - daily cases and deaths
+    sort date 
+    *by location: gen new_cases = total_cases - total_cases[_n-1]
+    gen new_cases = total_cases - total_cases[_n-1]
+    replace new_cases = total_cases if new_cases==. & _n==1 
+    gen new_deaths = total_deaths - total_deaths[_n-1]
+    replace new_deaths = total_deaths if new_deaths==. & _n==1
+    keep date location new_cases new_deaths total_cases total_deaths
+    save `CYM', replace
+
+ **MSR
+  use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+keep if provincestate=="Montserrat" 
+    ** Match JH format to OWID format before appending
+    generate date = date(tempdate, "MDY")
+    format date %tdNN/DD/CCYY
+    drop tempdate 
+    rename provincestate location 
+    rename confirmed total_cases
+    rename deaths total_deaths 
+    * Two new variables - daily cases and deaths
+    sort date 
+    *by location: gen new_cases = total_cases - total_cases[_n-1]
+    gen new_cases = total_cases - total_cases[_n-1]
+    replace new_cases = total_cases if new_cases==. & _n==1 
+    gen new_deaths = total_deaths - total_deaths[_n-1]
+    replace new_deaths = total_deaths if new_deaths==. & _n==1
+    keep date location new_cases new_deaths total_cases total_deaths
+    save `MSR', replace
+
+
+     **VGB
+      use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+keep if provincestate=="British Virgin Islands" 
+    ** Match JH format to OWID format before appending
+    generate date = date(tempdate, "MDY")
+    format date %tdNN/DD/CCYY
+    drop tempdate 
+    rename provincestate location 
+    rename confirmed total_cases
+    rename deaths total_deaths 
+    * Two new variables - daily cases and deaths
+    sort date 
+    *by location: gen new_cases = total_cases - total_cases[_n-1]
+    gen new_cases = total_cases - total_cases[_n-1]
+    replace new_cases = total_cases if new_cases==. & _n==1 
+    gen new_deaths = total_deaths - total_deaths[_n-1]
+    replace new_deaths = total_deaths if new_deaths==. & _n==1
+    keep date location new_cases new_deaths total_cases total_deaths
+    save `VGB', replace
+
 ** ----------------------------------------------------------------------------
-*/
 
 use "`datapath'\version01\1-input\full_owid", clear
 
@@ -167,6 +273,65 @@ format date %tdNN/DD/CCYY
 drop date_orig
 order date 
 sort location date 
+
+** Temp fix on 18-jun-2020 (updated 14Dec2020 to include other UKOTS)
+** Append JH data if TCA does not exist
+** Included as TCA has been lost from ECDC web data 
+** Assert should not highlight any TCA entries (_rc will equal 0 - ie no error)
+    capture assert iso !="TCA"
+    ** Append JH data if assert condition met
+    if _rc == 0 {
+        append using `TCA'
+        replace iso = "TCA" if iso=="" & location=="Turks and Caicos Islands"
+        replace population = 42953 if population==. & location=="Turks and Caicos Islands"
+             }
+
+**AIA
+ capture assert iso !="AIA"
+    ** Append JH data if assert condition met
+    if _rc == 0 {
+        append using `AIA'
+        replace iso = "AIA" if iso=="" & location=="Anguilla"
+        replace population = 15002 if population==. & location=="Anguilla"
+             }
+
+**BMU
+ capture assert iso !="BMU"
+    ** Append JH data if assert condition met
+    if _rc == 0 {
+        append using `BMU'
+        replace iso = "BMU" if iso=="" & location=="Bermuda"
+        replace population = 62273 if population==. & location=="Bermuda"
+             }
+
+**CYM
+ capture assert iso !="CYM"
+    ** Append JH data if assert condition met
+    if _rc == 0 {
+        append using `CYM'
+        replace iso = "CYM" if iso=="" & location=="Cayman Islands"
+        replace population = 65720 if population==. & location=="Cayman Islands"
+             }
+
+**MSR
+ capture assert iso !="MSR"
+    ** Append JH data if assert condition met
+    if _rc == 0 {
+        append using `MSR'
+        replace iso = "MSR" if iso=="" & location=="Montserrat"
+        replace population = 4999 if population==. & location=="Montserrat"
+             }             
+
+**VGB
+ capture assert iso !="VGB"
+    ** Append JH data if assert condition met
+    if _rc == 0 {
+        append using `VGB'
+        replace iso = "VGB" if iso=="" & location=="British Virgin Islands"
+        replace population = 30237 if population==. & location=="British Virgin Islands"
+             }   
+
+
 
 ** 19-Jun-2020
 ** ERROR correction 

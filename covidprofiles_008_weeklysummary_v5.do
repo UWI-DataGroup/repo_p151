@@ -38,51 +38,36 @@
     cap mkdir "`parent'\\`today'
     local syncpath "X:\The University of the West Indies\CaribData - Documents\COVID19Surveillance\PDF_Briefings\04 weekly_summary\\`today'"
     **local syncpath "X:\The UWI - Cave Hill Campus\CaribData - Documents\COVID19Surveillance\PDF_Briefings\04 weekly_summary" // SW to use this filepath
-
 ** HEADER -----------------------------------------------------
-
 **! ------------------------------------------
 **! The weekly surveillance update
 **! Run this every Thursday 
 **! ------------------------------------------
-
 ** Pre-Load the COVID metrics --> as Global Macros
 qui do "`logpath'\covidprofiles_003_metrics_v5"
-
 ** Close any open log file and open a new log file
 capture log close
 log using "`logpath'\covidprofiles_008_weeklysummary_v5", replace
-
-
 ** CARICOM cases in past week
 dis $m62caricom
-
 ** CARICOM deaths in past week
 dis $m63caricom
-
 ** HAITI
 dis $m62_HTI
-
 ** Reminaing cases
 dis $m62caricom - $m62_HTI 
-
 ** New cases and deaths in past 24 hours
 dis $m60caricom
 dis $m61caricom
-
 ** Total cases in Haiti
 dis $m01_HTI 
-
 ** Dom Rep
 dis $m01_DOM
 dis $m62_DOM
 dis $m02_DOM
-
-
 ** Create a tentative standard text for this
 ** Will never be entirely possible - as text may need to change each week
 ** But should make the writing process a little easier
-
 ** DAY OF THE WEEK
 local dow = dow(d("$S_DATE"))
 if `dow'==0 {
@@ -106,7 +91,6 @@ if `dow'==5 {
 if `dow'==6 {
     local day = "Sat" 
 }
-
 ** Change over most recent week (62 and 63)
 dis $m62caricom
 dis $m63caricom
@@ -116,15 +100,13 @@ local change1d = $m65caricom - $m63caricom
 ** Weekly change in cases (2 weeks ago) 
 local change2 = $m66caricom - $m64caricom 
 local change2d = $m67caricom - $m65caricom 
-
 ** Remaining deaths after removing Haiti 
 local remain = $m62caricom - $m62_HTI 
 ** Remaining deaths after removing Haiti and Suriname
 local remain2 = $m62caricom - $m62_HTI - $m62_SUR 
-**Remaining deahs after removing Suriname, Bahamas and Haiti
+**Remaining deahs after countries with >200 cases
 local remain3 = $m62caricom - $m62_SUR - $m62_BHS - $m62_HTI
-local remain4 = $m62caricom - $m62_JAM - $m62_BLZ - $m62_BHS - $m62_GUY
-
+local remain4 = $m62caricom - $m62_JAM - $m62_BLZ - $m62_GUY
     
     if $m62_ATG>0 {
         local number = `number'+1
@@ -183,9 +165,7 @@ local remain4 = $m62caricom - $m62_JAM - $m62_BLZ - $m62_BHS - $m62_GUY
      if $m62_TCA>0 {
        local number = `number'+1
      }
-
 ****Creating a macro for countries with cases over 200 (this excludes any countries highlighted as the top hot spots)
-
 local number2 = 0
     if $m62_AIA>200 {
         local number2 = `number2'+1
@@ -247,15 +227,12 @@ local number2 = 0
     if $m62_TCA>200 {
         local number2 = `number2'+1
     }
-
 ** BULLET
 local bullet = uchar(8226)
-
 ** ------------------------------------------------------
 ** PDF COUNTRY REPORT
 ** ------------------------------------------------------
     putpdf begin, pagesize(letter) font("Calibri Light", 10) margin(top,0.5cm) margin(bottom,0.25cm) margin(left,0.5cm) margin(right,0.25cm)
-
 ** TITLE, ATTRIBUTION, DATE of CREATION
     putpdf table intro = (1,12), width(100%) halign(left)    
     putpdf table intro(.,.), border(all, nil)
@@ -272,7 +249,6 @@ local bullet = uchar(8226)
     putpdf table intro(1,2)=("For all our COVID-19 surveillance outputs, go to "), halign(left) append
     putpdf table intro(1,2)=("www.uwi.edu/covid19/surveillance "), halign(left) underline append linebreak 
     putpdf table intro(1,2)=("Updated on: $S_DATE at $S_TIME "), halign(left) bold append
-
 ** INTRODUCTION
     putpdf paragraph ,  font("Calibri Light", 10)
     putpdf text ("Weekly Summary for the week ending `day' $S_DATE. ") , bold linebreak
@@ -281,9 +257,7 @@ local bullet = uchar(8226)
     putpdf text ("new confirmed cases (compared to `change1' last week, and `change2' two weeks ago) "),  
     putpdf text ("and $m63caricom new confirmed deaths (compared to `change1d' last week, and `change2d' two weeks ago). "),  
     putpdf text ("There were `number2' countries with over 200 cases: "), linebreak
-
     putpdf paragraph ,  font("Calibri Light", 10) indent(left, 35pt)
-
     **exclude top hotspot highlighted above
     if $m62_AIA > 200 {
         putpdf text ("`bullet' Anguilla ($m62_AIA cases) "), linebreak 
@@ -345,13 +319,10 @@ local bullet = uchar(8226)
     if $m62_TCA > 200 {
         putpdf text ("`bullet' Turks and Caicos Islands ($m62_TCA cases) "), linebreak
     }
-
     putpdf text (" "), linebreak  
     putpdf paragraph ,  font("Calibri Light", 10)
     putpdf text ("The remaining `remain4' cases were reported in `number' countries: "), linebreak  
     putpdf text (" "), linebreak  
-
-
     putpdf paragraph ,  font("Calibri Light", 10) indent(left, 35pt)
     **exclude countries with > 200 cases
     if $m62_AIA == 1 {
@@ -366,12 +337,12 @@ local bullet = uchar(8226)
     if $m62_ATG > 1 {
         putpdf text ("`bullet' Antigua and Barbuda ($m62_ATG cases) "), linebreak 
     }
-    **if $m62_BHS == 1 {
-    **    putpdf text ("`bullet' The Bahamas ($m62_BHS case) "), linebreak 
-    **}
-    **if $m62_BHS > 1 {
-    **    putpdf text ("`bullet' The Bahamas ($m62_BHS cases) "), linebreak 
-    **}
+    if $m62_BHS == 1 {
+        putpdf text ("`bullet' The Bahamas ($m62_BHS case) "), linebreak 
+    }
+    if $m62_BHS > 1 {
+        putpdf text ("`bullet' The Bahamas ($m62_BHS cases) "), linebreak 
+    }
     if $m62_BRB == 1 {
         putpdf text ("`bullet' Barbados ($m62_BRB case) "), linebreak 
     }
@@ -474,21 +445,15 @@ local bullet = uchar(8226)
     if $m62_TCA > 1 {
      putpdf text ("`bullet' Turks and Caicos Islands ($m62_TCA cases) "), linebreak
       }
-
     putpdf text (" "), linebreak  
-
     putpdf paragraph ,  font("Calibri Light", 10) 
     putpdf text ("In the past 24 hours there have been $m60caricom new confirmed cases and $m61caricom new confirmed deaths. "), 
     putpdf text ("Belize ($m01_BLZ confirmed cases, $m62_BLZ in the past week) ")
     putpdf text ("and Jamaica ($m01_JAM confirmed cases, $m62_JAM in the past week)")
     putpdf text ("are the current Caribbean hotspots.")       
-
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     putpdf save "`syncpath'/`date_string' Weekly summary", replace,
     ***This for practice
     **putpdf save "Desktop", replace
-
-
-
