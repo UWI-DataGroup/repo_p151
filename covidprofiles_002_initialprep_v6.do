@@ -156,6 +156,49 @@ drop if total_cases==0 | pop==.
 sort iso_num date 
 replace total_deaths = 0 if total_deaths==. & new_deaths==0 
 
+** 14-DEC-2020
+** ZERO total_cases counts early in outbreak when daily cumulation = 0 IE no cases yet
+** In this situation - The total_cases count = missing
+** Need to replace this missing with ZERO counts 
+sort iso_num date 
+replace total_cases = 0 if total_cases==. & new_cases==0 
+** South Korea has early series error
+replace new_cases = 1 if iso=="KOR" & new_cases==. & total_cases==1
+drop if iso=="KOR" & new_cases==. & new_deaths==. & total_cases==. & total_deaths==.
+replace new_deaths = 0 if iso=="KOR" & new_deaths==.
+replace total_deaths = 0 if iso=="KOR" & total_deaths==.
+
+** USA has early series error
+replace new_cases = 1 if iso=="USA" & new_cases==. & total_cases==1
+replace new_deaths = 0 if iso=="USA" & new_deaths==.
+replace total_deaths = 0 if iso=="USA" & total_deaths==.
+
+** Guyana had an early time series correction
+** Smooth this correction
+** Starting with 22-mar-2020
+replace total_cases = 7 if iso=="GUY" & date==21996
+replace new_cases = 0 if iso=="GUY" & date==21996
+** 23-mar
+replace total_cases = 7 if iso=="GUY" & date==21997
+replace new_cases = 0 if iso=="GUY" & date==21997
+** 24-mar
+replace total_cases = 7 if iso=="GUY" & date==21998
+replace new_cases = 0 if iso=="GUY" & date==21998
+** 25-mar
+replace total_cases = 7 if iso=="GUY" & date==21999
+replace new_cases = 0 if iso=="GUY" & date==21999
+** 26-mar
+replace total_cases = 7 if iso=="GUY" & date==22000
+replace new_cases = 0 if iso=="GUY" & date==22000
+** 27-mar
+replace total_cases = 7 if iso=="GUY" & date==22001
+replace new_cases = 0 if iso=="GUY" & date==22001
+** 28-mar
+replace new_cases = 1 if iso=="GUY" & date==22002
+
+
+** Drop days before outbreak begins in each country
+drop if new_cases==0 & total_cases==0 
 
 ** Save the cleaned and restricted dataset
 save "`datapath'\version01\2-working\covid_restricted_001", replace
