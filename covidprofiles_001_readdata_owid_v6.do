@@ -129,8 +129,7 @@ forvalues month = 1/12 {
 ** Save a daily backup of the Johns Hopkins data
 local c_date = c(current_date)
 local date_string = subinstr("`c_date'", " ", "", .)
-*save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
- use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
 
 tempfile TCA AIA BMU CYM MSR VGB
 ** 18-jun-2020

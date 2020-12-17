@@ -162,6 +162,11 @@ replace total_deaths = 0 if total_deaths==. & new_deaths==0
 ** Need to replace this missing with ZERO counts 
 sort iso_num date 
 replace total_cases = 0 if total_cases==. & new_cases==0 
+** 16-Dec-2020
+
+** Fix to total deaths to replace missing with zero
+replace total_deaths = 0 if total_deaths==. 
+
 ** South Korea has early series error
 replace new_cases = 1 if iso=="KOR" & new_cases==. & total_cases==1
 drop if iso=="KOR" & new_cases==. & new_deaths==. & total_cases==. & total_deaths==.
