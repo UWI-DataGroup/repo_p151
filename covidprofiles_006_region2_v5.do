@@ -245,34 +245,17 @@ replace new = . if new==0
     ///yscale(log reverse fill noline) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
     xlab(   21984 "10 Mar" 
-            21994 "20 Mar" 
-            22004 "30 Mar" 
             22015 "10 Apr"
-            22025 "20 Apr"
-            22035 "30 Apr"
             22045 "10 May"
-            22055 "20 May"
-            22065 "30 May"
             22076 "10 Jun"
-            22086 "20 Jun"
-            22096 "30 Jun"
             22106 "10 Jul"
-            22116 "20 Jul"
-            22126 "30 Jul"
             22137 "10 Aug"
-            22147 "20 Aug"
-            22157 "30 Aug"
             22168 "10 Sep"
-            22178 "20 Sep"
-            22188 "30 Sep"
             22198 "10 Oct"
-            22208 "20 Oct"
-            22218 "30 Oct"
             22229 "10 Nov"
-            22239 "20 Nov"
-            22249 "30 Nov"
+            22260 "10 Dec"
             $fdate "$fdatef"
-    , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(2.5) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
     title("Daily cases by $S_DATE", pos(11) ring(1) size(3.5))
     legend(size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
@@ -332,34 +315,17 @@ replace gr7 = . if gr7==0
     ///yscale(log reverse fill noline) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
     xlab(   21984 "10 Mar" 
-            21994 "20 Mar" 
-            22004 "30 Mar" 
             22015 "10 Apr"
-            22025 "20 Apr"
-            22035 "30 Apr"
             22045 "10 May"
-            22055 "20 May"
-            22065 "30 May"
             22076 "10 Jun"
-            22086 "20 Jun"
-            22096 "30 Jun"
             22106 "10 Jul"
-            22116 "20 Jul"
-            22126 "30 Jul"
             22137 "10 Aug"
-            22147 "20 Aug"
-            22157 "30 Aug"
             22168 "10 Sep"
-            22178 "20 Sep"
-            22188 "30 Sep"
             22198 "10 Oct"
-            22208 "20 Oct"
-            22218 "30 Oct"
             22229 "10 Nov"
-            22239 "20 Nov"
-            22249 "30 Nov"
+            22260 "10 Dec"
             $fdate "$fdatef"
-    , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(2.5) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
     title("Growth rate by $S_DATE", pos(11) ring(1) size(3.5))
     legend(size(2.75) position(2) ring(5) colf cols(1) lc(gs16)
@@ -419,34 +385,17 @@ replace metric = . if metric==0
     yscale(reverse fill noline range(0(1)14)) 
     ytitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
     xlab(   21984 "10 Mar" 
-            21994 "20 Mar" 
-            22004 "30 Mar" 
             22015 "10 Apr"
-            22025 "20 Apr"
-            22035 "30 Apr"
             22045 "10 May"
-            22055 "20 May"
-            22065 "30 May"
             22076 "10 Jun"
-            22086 "20 Jun"
-            22096 "30 Jun"
             22106 "10 Jul"
-            22116 "20 Jul"
-            22126 "30 Jul"
             22137 "10 Aug"
-            22147 "20 Aug"
-            22157 "30 Aug"
             22168 "10 Sep"
-            22178 "20 Sep"
-            22188 "30 Sep"
             22198 "10 Oct"
-            22208 "20 Oct"
-            22218 "30 Oct"
             22229 "10 Nov"
-            22239 "20 Nov"
-            22249 "30 Nov"
+            22260 "10 Dec"
             $fdate "$fdatef"
-    , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
+    , labs(2.5) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
     title("Cumulative cases by $S_DATE", pos(11) ring(1) size(3.5))
     legend(size(2.75) position(2) ring(4) colf cols(1) lc(gs16)
@@ -513,6 +462,7 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
             22168 "10 Sep"
             22198 "10 Oct"
             22229 "10 Nov"
+            22260 "10 Dec"
             $fdate "$fdatef"
     , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 
@@ -582,7 +532,8 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
             22137 "10 Aug"
             22168 "10 Sep"
             22198 "10 Oct"
-            22229 "10 Dec"
+            22229 "10 Nov"
+            22260 "10 Dec"
             $fdate "$fdatef"
     , labs(1.75) nogrid glc(gs16) angle(45) format(%9.0f))
     xtitle(" ", size(1) margin(l=0 r=0 t=0 b=0)) 

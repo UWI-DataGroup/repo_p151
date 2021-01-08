@@ -106,20 +106,20 @@ local remain = $m62caricom - $m62_HTI
 local remain2 = $m62caricom - $m62_HTI - $m62_SUR 
 **Remaining deahs after countries with >200 cases
 local remain3 = $m62caricom - $m62_SUR - $m62_BHS - $m62_HTI
-local remain4 = $m62caricom - $m62_JAM - $m62_BLZ - $m62_GUY
+local remain4 = $m62caricom - $m62_JAM - $m62_BLZ - $m62_SUR - $m62_BRB 
     
     if $m62_ATG>0 {
         local number = `number'+1
     }
-    **if $m62_BHS>0 {
-    **    local number = `number'+1
-    **}
+    if $m62_BHS>0 {
+        local number = `number'+1
+    }
     **if $m62_BLZ>0 {
       **  local number = `number'+1
     **}
-    if $m62_BRB>0 {
-        local number = `number'+1
-    }
+    **if $m62_BRB>0 {
+    **    local number = `number'+1
+    **}
     if $m62_BMU>0 {
         local number = `number'+1
     }
@@ -135,15 +135,15 @@ local remain4 = $m62caricom - $m62_JAM - $m62_BLZ - $m62_GUY
     if $m62_GRD>0 {
         local number = `number'+1
     }
-   **if $m62_GUY>0 {
-    **   local number = `number'+1
-  **}
+   if $m62_GUY>0 {
+      local number = `number'+1
+  }
   if $m62_HTI>0 {
       local number = `number'+1
   }
-   if $m62_JAM>0 {
-          local number = `number'+1
-  }
+   **if $m62_JAM>0 {
+   **       local number = `number'+1
+  **}
     if $m62_MSR>0 {
         local number = `number'+1
     }
@@ -156,9 +156,9 @@ local remain4 = $m62caricom - $m62_JAM - $m62_BLZ - $m62_GUY
     if $m62_VCT>0 {
         local number = `number'+1
     }
-     if $m62_SUR>0 {
-        local number = `number'+1
-     }
+    ** if $m62_SUR>0 {
+    **    local number = `number'+1
+    ** }
      if $m62_TTO>0 {
        local number = `number'+1
   }
@@ -343,12 +343,12 @@ local bullet = uchar(8226)
     if $m62_BHS > 1 {
         putpdf text ("`bullet' The Bahamas ($m62_BHS cases) "), linebreak 
     }
-    if $m62_BRB == 1 {
-        putpdf text ("`bullet' Barbados ($m62_BRB case) "), linebreak 
-    }
-    if $m62_BRB > 1 {
-        putpdf text ("`bullet' Barbados ($m62_BRB cases) "), linebreak 
-    }
+    **if $m62_BRB == 1 {
+    **    putpdf text ("`bullet' Barbados ($m62_BRB case) "), linebreak 
+    **}
+    **if $m62_BRB > 1 {
+    **    putpdf text ("`bullet' Barbados ($m62_BRB cases) "), linebreak 
+    **}
     **if $m62_BLZ == 1 {
     **    putpdf text ("`bullet' Belize ($m62_BLZ case) "), linebreak
     **}
@@ -385,12 +385,12 @@ local bullet = uchar(8226)
     if $m62_GRD > 1 {
         putpdf text ("`bullet' Grenada ($m62_GRD cases) "), linebreak
     }
-   **if $m62_GUY == 1 {
-   **   putpdf text ("`bullet' Guyana ($m62_GUY case) "), linebreak
-  **}
-  **if $m62_GUY > 1 {
-   **   putpdf text ("`bullet' Guyana ($m62_GUY cases) "), linebreak
- **}
+    if $m62_GUY == 1 {
+      putpdf text ("`bullet' Guyana ($m62_GUY case) "), linebreak
+    }
+    if $m62_GUY > 1 {
+      putpdf text ("`bullet' Guyana ($m62_GUY cases) "), linebreak
+    }
     if $m62_HTI == 1 {
         putpdf text ("`bullet' Haiti ($m62_HTI case) "), linebreak
     }
@@ -427,12 +427,12 @@ local bullet = uchar(8226)
     if $m62_VCT > 1 {
         putpdf text ("`bullet' St Vincent and the Grenadines ($m62_VCT cases) "), linebreak
     }
-    if $m62_SUR == 1 {
-        putpdf text ("`bullet' Suriname ($m62_SUR case) "), linebreak
-    }
-    if $m62_SUR > 1 {
-        putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
-    }
+**    if $m62_SUR == 1 {
+**        putpdf text ("`bullet' Suriname ($m62_SUR case) "), linebreak
+**    }
+**    if $m62_SUR > 1 {
+**        putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
+**    }
     if $m62_TTO == 1 {
         putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO case) "), linebreak
     }
@@ -448,9 +448,9 @@ local bullet = uchar(8226)
     putpdf text (" "), linebreak  
     putpdf paragraph ,  font("Calibri Light", 10) 
     putpdf text ("In the past 24 hours there have been $m60caricom new confirmed cases and $m61caricom new confirmed deaths. "), 
-    putpdf text ("Belize ($m01_BLZ confirmed cases, $m62_BLZ in the past week) ")
-    putpdf text ("and Jamaica ($m01_JAM confirmed cases, $m62_JAM in the past week)")
-    putpdf text ("are the current Caribbean hotspots.")       
+    **putpdf text ("Belize ($m01_BLZ confirmed cases, $m62_BLZ in the past week) ")
+    **putpdf text ("and Jamaica ($m01_JAM confirmed cases, $m62_JAM in the past week)")
+    **putpdf text ("are the current Caribbean hotspots.")       
 ** Save the PDF
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
