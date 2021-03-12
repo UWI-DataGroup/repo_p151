@@ -392,3 +392,5 @@ order country country_order iso iso_num pop date new_cases new_deaths total_case
     local c_date = c(current_date)
     local date_string = subinstr("`c_date'", " ", "", .)
     save "`datapath154'\version01\2-working\covid_daily_surveillance_`date_string'", replace
+
+

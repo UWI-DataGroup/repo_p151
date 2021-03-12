@@ -135,6 +135,7 @@ sort iso date
 ** This needed to allow accurate count of days since start of outbreak
 fillin iso date 
 sort iso date
+
 replace new_cases = 0 if new_cases==. & new_cases[_n-1]<. & iso==iso[_n-1] 
 replace new_deaths = 0 if new_death==. & new_deaths[_n-1]<. & iso==iso[_n-1] 
 replace total_cases = total_cases[_n-1] if total_cases==. & total_cases[_n-1]<. & iso==iso[_n-1] 
@@ -162,8 +163,8 @@ replace total_deaths = 0 if total_deaths==. & new_deaths==0
 ** Need to replace this missing with ZERO counts 
 sort iso_num date 
 replace total_cases = 0 if total_cases==. & new_cases==0 
-** 16-Dec-2020
 
+** 16-Dec-2020 
 ** Fix to total deaths to replace missing with zero
 replace total_deaths = 0 if total_deaths==. 
 
@@ -204,6 +205,7 @@ replace new_cases = 1 if iso=="GUY" & date==22002
 
 ** Drop days before outbreak begins in each country
 drop if new_cases==0 & total_cases==0 
+drop if new_cases==. & total_cases==.
 
 ** Save the cleaned and restricted dataset
 save "`datapath'\version01\2-working\covid_restricted_001", replace

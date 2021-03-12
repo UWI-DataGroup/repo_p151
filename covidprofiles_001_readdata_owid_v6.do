@@ -49,7 +49,6 @@
 
 
 
-
 ** Data Source A1 - OWID full dataset
     python: import pandas as full_csv
     python: full_df = full_csv.read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv')
@@ -88,6 +87,8 @@ cap{
    
 ** Data Source C1 - JohnsHopkins counts
 ** Longer import time - includes US county-level data - much larger dataset
+
+*Added in on 16-Feb2021 to create a dataset for 2021 and combine with 2020
 local URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/"
 forvalues month = 1/12 {
    forvalues day = 1/31 {
@@ -122,13 +123,51 @@ forvalues month = 1/12 {
       capture append using "`today'"
    }
 }
+save "`datapath'\version01\2-working\jh_time_series2020", replace
 
+local URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/"
+forvalues month = 1/12 {
+   forvalues day = 1/31 {
+      local month = string(`month', "%02.0f")
+      local day = string(`day', "%02.0f")
+      local year = "2021"
+      local today = "`month'-`day'-`year'"
+      local FileName = "`URL'`today'.csv"
+      clear
+      capture import delimited "`FileName'"
+      capture confirm variable ïprovincestate
+      if _rc == 0 {
+         rename ïprovincestate provincestate
+         label variable provincestate "Province/State"
+      }
+      capture rename province_state provincestate
+      capture rename country_region countryregion
+      capture rename last_update lastupdate
+      capture rename lat latitude
+      capture rename long longitude
+      generate tempdate = "`today'"
+      capture save "`today'", replace
+   }
+}
+clear
+forvalues month = 1/12 {
+   forvalues day = 1/31 {
+      local month = string(`month', "%02.0f")
+      local day = string(`day', "%02.0f")
+      local year = "2021"
+      local today = "`month'-`day'-`year'"
+      capture append using "`today'"
+   }
+}
 
 ** ----------------------------------------------------------------------------
 ** 18-Jun-2020
 ** Save a daily backup of the Johns Hopkins data
 local c_date = c(current_date)
 local date_string = subinstr("`c_date'", " ", "", .)
+save "`datapath'\version01\2-working\jh_time_series2021", replace
+use "`datapath'\version01\2-working\jh_time_series2021", clear 
+append using "`datapath'\version01\2-working\jh_time_series2020"
 save "`datapath'\version01\2-working\jh_time_series_`date_string'", replace
 
 tempfile TCA AIA BMU CYM MSR VGB
@@ -149,7 +188,7 @@ tempfile TCA AIA BMU CYM MSR VGB
     rename confirmed total_cases
     rename deaths total_deaths 
     * Fix data error (1-Apr-2020). Recorded as 6, should be 5
-    replace total_cases = total_cases[_n+1] if total_cases>total_cases[_n+1] 
+    *replace total_cases = total_cases[_n+1] if total_cases>total_cases[_n+1] 
     * Two new variables - daily cases and deaths
     sort date 
     *by location: gen new_cases = total_cases - total_cases[_n-1]
@@ -161,7 +200,7 @@ tempfile TCA AIA BMU CYM MSR VGB
     save `TCA', replace
 
 **AIA
- use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
+use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
 keep if provincestate=="Anguilla" 
     ** Match JH format to OWID format before appending
     generate date = date(tempdate, "MDY")
@@ -182,7 +221,7 @@ keep if provincestate=="Anguilla"
 
     **BMU
  use "`datapath'\version01\2-working\jh_time_series_`date_string'", clear 
-keep if provincestate=="Bermuda" 
+keep if provincestate=="Bermuda"
     ** Match JH format to OWID format before appending
     generate date = date(tempdate, "MDY")
     format date %tdNN/DD/CCYY
@@ -262,7 +301,7 @@ keep if provincestate=="British Virgin Islands"
     keep date location new_cases new_deaths total_cases total_deaths
     save `VGB', replace
 
-** ----------------------------------------------------------------------------
+**----------------------------------------------------------------------------
 
 use "`datapath'\version01\1-input\full_owid", clear
 
@@ -273,10 +312,14 @@ drop date_orig
 order date 
 sort location date 
 
+******************
 ** Temp fix on 18-jun-2020 (updated 14Dec2020 to include other UKOTS)
 ** Append JH data if TCA does not exist
 ** Included as TCA has been lost from ECDC web data 
 ** Assert should not highlight any TCA entries (_rc will equal 0 - ie no error)
+
+*added 15-Feb-2021, as TCA data have started to be added to OWID but the fields are blank
+drop if iso_code=="TCA"
     capture assert iso !="TCA"
     ** Append JH data if assert condition met
     if _rc == 0 {
@@ -286,6 +329,8 @@ sort location date
              }
 
 **AIA
+*added 13-Fev-2021, as AIA data have started to be added to OWID but the fields are blank
+drop if iso_code=="AIA"
  capture assert iso !="AIA"
     ** Append JH data if assert condition met
     if _rc == 0 {
@@ -295,6 +340,9 @@ sort location date
              }
 
 **BMU
+*added 13-Fev-2021, as Bermuda data have started to be added to OWID but the fields are blank
+drop if iso_code=="BMU"
+
  capture assert iso !="BMU"
     ** Append JH data if assert condition met
     if _rc == 0 {
@@ -304,6 +352,9 @@ sort location date
              }
 
 **CYM
+*added 13-Feb-2021, as Cayman islands data have started to be added to OWID but the fields are blank
+drop if iso_code=="CYM"
+
  capture assert iso !="CYM"
     ** Append JH data if assert condition met
     if _rc == 0 {
@@ -313,6 +364,8 @@ sort location date
              }
 
 **MSR
+*added 13-Feb-2021, as MSR data have started to be added to OWID but the fields are blank
+drop if iso_code=="MSR"
  capture assert iso !="MSR"
     ** Append JH data if assert condition met
     if _rc == 0 {
@@ -322,6 +375,8 @@ sort location date
              }             
 
 **VGB
+*added 13-Feb-2021, as Bermuda data have started to be added to OWID but the fields are blank
+drop if iso_code=="VGB"
  capture assert iso !="VGB"
     ** Append JH data if assert condition met
     if _rc == 0 {
@@ -329,7 +384,6 @@ sort location date
         replace iso = "VGB" if iso=="" & location=="British Virgin Islands"
         replace population = 30237 if population==. & location=="British Virgin Islands"
              }   
-
 
 
 ** 19-Jun-2020
