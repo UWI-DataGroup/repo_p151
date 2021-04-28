@@ -1,6 +1,6 @@
 ** HEADER -----------------------------------------------------
 **  DO-FILE METADATA
-    //  algorithm name					covidprofiles_006_region2_v6.do
+    //  algorithm name					covidprofiles_006_region2_v5.do
     //  project:				        
     //  analysts:				       	Ian HAMBLETON
     // 	date last modified	            21-JUL-2020
@@ -42,7 +42,7 @@
     
     ** Close any open log file and open a new log file
     capture log close
-    log using "`logpath'\covidprofiles_006_region2_v6", replace
+    log using "`logpath'\covidprofiles_006_region2_v5", replace
 ** HEADER -----------------------------------------------------
 ** -----------------------------------------
 ** Pre-Load the COVID metrics --> as Global Macros
@@ -204,18 +204,21 @@ global fdatef : di %tdD_m date("$S_DATE", "DMY")
 ** Graphics numeric running from 1 to 20
 gen corder = iso_num
 
+
 ** -----------------------------------------
-** HEATMAP -- NEW CASES
+** HEATMAP -- NEW CASES (v6)
+** ORIGINAL as of 28-APR-2021
 ** -----------------------------------------
 replace new = . if new==0
 #delimit ;
     heatplot new i.corder date if mtype==1
     ,
+    bwidth(4) 
     color(RdYlBu , reverse intensify(0.75 ))
     cuts(2 5 10 15 20 25 30 40 50 100 200)
     keylabels(all, range(1))
     p(lcolor(white) lalign(center) lw(0.05))
-    discrete
+    /// discrete
     statistic(asis)
     missing(label("zero") fc(gs12) lc(gs16) lw(0.05) )
     plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -268,8 +271,6 @@ replace new = . if new==0
     name(heatmap_newcases) 
     ;
 #delimit cr
-
-/*
 graph export "`outputpath'/04_TechDocs/heatmap_newcases_$S_DATE.png", replace width(4000)
 ** -----------------------------------------
 ** HEATMAP -- CASES -- GROWTH RATE
@@ -278,12 +279,13 @@ replace gr7 = . if gr7==0
 #delimit ;
     heatplot gr7 i.corder date if mtype==1
     ,
+    bwidth(4) 
     color(RdYlBu , reverse intensify(0.75 ))
     cuts(1($bingrc)@max)
     ///cuts(2 4 6 8 10 12 14 16 18 20)
     keylabels(all, range(1))
     p(lcolor(white) lalign(center) lw(0.05))
-    discrete
+    /// discrete
     statistic(asis)
     missing(label("zero") fc(gs12) lc(gs16) lw(0.05) )
     ///color(spmap, blues)
@@ -350,12 +352,13 @@ replace metric = . if metric==0
 #delimit ;
     heatplot metric i.corder date if mtype==1
     ,
+    bwidth(4) 
     color(RdYlBu , reverse intensify(0.75 ))
     ///cuts(1($bingrc)@max)
     cuts(10 20 30 40 50 75 100 200 300 400 500 750 1000 2000 3000 4000 5000)
     keylabels(all, range(1))
     p(lcolor(white) lalign(center) lw(0.05))
-    discrete
+    /// discrete
     statistic(asis)
     missing(label("zero") fc(gs12) lc(gs16) lw(0.05) )
     
@@ -421,12 +424,13 @@ graph export "`outputpath'/04_TechDocs/heatmap_cases_$S_DATE.png", replace width
 #delimit ;
     heatplot metric i.corder date if mtype==3
     ,
+    bwidth(7) 
     color(RdYlBu , reverse intensify(0.75 ))
     ///cuts(@min($bind)@max)
     cuts(5 10 15 20 25 30 35 40 45 50 60 70 80 90 100 200)
     keylabels(all, range(1))
     p(lcolor(white) lalign(center) lw(0.05))
-    discrete
+    /// discrete
     statistic(asis)
     missing(label("zero") fc(gs12) lc(gs16) lw(0.05) )
     
@@ -492,12 +496,13 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
 #delimit ;
     heatplot new i.corder date if mtype==3
     ,
+    bwidth(7) 
     color(RdYlBu , reverse intensify(0.75 ))
     cuts(@min(1){@max+1})
     ///cuts(5 10 15 20 25 30 35 40 45 50 60 70 80 90 100 200)
     keylabels(all, range(1))
     p(lcolor(white) lalign(center) lw(0.05))
-    discrete
+    /// discrete
     statistic(asis)
     missing(label("zero") fc(gs12) lc(gs16) lw(0.05) )
     srange(1)
@@ -559,6 +564,8 @@ graph export "`outputpath'/04_TechDocs/heatmap_deaths_$S_DATE.png", replace widt
     ;
 #delimit cr
 graph export "`outputpath'/04_TechDocs/heatmap_newdeaths_$S_DATE.png", replace width(4000)
+
+
 ** ------------------------------------------------------
 ** PDF REGIONAL REPORT (COUNTS OF CONFIRMED CASES)
 ** ------------------------------------------------------

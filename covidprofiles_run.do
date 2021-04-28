@@ -43,7 +43,7 @@ do "`logpath'\covidprofiles_001_readdata_owid_v6"
 ** Prepare data
 do "`logpath'\covidprofiles_002_initialprep_v6"
 do "`logpath'\covidprofiles_003_metrics_v5"
-** Country Profiles
+/*** Country Profiles
 do "`logpath'\covidprofiles_004_country_v5"
 ** Regional Profiles
 do "`logpath'\covidprofiles_005_region1_v5"
