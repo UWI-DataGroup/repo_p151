@@ -106,23 +106,23 @@ local remain = $m62caricom - $m62_HTI
 local remain2 = $m62caricom - $m62_HTI - $m62_SUR 
 **Remaining deahs after countries with >200 cases
 local remain3 = $m62caricom - $m62_SUR - $m62_BHS - $m62_HTI
-local remain4 = $m62caricom - $m62_JAM - $m62_GUY - $m62_BMU - $m62_TTO
+local remain4 = $m62caricom - $m62_BHS - $m62_GUY - $m62_JAM - $m62_SUR - $m62_TTO - $m62_HTI
     
     if $m62_ATG>0 {
         local number = `number'+1
     }
-    if $m62_BHS>0 {
-        local number = `number'+1
-    }
+    ** if $m62_BHS>0 {
+    **    local number = `number'+1
+    **}
     if $m62_BLZ>0 {
         local number = `number'+1
     }
     if $m62_BRB>0 {
         local number = `number'+1
     }
-    **if $m62_BMU>0 {
-    **    local number = `number'+1
-    **}
+    if $m62_BMU>0 {
+        local number = `number'+1
+    }
     if $m62_VGB>0 {
         local number = `number'+1
     }
@@ -138,9 +138,9 @@ local remain4 = $m62caricom - $m62_JAM - $m62_GUY - $m62_BMU - $m62_TTO
     **if $m62_GUY>0 {
     **  local number = `number'+1
     **}
-    if $m62_HTI>0 {
-      local number = `number'+1
-    }
+    **if $m62_HTI>0 {
+    **  local number = `number'+1
+    **}
     **if $m62_JAM>0 {
     **      local number = `number'+1
     **}
@@ -156,9 +156,9 @@ local remain4 = $m62caricom - $m62_JAM - $m62_GUY - $m62_BMU - $m62_TTO
     if $m62_VCT>0 {
         local number = `number'+1
     }
-    if $m62_SUR>0 {
-        local number = `number'+1
-    }
+    ** if $m62_SUR>0 {
+    **    local number = `number'+1
+    **}
     ** if $m62_TTO>0 {
     **   local number = `number'+1
     **}
@@ -337,12 +337,12 @@ local bullet = uchar(8226)
     if $m62_ATG > 1 {
         putpdf text ("`bullet' Antigua and Barbuda ($m62_ATG cases) "), linebreak 
     }
-    if $m62_BHS == 1 {
-        putpdf text ("`bullet' The Bahamas ($m62_BHS case) "), linebreak 
-    }
-    if $m62_BHS > 1 {
-        putpdf text ("`bullet' The Bahamas ($m62_BHS cases) "), linebreak 
-    }
+    ** if $m62_BHS == 1 {
+    **    putpdf text ("`bullet' The Bahamas ($m62_BHS case) "), linebreak 
+    **}
+    **if $m62_BHS > 1 {
+    **    putpdf text ("`bullet' The Bahamas ($m62_BHS cases) "), linebreak 
+    **}
     if $m62_BRB == 1 {
         putpdf text ("`bullet' Barbados ($m62_BRB case) "), linebreak 
     }
@@ -355,12 +355,12 @@ local bullet = uchar(8226)
     if $m62_BLZ > 1 {
         putpdf text ("`bullet' Belize ($m62_BLZ cases) "), linebreak
     }
-    **if $m62_BMU == 1 {
-    **    putpdf text ("`bullet' Bermuda ($m62_BMU case) "), linebreak
-    **}
-    **if $m62_BMU > 1 {
-    **    putpdf text ("`bullet' Bermuda ($m62_BMU cases) "), linebreak
-    **}
+    if $m62_BMU == 1 {
+        putpdf text ("`bullet' Bermuda ($m62_BMU case) "), linebreak
+    }
+    if $m62_BMU > 1 {
+        putpdf text ("`bullet' Bermuda ($m62_BMU cases) "), linebreak
+    }
     if $m62_VGB == 1 {
         putpdf text ("`bullet' The British Virgin Islands ($m62_VGB case) "), linebreak
     }
@@ -391,12 +391,12 @@ local bullet = uchar(8226)
    **  if $m62_GUY > 1 {
    **   putpdf text ("`bullet' Guyana ($m62_GUY cases) "), linebreak
     **}
-    if $m62_HTI == 1 {
-        putpdf text ("`bullet' Haiti ($m62_HTI case) "), linebreak
-    }
-    if $m62_HTI > 1 {
-        putpdf text ("`bullet' Haiti ($m62_HTI cases) "), linebreak
-    }
+   ** if $m62_HTI == 1 {
+   **     putpdf text ("`bullet' Haiti ($m62_HTI case) "), linebreak
+    **}
+    ** if $m62_HTI > 1 {
+    **    putpdf text ("`bullet' Haiti ($m62_HTI cases) "), linebreak
+    **}
 **    if $m62_JAM == 1 {
 **        putpdf text ("`bullet' Jamaica ($m62_JAM case) "), linebreak
 **     }
@@ -427,12 +427,12 @@ local bullet = uchar(8226)
     if $m62_VCT > 1 {
         putpdf text ("`bullet' St Vincent and the Grenadines ($m62_VCT cases) "), linebreak
     }
-    if $m62_SUR == 1 {
-        putpdf text ("`bullet' Suriname ($m62_SUR case) "), linebreak
-    }
-    if $m62_SUR > 1 {
-        putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
-    }
+    ** if $m62_SUR == 1 {
+    **    putpdf text ("`bullet' Suriname ($m62_SUR case) "), linebreak
+    **}
+    **if $m62_SUR > 1 {
+    **    putpdf text ("`bullet' Suriname ($m62_SUR cases) "), linebreak
+    **}
     **if $m62_TTO == 1 {
     **    putpdf text ("`bullet' Trinidad and Tobago ($m62_TTO case) "), linebreak
     **}
