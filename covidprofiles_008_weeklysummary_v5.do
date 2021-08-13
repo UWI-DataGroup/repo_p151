@@ -114,9 +114,9 @@ local remain4 = $m62caricom - $m62_BHS - $m62_GUY - $m62_JAM - $m62_SUR - $m62_T
     ** if $m62_BHS>0 {
     **    local number = `number'+1
     **}
-    if $m62_BLZ>0 {
-        local number = `number'+1
-    }
+    ** if $m62_BLZ>0 {
+    **    local number = `number'+1
+    **}
     if $m62_BRB>0 {
         local number = `number'+1
     }
@@ -150,9 +150,9 @@ local remain4 = $m62caricom - $m62_BHS - $m62_GUY - $m62_JAM - $m62_SUR - $m62_T
     if $m62_KNA>0 {
         local number = `number'+1
     }
-    if $m62_LCA>0 {
-        local number = `number'+1
-    }
+    **if $m62_LCA>0 {
+    **    local number = `number'+1
+    **}
     if $m62_VCT>0 {
         local number = `number'+1
     }
@@ -278,7 +278,7 @@ local bullet = uchar(8226)
         putpdf text ("`bullet' Bermuda ($m62_BMU cases) "), linebreak
     }
     if $m62_VGB > 200 {
-        putpdf text ("`bullet' The British Virgin Islands ($m62_VGB case) "), linebreak
+        putpdf text ("`bullet' The British Virgin Islands ($m62_VGB cases) "), linebreak
     }
     if $m62_CYM > 200 {
         putpdf text ("`bullet' Cayman Islands ($m62_CYM cases) "), linebreak
@@ -348,13 +348,13 @@ local bullet = uchar(8226)
     }
     if $m62_BRB > 1 {
         putpdf text ("`bullet' Barbados ($m62_BRB cases) "), linebreak 
-    }
-    if $m62_BLZ == 1 {
-        putpdf text ("`bullet' Belize ($m62_BLZ case) "), linebreak
-    }
-    if $m62_BLZ > 1 {
-        putpdf text ("`bullet' Belize ($m62_BLZ cases) "), linebreak
-    }
+    **}
+    ** if $m62_BLZ == 1 {
+    **    putpdf text ("`bullet' Belize ($m62_BLZ case) "), linebreak
+    **}
+    **if $m62_BLZ > 1 {
+    **    putpdf text ("`bullet' Belize ($m62_BLZ cases) "), linebreak
+    **}
     if $m62_BMU == 1 {
         putpdf text ("`bullet' Bermuda ($m62_BMU case) "), linebreak
     }
@@ -415,12 +415,12 @@ local bullet = uchar(8226)
     if $m62_KNA > 1 {
         putpdf text ("`bullet' St Kitts and Nevis ($m62_KNA cases) "), linebreak
     }
-    if $m62_LCA == 1 {
-        putpdf text ("`bullet' St Lucia ($m62_LCA case) "), linebreak
-    }
-    if $m62_LCA > 1 {
-        putpdf text ("`bullet' St Lucia ($m62_LCA cases) "), linebreak
-    }
+    **if $m62_LCA == 1 {
+    **    putpdf text ("`bullet' St Lucia ($m62_LCA case) "), linebreak
+    **}
+    **if $m62_LCA > 1 {
+    **    putpdf text ("`bullet' St Lucia ($m62_LCA cases) "), linebreak
+    **}
     if $m62_VCT == 1 {
         putpdf text ("`bullet' St Vincent and thee Grenadines ($m62_VCT case) "), linebreak
     }
